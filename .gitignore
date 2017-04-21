@@ -1,0 +1,15 @@
+# .gitignore file for picosdk-c-sharp-examples repository
+# Untracked files/folders to ignore.
+
+# Folders
+
+**/.vs
+**/bin
+**/obj
+
+# Files 
+**/*.csproj.user
+**/*.exe
+**/*.dll
+**/*.txt
+**/*.orig
