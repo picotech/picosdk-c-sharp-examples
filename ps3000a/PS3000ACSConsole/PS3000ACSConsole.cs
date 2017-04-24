@@ -188,7 +188,7 @@ namespace PS3000ACSConsole
         void BlockCallback(short handle, short status, IntPtr pVoid)
         {
             // flag to say done reading data
-            if (status != (short) Status.PICO_CANCELLED)
+            if (status != (short) StatusCodes.PICO_CANCELLED)
             {
                 _ready = true;
             }
@@ -221,7 +221,7 @@ namespace PS3000ACSConsole
             short maxLogicVoltage = 5;
             short enabled = 1;
 
-            status = Status.PICO_OK;
+            status = StatusCodes.PICO_OK;
 
             // Set logic threshold
             logicLevel = (short)((logicVoltage / maxLogicVoltage) * Imports.MaxLogicLevel);
@@ -231,7 +231,7 @@ namespace PS3000ACSConsole
             {
                 status = Imports.SetDigitalPort(_handle, port, enabled, logicLevel);
             }
-            Console.WriteLine(status != Status.PICO_OK ? "SetDigitals:Imports.SetDigitalPort Status = 0x{0:X6}" : "", status);
+            Console.WriteLine(status != StatusCodes.PICO_OK ? "SetDigitals:Imports.SetDigitalPort Status = 0x{0:X6}" : "", status);
 
         }
 
@@ -244,7 +244,7 @@ namespace PS3000ACSConsole
             Imports.Channel port;
             uint status;
 
-            status = Status.PICO_OK;
+            status = StatusCodes.PICO_OK;
 
             // Disable Digital ports 
             for (port = Imports.Channel.PS3000A_DIGITAL_PORT0; port <= Imports.Channel.PS3000A_DIGITAL_PORT1; port++)
@@ -252,7 +252,7 @@ namespace PS3000ACSConsole
                 status = Imports.SetDigitalPort(_handle, port, 0, 0);
             }
 
-            Console.WriteLine(status != Status.PICO_OK ? "DisableDigital:Imports.SetDigitalPort Status = 0x{0:X6}" : "", status);
+            Console.WriteLine(status != StatusCodes.PICO_OK ? "DisableDigital:Imports.SetDigitalPort Status = 0x{0:X6}" : "", status);
         }
 
 
@@ -263,7 +263,7 @@ namespace PS3000ACSConsole
         {
             uint status;
 
-            status = Status.PICO_OK;
+            status = StatusCodes.PICO_OK;
 
             // Disable analogue ports
             for (int i = 0; i < _channelCount; i++)
@@ -271,7 +271,7 @@ namespace PS3000ACSConsole
                 status = Imports.SetChannel(_handle, Imports.Channel.ChannelA + i, 0, 0, 0, 0);
             }
 
-            Console.WriteLine(status != Status.PICO_OK ? "DisableAnalogue:Imports.SetChannel Status = 0x{0:X6}" : "", status);
+            Console.WriteLine(status != StatusCodes.PICO_OK ? "DisableAnalogue:Imports.SetChannel Status = 0x{0:X6}" : "", status);
         }
 
 
@@ -335,7 +335,7 @@ namespace PS3000ACSConsole
 
                         status = Imports.SetDataBuffers(_handle, (Imports.Channel)i, maxBuffers, minBuffers, (int) sampleCount, segmentIndex, Imports.RatioMode.Average);
 
-                        if (status != Status.PICO_OK)
+                        if (status != StatusCodes.PICO_OK)
                         {
                             Console.WriteLine("BlockDataHandler:Imports.SetDataBuffers Channel {0} Status = 0x{1:X6}", (char)('A' + i), status);
                         }
@@ -352,7 +352,7 @@ namespace PS3000ACSConsole
 
                     status = Imports.SetDataBuffer(_handle, i + Imports.Channel.PS3000A_DIGITAL_PORT0, digiBuffer, (int) sampleCount, segmentIndex, Imports.RatioMode.None);
 
-                    if (status != Status.PICO_OK)
+                    if (status != StatusCodes.PICO_OK)
                     {
                         Console.WriteLine("BlockDataHandler:Imports.SetDataBuffer {0} Status = 0x{1,0:X6}", i + Imports.Channel.PS3000A_DIGITAL_PORT0, status);
                     }
@@ -382,14 +382,14 @@ namespace PS3000ACSConsole
 
                 status = Imports.RunBlock(_handle, 0, (int)sampleCount, _timebase, _oversample, out timeIndisposed, 0, _callbackDelegate, IntPtr.Zero);
 
-                if (status == Status.PICO_POWER_SUPPLY_CONNECTED || status == Status.PICO_POWER_SUPPLY_NOT_CONNECTED || status == Status.PICO_POWER_SUPPLY_UNDERVOLTAGE)
+                if (status == StatusCodes.PICO_POWER_SUPPLY_CONNECTED || status == StatusCodes.PICO_POWER_SUPPLY_NOT_CONNECTED || status == StatusCodes.PICO_POWER_SUPPLY_UNDERVOLTAGE)
                 {
                     status = PowerSourceSwitch(_handle, status);
                     retry = true;
                 }
                 else
                 {
-                    Console.WriteLine(status != (short)Status.PICO_OK ? "BlockDataHandler:Imports.RunBlock Status = 0x{0:X6}" : "", status);
+                    Console.WriteLine(status != (short)StatusCodes.PICO_OK ? "BlockDataHandler:Imports.RunBlock Status = 0x{0:X6}" : "", status);
                 }
             }
             while (retry);
@@ -427,7 +427,7 @@ namespace PS3000ACSConsole
                     status = Imports.GetValues(_handle, startIndex, ref sampleCount, downSampleRatio, Imports.RatioMode.None, segmentIndex, out overflow);
                 }
 
-                if (status == Status.PICO_OK)
+                if (status == StatusCodes.PICO_OK)
                 {
 
                     /* Print out the first 10 readings, converting the readings to mV if required */
@@ -523,9 +523,9 @@ namespace PS3000ACSConsole
                 }
                 else
                 {
-                    if (status == (short)Status.PICO_POWER_SUPPLY_CONNECTED || status == (short)Status.PICO_POWER_SUPPLY_NOT_CONNECTED || status == (short)Status.PICO_POWER_SUPPLY_UNDERVOLTAGE)
+                    if (status == (short)StatusCodes.PICO_POWER_SUPPLY_CONNECTED || status == (short)StatusCodes.PICO_POWER_SUPPLY_NOT_CONNECTED || status == (short)StatusCodes.PICO_POWER_SUPPLY_UNDERVOLTAGE)
                     {
-                        if (status == (short)Status.PICO_POWER_SUPPLY_UNDERVOLTAGE)
+                        if (status == (short)StatusCodes.PICO_POWER_SUPPLY_UNDERVOLTAGE)
                         {
                             status = PowerSourceSwitch(_handle, status);
                         }
@@ -603,20 +603,20 @@ namespace PS3000ACSConsole
             int timeInterval = 0;
             int maxSamples = 0;
 
-            status = Status.PICO_INVALID_TIMEBASE;
+            status = StatusCodes.PICO_INVALID_TIMEBASE;
 
             do
             {
                 status = Imports.GetTimebase(_handle, _timebase, (int)numSamples, out timeInterval, _oversample, out maxSamples, 0);
 
-                if (status != Status.PICO_OK)
+                if (status != StatusCodes.PICO_OK)
                 {
                     Console.WriteLine("Selected timebase {0} could not be used.\n", _timebase);
                     _timebase++;
                 }
 
             }
-            while (status != Status.PICO_OK);
+            while (status != StatusCodes.PICO_OK);
 
             Console.WriteLine("Timebase: {0}\t Sampling Interval (ns): {1}\nMax Samples per Channel per Segment: {2}\n", _timebase, timeInterval, maxSamples);
 
@@ -684,7 +684,7 @@ namespace PS3000ACSConsole
 
                         status = Imports.SetDataBuffer(_handle, (Imports.Channel)channel, values[segment][channel], (int) numSamples, segment, Imports.RatioMode.None);
 
-                        if (status != Status.PICO_OK)
+                        if (status != StatusCodes.PICO_OK)
                         {
                             Console.WriteLine("RapidBlockDataHandler:Imports.SetDataBuffer Channel {0} Status = 0x{1:X6}", (char)('A' + channel), status);
                         }
@@ -694,7 +694,7 @@ namespace PS3000ACSConsole
                     {
                         status = Imports.SetDataBuffer(_handle, (Imports.Channel)channel, null, 0, segment, Imports.RatioMode.None);
 
-                        if (status != Status.PICO_OK)
+                        if (status != StatusCodes.PICO_OK)
                         {
                             Console.WriteLine("RapidBlockDataHandler:Imports.SetDataBuffer Channel {0} Status = 0x{1:X6}", (char)('A' + channel), status);
                         }
@@ -715,11 +715,11 @@ namespace PS3000ACSConsole
             // Obtain trigger timestamping information
             status = Imports.GetTriggerInfoBulk(_handle, triggerInfo, 0, (nRapidCaptures - 1));
 
-            if (status == Status.PICO_OK)
+            if (status == StatusCodes.PICO_OK)
             {
                 isTriggerTimestampingSupported = true;
             }
-            else if (status == Status.PICO_NOT_SUPPORTED_BY_THIS_DEVICE)
+            else if (status == StatusCodes.PICO_NOT_SUPPORTED_BY_THIS_DEVICE)
             {
                 Console.WriteLine("RapidBlockDataHandler:Trigger timestamping not supported by this device.");
                 isTriggerTimestampingSupported = false;
@@ -751,7 +751,7 @@ namespace PS3000ACSConsole
                     {
                         // Nothing to display
                     }
-                    else if (seg > 0 && triggerInfo[seg].status == Status.PICO_OK)
+                    else if (seg > 0 && triggerInfo[seg].status == StatusCodes.PICO_OK)
                     {
                         timeStamp = triggerInfo[seg].timeStampCounter - triggerInfo[seg - 1].timeStampCounter;
                         Console.WriteLine("Time since trigger for last segment: {0} ns\n", (timeStamp * (UInt64)timeInterval));
@@ -980,7 +980,7 @@ namespace PS3000ACSConsole
         {
 
             uint numRapidCaptures = 1;
-            uint status = Status.PICO_OK;
+            uint status = StatusCodes.PICO_OK;
             uint maxSegments = 0;
             bool valid = false;
 
@@ -1282,7 +1282,7 @@ namespace PS3000ACSConsole
             PinnedArray<short>[] appDigiBuffersPinned = new PinnedArray<short>[_digitalPorts * 2];
 
             sampleInterval = 1;
-            status = Status.PICO_OK;
+            status = StatusCodes.PICO_OK;
 
             switch (mode)
             {
@@ -1306,7 +1306,7 @@ namespace PS3000ACSConsole
 
                             status = Imports.SetDataBuffers(_handle, (Imports.Channel)(channel / 2), buffers[channel], buffers[channel + 1], (int) tempBufferSize, 0, Imports.RatioMode.Aggregate);
 
-                            if (status != Status.PICO_OK)
+                            if (status != StatusCodes.PICO_OK)
                             {
                                 Console.WriteLine("StreamDataHandler:Imports.SetDataBuffers Channel {0} Status = 0x{1:X6}\n", (char)('A' + channel), status);
                             }
@@ -1339,7 +1339,7 @@ namespace PS3000ACSConsole
 
                         status = Imports.SetDataBuffers(_handle, (Imports.Channel)((port / 2) + Imports.Channel.PS3000A_DIGITAL_PORT0), digiBuffers[port], digiBuffers[port + 1], (int) tempBufferSize, 0, Imports.RatioMode.Aggregate);
 
-                        if (status != Status.PICO_OK)
+                        if (status != StatusCodes.PICO_OK)
                         {
                             Console.WriteLine("StreamDataHandler:Imports.SetDataBuffers {0} Status = 0x{1:X6}", (Imports.Channel)port + (short)Imports.Channel.PS3000A_DIGITAL_PORT0, status);
                         }
@@ -1369,7 +1369,7 @@ namespace PS3000ACSConsole
 
                         status = Imports.SetDataBuffer(_handle, (Imports.Channel)((port) + Imports.Channel.PS3000A_DIGITAL_PORT0), digiBuffers[port], (int)tempBufferSize, 0, Imports.RatioMode.None);
 
-                        if (status != Status.PICO_OK)
+                        if (status != StatusCodes.PICO_OK)
                         {
                             Console.WriteLine("StreamDataHandler:Imports.SetDataBuffer {0} Status = 0x{1:X6}", (Imports.Channel)port + (short)Imports.Channel.PS3000A_DIGITAL_PORT0, status);
                         }
@@ -1404,7 +1404,7 @@ namespace PS3000ACSConsole
                 // Start streaming data capture
                 status = Imports.RunStreaming(_handle, ref sampleInterval, timeUnits, preTrigger, postTrigger - preTrigger, autoStop, downsampleRatio, ratioMode, tempBufferSize);
 
-                if (status == Status.PICO_POWER_SUPPLY_CONNECTED || status == Status.PICO_POWER_SUPPLY_NOT_CONNECTED || status == Status.PICO_POWER_SUPPLY_UNDERVOLTAGE)
+                if (status == StatusCodes.PICO_POWER_SUPPLY_CONNECTED || status == StatusCodes.PICO_POWER_SUPPLY_NOT_CONNECTED || status == StatusCodes.PICO_POWER_SUPPLY_UNDERVOLTAGE)
                 {
                     status = PowerSourceSwitch(_handle, status);
                     retry = true;
@@ -1412,7 +1412,7 @@ namespace PS3000ACSConsole
             }
             while (retry);
 
-            Console.WriteLine(status != (short)Status.PICO_OK ? "StreamDataHandler:Imports.RunStreaming Status = 0x{0,0:X6}" : "", status);
+            Console.WriteLine(status != (short)StatusCodes.PICO_OK ? "StreamDataHandler:Imports.RunStreaming Status = 0x{0,0:X6}" : "", status);
 
             Console.WriteLine("Streaming data...Press a key to abort");
 
@@ -1446,9 +1446,9 @@ namespace PS3000ACSConsole
 
                 status = Imports.GetStreamingLatestValues(_handle, StreamingCallback, (System.IntPtr) mode);
 
-                if (status == Status.PICO_POWER_SUPPLY_CONNECTED || status ==  Status.PICO_POWER_SUPPLY_NOT_CONNECTED || status ==  Status.PICO_POWER_SUPPLY_UNDERVOLTAGE)
+                if (status == StatusCodes.PICO_POWER_SUPPLY_CONNECTED || status ==  StatusCodes.PICO_POWER_SUPPLY_NOT_CONNECTED || status ==  StatusCodes.PICO_POWER_SUPPLY_UNDERVOLTAGE)
                 {
-                    if (status == (short)Status.PICO_POWER_SUPPLY_UNDERVOLTAGE)
+                    if (status == (short)StatusCodes.PICO_POWER_SUPPLY_UNDERVOLTAGE)
                     {
                         status = PowerSourceSwitch(_handle, status);
                     }
@@ -2076,7 +2076,7 @@ namespace PS3000ACSConsole
 
             switch (status)
             {
-                case Status.PICO_POWER_SUPPLY_NOT_CONNECTED:
+                case StatusCodes.PICO_POWER_SUPPLY_NOT_CONNECTED:
                     do
                     {
                         Console.WriteLine("5V Power Supply not connected\nDo you want to run using power from the USB lead? Y\\N");
@@ -2091,12 +2091,12 @@ namespace PS3000ACSConsole
                     Console.WriteLine(ch == 'N' ? "Please use the 5V power supply to power this unit" : "");
                     break;
 
-                case Status.PICO_POWER_SUPPLY_CONNECTED:
+                case StatusCodes.PICO_POWER_SUPPLY_CONNECTED:
                     Console.WriteLine("Using 5V power supply voltage");
                     status = Imports.ChangePowerSource(handle, status);
                     break;
 
-                case Status.PICO_POWER_SUPPLY_UNDERVOLTAGE:
+                case StatusCodes.PICO_POWER_SUPPLY_UNDERVOLTAGE:
                     do
                     {
                         Console.WriteLine("");
@@ -2109,9 +2109,9 @@ namespace PS3000ACSConsole
                         {
                             Environment.Exit(0);
                         }
-                        status = PowerSourceSwitch(handle, Status.PICO_POWER_SUPPLY_CONNECTED);
+                        status = PowerSourceSwitch(handle, StatusCodes.PICO_POWER_SUPPLY_CONNECTED);
                     }
-                    while (status == (short)Status.PICO_POWER_SUPPLY_REQUEST_INVALID);
+                    while (status == (short)StatusCodes.PICO_POWER_SUPPLY_REQUEST_INVALID);
                     break;
             }
             return status;
@@ -2123,17 +2123,17 @@ namespace PS3000ACSConsole
         {
             uint status = Imports.OpenUnit(out handle, null);
 
-            if (status != Status.PICO_OK)
+            if (status != StatusCodes.PICO_OK)
             {
                 status = PowerSourceSwitch(handle, status);
 
-                if (status == Status.PICO_POWER_SUPPLY_UNDERVOLTAGE)
+                if (status == StatusCodes.PICO_POWER_SUPPLY_UNDERVOLTAGE)
                 {
                     status = PowerSourceSwitch(handle, status);
                 }
-                else if (status == Status.PICO_USB3_0_DEVICE_NON_USB3_0_PORT)
+                else if (status == StatusCodes.PICO_USB3_0_DEVICE_NON_USB3_0_PORT)
                 {
-                    status = PowerSourceSwitch(handle, Status.PICO_POWER_SUPPLY_NOT_CONNECTED);
+                    status = PowerSourceSwitch(handle, StatusCodes.PICO_POWER_SUPPLY_NOT_CONNECTED);
                 }
                 else
                 {
@@ -2142,7 +2142,7 @@ namespace PS3000ACSConsole
             }
 
 
-            if (status != Status.PICO_OK)
+            if (status != StatusCodes.PICO_OK)
             {
                 Console.WriteLine("Unable to open device");
                 Console.WriteLine("Error code : 0x{0}", Convert.ToString(status, 16));
@@ -2169,7 +2169,7 @@ namespace PS3000ACSConsole
 
             uint status = Imports.EnumerateUnits(out count, serials, ref serialsLength);
 
-            if (status != Status.PICO_OK)
+            if (status != StatusCodes.PICO_OK)
             {
                 Console.WriteLine("No devices found.\n");
                 Console.WriteLine("Error code : {0}", status);

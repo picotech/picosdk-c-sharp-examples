@@ -71,7 +71,7 @@ namespace PS3000ASigGen
                 MessageBox.Show("Cannot open device error code: " + status.ToString(), "Error Opening Device", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Close();
             }
-            else if (status != Status.PICO_OK)
+            else if (status != StatusCodes.PICO_OK)
             {
                 status = Imports.ChangePowerSource(handle, status);
             }
@@ -80,7 +80,7 @@ namespace PS3000ASigGen
 
             status = Imports.SigGenArbitraryMinMaxValues(handle, out minArbitraryWaveformValue, out maxArbitraryWaveformValue, out minArbitraryWaveformSize, out maxArbitraryWaveformSize);
 
-            if (status == Status.PICO_OK)
+            if (status == StatusCodes.PICO_OK)
             {
                 if (maxArbitraryWaveformSize > 0)
                 {
@@ -255,7 +255,7 @@ namespace PS3000ASigGen
                 status = Imports.SetSigGenArbitrary(handle, offset, pkToPk, startDeltaPhase, stopDeltaPhase, deltaPhaseIncrement, dwellCount, waveform, waveformsize, sweeptype,
                                                         operations, indexMode, shots, sweeps, triggertype, triggersource, extinthreshold);
 
-                if (status != Status.PICO_OK)
+                if (status != StatusCodes.PICO_OK)
                 {
                     MessageBox.Show("Error SetSigGenArbitrary error code :" + status.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -282,7 +282,7 @@ namespace PS3000ASigGen
                 status = Imports.SetSigGenBuiltInV2(handle, offset, pkToPk, wavetype, startFreq, stopFreq, increment, dwellTime, sweeptype,
                                                         operations, shots, sweeps, triggertype, triggersource, extinthreshold);
 
-                if (status != Status.PICO_OK)
+                if (status != StatusCodes.PICO_OK)
                 {
                     MessageBox.Show("Error SetSigGenBuiltInV2 error code :" + status.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
