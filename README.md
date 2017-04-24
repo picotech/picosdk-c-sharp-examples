@@ -30,7 +30,7 @@ Please visit our [Support page](https://www.picotech.com/tech-support) to contac
 
 ## Copyright and licensing
 
-picosdk-c-sharp-examples is Copyright (C) 2011 - 2017 Pico Technology Ltd. All rights reserved. See [LICENSE.md](LICENSE.md) for license terms. 
+picosdk-c-sharp-examples is Copyright (C) 2007 - 2017 Pico Technology Ltd. All rights reserved. See [LICENSE.md](LICENSE.md) for license terms. 
 
 *PicoScope* and *PicoLog* are registered trademarks of Pico Technology Ltd. 
 
