@@ -1,12 +1,19 @@
 /**************************************************************************
-// PICO_SIGNATURE
+ *
+ * Filename: PS3000APinnedArray.cs
+ * 
+ * Description:
+ *   This file defines an object to hold an array in memory when 
+ *   registering a data buffer with the ps3000a driver.
+ *   
+ * Copyright (C) 2011 - 2017 Pico Technology Ltd. See LICENSE file for terms.
  *
  **************************************************************************/
 
 using System;
 using System.Runtime.InteropServices;
 
-namespace PS3000ACSConsole
+namespace PS3000APinnedArray
 {
     public class PinnedArray<T> : IDisposable
     {
