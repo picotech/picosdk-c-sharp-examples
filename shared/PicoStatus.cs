@@ -16,7 +16,7 @@
 
 namespace PicoStatus
 {
-    public class PicoInfo
+    public static class PicoInfo
     {
         #region constants
 
@@ -48,7 +48,7 @@ namespace PicoStatus
         #endregion
     }
 
-    public class StatusCodes
+    public static class StatusCodes
     {
         #region constants
 
