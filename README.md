@@ -1,6 +1,6 @@
 # picosdk-c-sharp-examples
 
-This is a collection of C# examples for PicoScope oscilloscope and PicoLog data logger products.
+picosdk-c-sharp-examples is a set of C# examples for PicoScope oscilloscope and PicoLog data logger products.
 
 Examples are provided as Microsoft Visual Studio Community 2017 solutions and are grouped by driver name.
 
