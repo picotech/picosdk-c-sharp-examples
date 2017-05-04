@@ -161,7 +161,7 @@ namespace PS4000AImports
             PS4824 = 4824
         }
 
-        public enum CONDITIONS_INFO : int
+        public enum ConditionsInfo : int
         {
             Clear = 1,
             Add = 2
@@ -472,7 +472,7 @@ namespace PS4000AImports
                                                                     short handle,
                                                                     TriggerConditions[] conditions,
                                                                     short numConditions,
-                                                                    CONDITIONS_INFO info);
+                                                                    ConditionsInfo info);
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aSetTriggerDelay")]
         public static extern UInt32 SetTriggerDelay(short handle, uint delay);
@@ -481,7 +481,7 @@ namespace PS4000AImports
         public static extern UInt32 SetPulseWidthQualifierConditions(short handle,
                                                     TriggerConditions[] conditions,
                                                     short numConditions,
-                                                    CONDITIONS_INFO info);
+                                                    ConditionsInfo info);
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aSetPulseWidthQualifierProperties")]
         public static extern UInt32 SetPulseWidthQualifierProperties(short handle,
