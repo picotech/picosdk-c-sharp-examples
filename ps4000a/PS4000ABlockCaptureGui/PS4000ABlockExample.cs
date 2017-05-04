@@ -1,18 +1,19 @@
-﻿/**************************************************************************
+﻿/******************************************************************************
  *
- * Filename: PS4000ABlockExamples.cs
+ *  Filename: PS4000ABlockExamples.cs
  * 
- * Description:
- *   This is a Block Capture program that shows how to trigger on
- *   one channel and display results for a PicoScope 4000 Series device using
- *   the ps4000a driver API functions.   
+ *  Description:
+ *    This is a Block Capture program that shows how to trigger on
+ *    one channel and display results for a PicoScope 4000 Series device using
+ *    the ps4000a driver API functions.   
  *
- * Examples:
- *    Collect a block of samples immediately
- *    Collect a block of samples when a trigger event occurs
+ *  Examples:
+ *     Collect a block of samples immediately
+ *     Collect a block of samples when a trigger event occurs
  *
- *
- **************************************************************************/
+ *  Copyright (C) 2014 - 2017 Pico Technology Ltd. See LICENSE file for terms.
+ * 
+ ******************************************************************************/
 
 using System;
 using System.Linq;
