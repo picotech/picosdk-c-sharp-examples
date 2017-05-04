@@ -37,7 +37,7 @@ namespace PS4000AImports
 
         #region Driver enums
 
-        public enum coupling : int
+        public enum Coupling : int
         {
             AC,
             DC
@@ -77,6 +77,15 @@ namespace PS4000AImports
             Range_50V,
             Range_100V,
             Range_200V
+        }
+
+        public enum DeviceResolution : int
+        {
+            PS4000A_DR_8BIT,
+            PS4000A_DR_12BIT,
+            PS4000A_DR_14BIT,
+            PS4000A_DR_15BIT,
+            PS4000A_DR_16BIT
         }
 
         public enum ReportedTimeUnits : int
@@ -148,6 +157,7 @@ namespace PS4000AImports
         public enum Model : int
         {
             NONE = 0,
+            PS4444 = 4444,
             PS4824 = 4824
         }
 
@@ -212,6 +222,39 @@ namespace PS4000AImports
             PS4000A_SIGGEN_EXT_IN,
             PS4000A_SIGGEN_SOFT_TRIG
         }
+
+        public enum BandwidthLimiterFlags : int
+        {
+            PS4000A_BW_FULL_FLAG = (1 << 0),
+            PS4000A_BW_20KHZ_FLAG = (1 << 1),
+            PS4000A_BW_100KHZ_FLAG = (1 << 2),  //( default when current clamp detected: can be changed)
+            PS4000A_BW_1MHZ_FLAG = (1 << 3)     //( default for 14 bits: can be changed)
+        }
+
+        public enum BandwidthLimiter : int
+        {
+            PS4000A_BW_FULL,
+            PS4000A_BW_20KHZ,
+            PS4000A_BW_100KHZ, // (default when current clamp detected: can be changed)
+            PS4000A_BW_1MHZ
+        }
+
+        public enum ResistanceRange : int
+        {
+            PS4000A_RESISTANCE_315K = 0x00000200,
+            PS4000A_RESISTANCE_1100K,
+            PS4000A_RESISTANCE_10M,
+            PS4000A_MAX_RESISTANCE_RANGES = (PS4000A_RESISTANCE_10M + 1) - PS4000A_RESISTANCE_315K,
+            PS4000A_RESISTANCE_ADCV = 0x10000000
+        }
+
+        public enum PinStates : int
+        {
+            PS4000A_CAL_PINS_OFF,
+            PS4000A_GND_SIGNAL,
+            PS4000A_SIGNAL_SIGNAL
+        }
+
         #endregion
 
         // Structures
@@ -339,6 +382,9 @@ namespace PS4000AImports
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aOpenUnit")]
         public static extern UInt32 OpenUnit(out short handle, StringBuilder serial);
+
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aOpenUnitWithResolution")]
+        public static extern UInt32 OpenUnitWithResolution(out short handle, StringBuilder serial, DeviceResolution resolution);
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aCloseUnit")]
         public static extern UInt32 CloseUnit(short handle);
@@ -553,6 +599,24 @@ namespace PS4000AImports
                                                     out short count,
                                                     StringBuilder serials,
                                                     ref short serialLength);
+
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aSetDeviceResolution")]
+        public static extern UInt32 SetDeviceResolution(short handle, DeviceResolution resolution);
+
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aGetDeviceResolution")]
+        public static extern UInt32 GetDeviceResolution(short handle, out DeviceResolution resolution);
+
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aSetCalibrationPins")]
+        public static extern UInt32 SetCalibrationPins(
+                                                        short handle,
+                                                        PinStates pinStates,
+                                                        WaveType waveType,
+                                                        double frequency,
+                                                        uint amplitude,
+                                                        uint offset);
+
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aGetCommonModeOverflow")]
+        public static extern UInt32 GetCommonModeOverflow(short handle, ref ushort overflow);
 
         #endregion
     }
