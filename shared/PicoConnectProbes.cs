@@ -20,7 +20,7 @@ namespace PicoConnectProbes
     {
         #region PicoConnectProbe enums
 
-        public enum PicoConnectProbe : int
+        public enum PicoConnectProbe : uint
         {
             PICO_CONNECT_PROBE_NONE = 0,
 
@@ -31,10 +31,10 @@ namespace PicoConnectProbes
             PICO_CONNECT_PROBE_CURRENT_CLAMP_40A,
             PICO_CONNECT_PROBE_CAT3_HV_1KV,
 
-            PICO_CONNECT_PROBE_INTELLIGENT = 0xFFFFFFFD,
+            PICO_CONNECT_PROBE_INTELLIGENT = (uint) 0xFFFFFFFD,
 
-            PICO_CONNECT_PROBE_UNKNOWN_PROBE = 0xFFFFFFFE,
-            PICO_CONNECT_PROBE_FAULT_PROBE = 0xFFFFFFFF
+            PICO_CONNECT_PROBE_UNKNOWN_PROBE = (uint) 0xFFFFFFFE,
+            PICO_CONNECT_PROBE_FAULT_PROBE = (uint) 0xFFFFFFFF
         }
 
 
@@ -167,34 +167,34 @@ namespace PicoConnectProbes
         {
             switch (name)
             {
-                case PICO_CONNECT_PROBE_NONE:
+                case PicoConnectProbe.PICO_CONNECT_PROBE_NONE:
                     return "None";
 
-                case PICO_CONNECT_PROBE_D9_BNC:
+                case PicoConnectProbe.PICO_CONNECT_PROBE_D9_BNC:
                     return "D9 BNC";
 
-                case PICO_CONNECT_PROBE_D9_2X_BNC:
+                case PicoConnectProbe.PICO_CONNECT_PROBE_D9_2X_BNC:
                     return "D9 2x BNC";
 
-                case PICO_CONNECT_PROBE_DIFFERENTIAL:
+                case PicoConnectProbe.PICO_CONNECT_PROBE_DIFFERENTIAL:
                     return "Differential";
 
-                case PICO_CONNECT_PROBE_CURRENT_CLAMP_200_2KA:
+                case PicoConnectProbe.PICO_CONNECT_PROBE_CURRENT_CLAMP_200_2KA:
                     return "Current Clamp 200Amp and 2000Amp";
 
-                case PICO_CONNECT_PROBE_CURRENT_CLAMP_40A:
+                case PicoConnectProbe.PICO_CONNECT_PROBE_CURRENT_CLAMP_40A:
                     return "Current Clamp 40Amp";
 
-                case PICO_CONNECT_PROBE_CAT3_HV_1KV:
+                case PicoConnectProbe.PICO_CONNECT_PROBE_CAT3_HV_1KV:
                     return "Probe CatIII HV 1kV";
 
-                case PICO_CONNECT_PROBE_INTELLIGENT:
+                case PicoConnectProbe.PICO_CONNECT_PROBE_INTELLIGENT:
                     return "Intelligent";
 
-                case PICO_CONNECT_PROBE_UNKNOWN_PROBE:
+                case PicoConnectProbe.PICO_CONNECT_PROBE_UNKNOWN_PROBE:
                     return "Unknown";
 
-                case PICO_CONNECT_PROBE_FAULT_PROBE:
+                case PicoConnectProbe.PICO_CONNECT_PROBE_FAULT_PROBE:
                     return "Fault";
             }
 
