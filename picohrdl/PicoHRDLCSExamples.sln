@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicoHRDLCSConsole", "PicoHRDLCSConsole\PicoHRDLCSConsole.csproj", "{8970E333-7D24-44A7-9F0B-A99E1AABE184}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicoHRDLCSGui", "PicoHRDLCSGui\PicoHRDLCSGui.csproj", "{796D8462-E6D6-4D73-9C71-17D246B17D5F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8970E333-7D24-44A7-9F0B-A99E1AABE184}.Debug|x64.ActiveCfg = Debug|x64
+		{8970E333-7D24-44A7-9F0B-A99E1AABE184}.Debug|x64.Build.0 = Debug|x64
+		{8970E333-7D24-44A7-9F0B-A99E1AABE184}.Debug|x86.ActiveCfg = Debug|x86
+		{8970E333-7D24-44A7-9F0B-A99E1AABE184}.Debug|x86.Build.0 = Debug|x86
+		{8970E333-7D24-44A7-9F0B-A99E1AABE184}.Release|x64.ActiveCfg = Release|x64
+		{8970E333-7D24-44A7-9F0B-A99E1AABE184}.Release|x64.Build.0 = Release|x64
+		{8970E333-7D24-44A7-9F0B-A99E1AABE184}.Release|x86.ActiveCfg = Release|x86
+		{8970E333-7D24-44A7-9F0B-A99E1AABE184}.Release|x86.Build.0 = Release|x86
+		{796D8462-E6D6-4D73-9C71-17D246B17D5F}.Debug|x64.ActiveCfg = Debug|x64
+		{796D8462-E6D6-4D73-9C71-17D246B17D5F}.Debug|x64.Build.0 = Debug|x64
+		{796D8462-E6D6-4D73-9C71-17D246B17D5F}.Debug|x86.ActiveCfg = Debug|x86
+		{796D8462-E6D6-4D73-9C71-17D246B17D5F}.Debug|x86.Build.0 = Debug|x86
+		{796D8462-E6D6-4D73-9C71-17D246B17D5F}.Release|x64.ActiveCfg = Release|x64
+		{796D8462-E6D6-4D73-9C71-17D246B17D5F}.Release|x64.Build.0 = Release|x64
+		{796D8462-E6D6-4D73-9C71-17D246B17D5F}.Release|x86.ActiveCfg = Release|x86
+		{796D8462-E6D6-4D73-9C71-17D246B17D5F}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
