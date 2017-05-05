@@ -1,12 +1,12 @@
 ﻿/**************************************************************************
 *
 * Filename:    PicoConnectProbes.cs
-
+*
 * Description:
 *
-* This header is based on the C header file PicoConnectProbes.h and 
-* defines the enumerations and functions relating to 
-* PicoConnectProbes (TM).
+* This file is based on the C header file PicoConnectProbes.h and 
+* defines the enumerations and functions relating to PicoConnect (TM)
+* probes.
 * 
 * Copyright (C) 2017 Pico Technology Ltd. See LICENSE file for terms.
 *
