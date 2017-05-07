@@ -88,9 +88,6 @@
     <Compile Include="..\USBPT104Imports.cs">
       <Link>USBPT104Imports.cs</Link>
     </Compile>
-    <Compile Include="..\USBPT104PinnedArray.cs">
-      <Link>USBPT104PinnedArray.cs</Link>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="USBPT104CSConsole.cs" />
   </ItemGroup>
