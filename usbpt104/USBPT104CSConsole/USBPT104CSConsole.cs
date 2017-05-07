@@ -4,7 +4,13 @@
 * 
 * Description:
 *   This is a console-mode program that demonstrates how to call the
-*   usbpt104 driver API functions using .NET.
+*   usbpt104 driver API functions using .NET for the USB PT-104 Platinum 
+*   Resistance Temperature Data Logger.
+*   
+* Examples:
+*   View unit information
+*   Setup channels
+*   Obtain temperature readings
 *   
 * Copyright (C) 2015 - 2017 Pico Technology Ltd. See LICENSE file for terms.
 *
