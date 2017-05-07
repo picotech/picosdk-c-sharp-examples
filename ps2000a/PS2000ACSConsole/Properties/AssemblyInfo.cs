@@ -15,7 +15,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Pico Technology Ltd.")]
 [assembly: AssemblyProduct("PicoScope 2000 Series Oscilloscopes")]
-[assembly: AssemblyCopyright("Copyright © 2011 - 2017. Pico Technology Ltd. All rights reserved.")]
+[assembly: AssemblyCopyright("Copyright © 2011 - 2017 Pico Technology Ltd. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
