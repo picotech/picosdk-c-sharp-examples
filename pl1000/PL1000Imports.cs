@@ -6,10 +6,6 @@
  *      This file his file contains .NET wrapper calls for the pl1000 driver 
  *      API functions. It also has the enums required by the (wrapped) function 
  *      calls.
- *		
- * Examples:
- *    Open a connection and display unit information before closing the 
- *    connection to the device.
  *    
  * Copyright (C) 2012 - 2017 Pico Technology Ltd. See LICENSE file for terms.    
  *    
