@@ -3,8 +3,9 @@
  *	Filename:			PicoStatus.cs
  *
  *	Description: 
- *	    This file defines the status codes returned by a Pico device, a PC Oscilloscope 
- *      or data logger and is based on the PicoStatus.h header file.
+ *	    This file defines the status codes returned by a Pico device, a 
+ *	    PC Oscilloscope or data logger and is based on the PicoStatus.h 
+ *	    header file.
  *
  *      In comments, "<API>" is a placeholder for the name of the scope or
  *      data logger API. For example, for the ps5000a API, it stands for
