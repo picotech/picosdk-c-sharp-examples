@@ -3,9 +3,9 @@
  *  Filename: PLCM3Imports.cs
  *
  *  Description:
- *      This file contains all the .NET wrapper calls needed to support
- *      the PicoLog CM3 C# Console example. It also has the enums
- *      required by the (wrapped) function calls.
+ *      This file contains .NET wrapper calls needed to support the 
+ *      PicoLog CM3 Current Data Loggers using the plcm3 driver API functions. 
+ *      It also has the enums required by the (wrapped) function calls.
  *   
  *  Copyright (C) 2011 - 2017 Pico Technology Ltd. See LICENSE file for terms.
  *   

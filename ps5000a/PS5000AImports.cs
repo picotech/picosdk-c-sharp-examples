@@ -3,10 +3,10 @@
  * Filename: PS5000AImports.cs
  *
  * Description:
- *   This file contains all the .NET wrapper calls needed to support
- *   the PicoScope 5000 Series Flexible Resolution Oscilloscopes using 
- *   the ps5000a driver API functions. It also has the enums and structs required
- *   by the (wrapped) function calls.
+ *   This file contains .NET wrapper calls needed to support the 
+ *   PicoScope 5000 series flexible resolution oscilloscopes using 
+ *   the ps5000a driver API functions. It also has the enums and structs 
+ *   required by the (wrapped) function calls.
  *   
  *  Copyright (C) 2013 - 2017 Pico Technology Ltd. See LICENSE file for terms.  
  *   

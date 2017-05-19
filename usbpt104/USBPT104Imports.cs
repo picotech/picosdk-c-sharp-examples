@@ -3,9 +3,10 @@
 * Filename: USBPT104Imports.cs
 *
 * Description:
-*   This file contains all the .NET wrapper calls needed to support
-*   the console example for the USBPT104. It also has the enums and structs 
-*   required by the (wrapped) function calls.
+*   This file contains .NET wrapper calls needed to support the 
+*   USB PT-104 Platinum Resistance Temperature Data Loggers using the 
+*   usbpt104 driver API functions. It also has the enums required by the 
+*   (wrapped) function calls.
 *   
 * Copyright (C) 2015 - 2017 Pico Technology Ltd. See LICENSE file for terms.
 *

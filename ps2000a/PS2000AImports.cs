@@ -3,9 +3,10 @@
  * Filename: PS2000AImports.cs
  * 
  * Description:
- *   This file contains all the .NET wrapper calls needed to support
- *   the console example. It also has the enums and structs required
- *   by the (wrapped) function calls.
+ *   This file contains .NET wrapper calls needed to support the 
+ *   PicoScope 2000 Series Oscilloscopes using the ps2000a driver API 
+ *   functions. It also has the enums and structs required by the 
+ *   (wrapped) function calls.
  *
  **************************************************************************/
 

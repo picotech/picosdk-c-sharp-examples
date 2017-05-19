@@ -3,9 +3,10 @@
  * Filename: PS3000Imports.cs
  *
  * Description:
- *      This file his file contains .NET wrapper calls for the ps3000 driver 
- *      API functions for PicoScope 3000 Series Oscilloscopes. It also has 
- *      the enums required by the (wrapped) function calls.
+ *      This file contains .NET wrapper calls needed to support the 
+ *      PicoScope 3000 Series Oscilloscopes using the ps3000 driver API 
+ *      functions. It also has the enums required by the (wrapped) function 
+ *      calls.
  *    
  * Copyright (C) 2007 - 2017 Pico Technology Ltd. See LICENSE file for terms.    
  *    
