@@ -12,7 +12,7 @@
  *     ADC-20
  *     ADC-24
  *      
- * Copyright (C) 2015 - 2017 Pico Technology Ltd. See LICENSE file for terms.
+ * Copyright © 2015-2017 Pico Technology Ltd. See LICENSE file for terms.
  *      
  ******************************************************************************/
 
@@ -70,9 +70,9 @@ namespace PicoHRDLGui
 
                 // Set up data array to retrieve values
                 int[] data = new int[100];
-                short[] overflow = new short[1];
+                short overflow = 0;
 
-                int numValues = Imports.GetValues(handle, data, overflow, values);
+                int numValues = Imports.GetValues(handle, data, out overflow, values);
 
                 int minAdc = 0;
                 int maxAdc = 0;
@@ -166,7 +166,7 @@ namespace PicoHRDLGui
 
             // Set Mains Rejection
 
-            short setMainsStatus = Imports.SetMains(handle, Imports.HRDLMainsRejection.HRDL_FIFTY_HERTZ);   //Set noise rejection for 50Hz  
+            short setMainsStatus = Imports.SetMains(handle, Imports.HRDLMainsRejection.HRDL_FIFTY_HERTZ);   // Set noise rejection for 50Hz  
         }
         
     }

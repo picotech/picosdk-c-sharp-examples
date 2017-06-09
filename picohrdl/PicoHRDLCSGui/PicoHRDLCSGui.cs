@@ -5,7 +5,7 @@
  * Description:
  *  Provide the main entry point for the application.
  * 
- * Copyright (C) 2016 - 2017 Pico Technology Ltd. See LICENSE file for terms.
+ * Copyright © 2016-2017 Pico Technology Ltd. See LICENSE file for terms.
  *
  ******************************************************************************/
 

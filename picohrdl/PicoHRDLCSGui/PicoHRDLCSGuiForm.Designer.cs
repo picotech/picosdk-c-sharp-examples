@@ -2,7 +2,7 @@
  *
  * Filename: PicoHRDLCSGuiForm.Designer.cs
  * 
- * Copyright (C) 2016 - 2017 Pico Technology Ltd. See LICENSE file for terms.
+ * Copyright © 2016-2017 Pico Technology Ltd. See LICENSE file for terms.
  *
  ******************************************************************************/
 
@@ -165,7 +165,7 @@ namespace PicoHRDLGui
             this.Controls.Add(this.unitInfoTextBox);
             this.Controls.Add(this.runButton);
             this.Name = "PicoHRDLCSGuiForm";
-            this.Text = "ADC-20/ADC-24 C# GUI Example";
+            this.Text = "PicoLog HRDL (picohrdl) C# GUI Example";
             this.ResumeLayout(false);
             this.PerformLayout();
 
