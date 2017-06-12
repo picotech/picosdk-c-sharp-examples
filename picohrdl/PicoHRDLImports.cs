@@ -25,6 +25,10 @@ namespace PicoHRDLImports
 
         public const int MAX_VOLTAGE_RANGE = 2500;
 
+        // Constants to define model
+        public const int HRDL_ADC_20 = 20;
+        public const int HRDL_ADC_24 = 24;
+
         #endregion
 
         #region Driver enums
