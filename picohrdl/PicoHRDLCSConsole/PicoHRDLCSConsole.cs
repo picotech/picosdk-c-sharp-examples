@@ -20,7 +20,6 @@ using System;
 using System.Threading;
 
 using PicoHRDLImports;
-using PicoPinnedArray;
 
 namespace PicoHRDL
 {
@@ -92,7 +91,7 @@ namespace PicoHRDL
 
             if (picoHRDLConsole.hasDigitalIO == true)
             {
-                short directionOut = 0; // (short) Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_2 + (short) Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_3 + (short) Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_4;
+                short directionOut = (short) Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_2 + (short) Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_3 + (short) Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_4;
                 short digitalPinOutState = 0; // All digital I/O pins that are outputs are set to low
                 short enabledDigitalIn = 0;
 
@@ -135,39 +134,33 @@ namespace PicoHRDL
                 Thread.Sleep(100);
             }
 
+            // Find the number of enabled channels (including digital for the ADC-24)
+            short numberOfEnabledChannels = 0;
+            status = Imports.GetNumberOfEnabledChannels(handle, out numberOfEnabledChannels);
+
+            if (picoHRDLChannelSettings[(int)Imports.HRDLInputs.HRDL_DIGITAL_CHANNELS].enabled == true)
+            {
+                numberOfEnabledChannels = (short)(numberOfEnabledChannels + 1);
+            }
+
+            int numberOfValuesPerChannel = numberOfValues / numberOfEnabledChannels;
+
             // Set up data array to retrieve values
             int[] times = new int[numberOfValues];
             int[] data = new int[numberOfValues];
-
-            PinnedArray<int> timesPinned = new PinnedArray<int>(times);
-            PinnedArray<int> dataPinned = new PinnedArray<int>(data);
 
             short overflow = 0;
 
             int numValues = 0;
 
-            unsafe
-            {
-                numValues = Imports.GetTimesAndValues(handle, times, data, out overflow, numberOfValues);
-            }
-            
+            numValues = Imports.GetTimesAndValues(handle, times, data, out overflow, numberOfValuesPerChannel);
 
             // Check to see if an overflow occured during the last data collection
             if (overflow > 0)
             {
                 Console.WriteLine("An over voltage occured during the last data run.\n\n");
             }
-
-            // Find the number of enabled channels (including digital for the ADC-24)
-
-            short numEnabledChannels = 0;
-            status = Imports.GetNumberOfEnabledChannels(handle, out numEnabledChannels);
-
-            if (picoHRDLChannelSettings[(int)Imports.HRDLInputs.HRDL_DIGITAL_CHANNELS].enabled == true)
-            {
-                numEnabledChannels = (short) (numEnabledChannels + 1);
-            }
-
+            
             int minAdc = 0;
             int maxAdc = 0;
 
@@ -227,9 +220,9 @@ namespace PicoHRDL
 
             // Display the 10 readings for each active channel
             // The time displayed will be for the first reading in each row
-            for (int n = 0; n < (numValues / numEnabledChannels); n++)
+            for (int n = 0; n < (numValues / numberOfEnabledChannels); n++)
             {
-                Console.Write("{0}\t", times[timeCount * numEnabledChannels]);
+                Console.Write("{0}\t", times[timeCount * numberOfEnabledChannels]);
 
                 for (int channel = (int) Imports.HRDLInputs.HRDL_DIGITAL_CHANNELS; channel <= (int)Imports.HRDLInputs.HRDL_MAX_ANALOG_CHANNELS; channel++)
                 {
@@ -237,7 +230,7 @@ namespace PicoHRDL
                     {
                         if (channel == (int) Imports.HRDLInputs.HRDL_DIGITAL_CHANNELS)
                         {
-                            Console.Write("{0}{1}{2}\t", 0x01 & (data[n]), 0x01 & (data[n] >> 0x1), 0x01 & (data[n] >> 0x2), 0x01 & (data[n] >> 0x3));
+                            Console.Write("{0}{1}{2}{3}\t", 0x01 & (data[n]), 0x01 & (data[n] >> 0x1), 0x01 & (data[n] >> 0x2), 0x01 & (data[n] >> 0x3));
                             n++;
                         }
                         else
