@@ -56,7 +56,7 @@ namespace PicoHRDL
                 System.Environment.Exit(1);
             }
 
-            Console.WriteLine("\nUnit opened - handle {0}:-\n", handle);
+            Console.WriteLine("\nUnit opened - (handle {0}):-\n", handle);
 
             PicoHRDLCSConsole picoHRDLConsole = new PicoHRDLCSConsole(handle);
 
@@ -91,7 +91,8 @@ namespace PicoHRDL
 
             if (picoHRDLConsole.hasDigitalIO == true)
             {
-                short directionOut = (short) Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_2 + (short) Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_3 + (short) Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_4;
+                // Set digital channels 1 as input
+                short directionOut = (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_2 + (short) Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_3 + (short) Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_4;
                 short digitalPinOutState = 0; // All digital I/O pins that are outputs are set to low
                 short enabledDigitalIn = 0;
 
@@ -150,7 +151,6 @@ namespace PicoHRDL
             int[] data = new int[numberOfValues];
 
             short overflow = 0;
-
             int numValues = 0;
 
             numValues = Imports.GetTimesAndValues(handle, times, data, out overflow, numberOfValuesPerChannel);
@@ -175,7 +175,7 @@ namespace PicoHRDL
             Console.WriteLine();
             Console.WriteLine("Collected {0} values:\n", numValues);
 
-            Console.WriteLine("Time shown in each row is for first reading in set.\n");
+            Console.WriteLine("Time shown in each row is for the first reading in the set.\n");
             Console.Write("Time\t");
 
             for (int ch = (int) Imports.HRDLInputs.HRDL_DIGITAL_CHANNELS; ch <= (int) Imports.HRDLInputs.HRDL_MAX_ANALOG_CHANNELS; ch++)
@@ -209,12 +209,6 @@ namespace PicoHRDL
             Console.WriteLine("\n");
             
             float[] scaledData = new float[numValues];
-
-            //for (int n = 0; n < numValues; n++)
-            //{
-            //    scaledData[n] = picoHRDLConsole.adcToMv(data[n], (short) Imports.HRDLRange.HRDL_2500_MV, maxAdc);
-            //    Console.WriteLine("Raw: {0} \tScaled: {1}", data[n], scaledData[n]);
-            //}
 
             int timeCount = 0;
 
@@ -298,15 +292,16 @@ namespace PicoHRDL
                     {
                         short variant = short.Parse(line.ToString());
 
-                        if (variant == 24)
-                        {
-                            hasDigitalIO = true;
-                            numberOfAnalogChannels = (short) Imports.HRDLInputs.HRDL_MAX_ANALOG_CHANNELS;
-                        }
-                        else if(variant == 20)
+                        if (variant == Imports.HRDL_ADC_20)
                         {
                             hasDigitalIO = false;
-                            numberOfAnalogChannels = (short) 8;
+                            numberOfAnalogChannels = (short)8;
+                        }
+                        else if(variant == Imports.HRDL_ADC_24)
+                        {
+                            
+                            hasDigitalIO = true;
+                            numberOfAnalogChannels = (short)Imports.HRDLInputs.HRDL_MAX_ANALOG_CHANNELS;
                         }
                         else
                         {
