@@ -8,7 +8,7 @@
  *      functions. It also has the enums required by the (wrapped) function 
  *      calls.
  *   
- *  Copyright (C) 2015 - 2017 Pico Technology Ltd. See LICENSE file for terms.
+ *  Copyright © 2015-2017 Pico Technology Ltd. See LICENSE file for terms.
  *   
  ******************************************************************************/
 
@@ -24,6 +24,10 @@ namespace PicoHRDLImports
         private const string _DRIVER_FILENAME = "picohrdl.dll";
 
         public const int MAX_VOLTAGE_RANGE = 2500;
+
+        // Constants to define model
+        public const int HRDL_ADC_20 = 20;
+        public const int HRDL_ADC_24 = 24;
 
         #endregion
 
@@ -51,7 +55,7 @@ namespace PicoHRDLImports
             HRDL_MAX_ANALOG_CHANNELS = HRDL_ANALOG_IN_CHANNEL_16
         } 
 
-        public enum HRDLDigitalIoChannel : short
+        public enum HRDLDigitalIOChannel : short
         {   
           HRDL_DIGITAL_IO_CHANNEL_1 = 0x01,
           HRDL_DIGITAL_IO_CHANNEL_2 = 0x02,
@@ -170,6 +174,13 @@ namespace PicoHRDLImports
             short range,
             short singleEnded);
 
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "HRDLSetDigitalIOChannel")]
+        public static extern short SetDigitalIOChannel(
+            short handle,
+            short directionOut,
+            short digitalOutPinState,
+            short enabledDigitalIn);
+
         [DllImport(_DRIVER_FILENAME, EntryPoint = "HRDLSetInterval")]
         public static extern short SetInterval(
             short handle, 
@@ -203,14 +214,14 @@ namespace PicoHRDLImports
             short handle,
             int[] times,
             int[] values,
-            short[] overflow,
+            out short overflow,
             int noOfValues);
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "HRDLGetValues")]
         public static extern short GetValues(
             short handle,
             int[] values,
-            short[] overflow,
+            out short overflow,
             int noOfValues);
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "HRDLReady")]
