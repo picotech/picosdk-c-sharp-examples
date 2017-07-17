@@ -20,7 +20,7 @@
  *    Collect a stream of data immediately
  *    Collect a stream of data when a trigger event occurs
  *    
- * Copyright (C) 2011 - 2017 Pico Technology Ltd. See LICENSE file for terms.    
+ * Copyright (C) 2011-2017 Pico Technology Ltd. See LICENSE file for terms.    
  *    
  *******************************************************************************/
 
@@ -29,7 +29,7 @@ using System.IO;
 using System.Threading;
 
 using PS2000AImports;
-using PS2000APinnedArray;
+using PicoPinnedArray;
 using PicoStatus;
 
 namespace PS2000ACSConsole
