@@ -71,9 +71,6 @@
     <Compile Include="..\PS3000AImports.cs">
       <Link>PS3000AImports.cs</Link>
     </Compile>
-    <Compile Include="..\PS3000APinnedArray.cs">
-      <Link>PS3000APinnedArray.cs</Link>
-    </Compile>
     <Compile Include="PS3000ACSConsole.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
