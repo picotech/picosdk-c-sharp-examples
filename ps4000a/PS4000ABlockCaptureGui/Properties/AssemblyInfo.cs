@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("PS4000aBlockCaptureGui")]
+[assembly: AssemblyTitle("PS4000ABlockCaptureGui")]
 [assembly: AssemblyDescription("PicoScope 4000 Series (ps4000a) C# Block Capture GUI Example")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Pico Technology Ltd.")]
