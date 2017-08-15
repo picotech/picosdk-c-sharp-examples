@@ -82,11 +82,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\shared\PicoPinnedArray.cs">
+      <Link>PicoPinnedArray.cs</Link>
+    </Compile>
     <Compile Include="..\PS2000Imports.cs">
       <Link>PS2000Imports.cs</Link>
-    </Compile>
-    <Compile Include="..\PS2000PinnedArray.cs">
-      <Link>PS2000PinnedArray.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PS2000CSConsole.cs" />

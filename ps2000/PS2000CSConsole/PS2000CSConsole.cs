@@ -27,6 +27,8 @@ using System;
 using System.IO;
 using System.Threading;
 
+using PicoPinnedArray;
+
 namespace PS2000CSConsoleExample
 {
     struct ChannelSettings
