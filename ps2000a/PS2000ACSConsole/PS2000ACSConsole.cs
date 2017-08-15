@@ -20,7 +20,7 @@
  *    Collect a stream of data immediately
  *    Collect a stream of data when a trigger event occurs
  *    
- * Copyright (C) 2011-2017 Pico Technology Ltd. See LICENSE file for terms.    
+ * Copyright © 2011-2017 Pico Technology Ltd. See LICENSE file for terms.    
  *    
  *******************************************************************************/
 
