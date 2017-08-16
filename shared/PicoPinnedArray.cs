@@ -45,7 +45,7 @@ namespace PicoPinnedArray
         public T[] Target => (T[])this.pinnedHandle.Target;
 
         /// <summary>
-        /// Extension for direct access to array elements
+        /// Operator for direct access to array elements
         /// </summary>
         /// <param name="array">Pinned array to access</param>
         public static implicit operator T[](PinnedArray<T> array) => array?.Target;
