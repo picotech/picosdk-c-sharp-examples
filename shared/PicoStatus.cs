@@ -2,14 +2,6 @@
 // Copyright(C) 2009 - 2017 Pico Technology Ltd. See LICENSE file for terms.
 // </copyright>
 
-/// <summary>
-/// This class defines the status codes returned by a Pico device,
-/// a PC Oscilloscope or data logger and is based on the PicoStatus.h header file.
-/// </summary>
-/// <remarks>
-/// In comments, "-API-" is a placeholder for the name of the scope or data logger API.
-/// For example, for the ps5000a API, it stands for "PS5000A" Or "ps5000a".
-/// </remarks>
 {
     /// <summary>
     /// PICO_INFO Values
@@ -40,8 +32,13 @@
     }
 
     /// <summary>
-    /// PICO_STATUS Values
+    /// This class defines the status codes returned by a Pico device,
+    /// a PC Oscilloscope or data logger and is based on the PicoStatus.h header file.
     /// </summary>
+    /// <remarks>
+    /// In comments, "-API-" is a placeholder for the name of the scope or data logger API.
+    /// For example, for the ps5000a API, it stands for "PS5000A" Or "ps5000a".
+    /// </remarks>
     public static class StatusCodes
     {
         /// <summary>The PicoScope is functioning correctly.</summary>
