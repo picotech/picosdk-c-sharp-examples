@@ -340,6 +340,18 @@ namespace PS2000CSConsoleExample
                 out short overflow,
                 int no_of_values);
 
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps2000_get_times_and_values")]
+        public static extern short GetTimesAndValues(
+                short handle,
+                int[] times,
+                short[] buffer_a,
+                short[] buffer_b,
+                short[] buffer_c,
+                short[] buffer_d,
+                out short overflow,
+                short timeUnits,
+                int no_of_values);
+
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps2000SetPulseWidthQualifier")]
         public static extern short SetPulseWidthQualifier(
             short handle,
