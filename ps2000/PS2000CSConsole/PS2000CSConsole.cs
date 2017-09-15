@@ -891,15 +891,38 @@ namespace PS2000CSConsoleExample
             short timeunit;
             bool valid = false;
             short status = 0;
+            short maxTimebaseIndex = 0; // Use this to place an upper bound on the timebase index selected
 
-            Console.WriteLine("Specify timebase index:");
+            Console.WriteLine("Available timebases indices and sampling intervals (nanoseconds):\n");
+
+            for (short i = 0; i < Imports.PS2200_MAX_TIMEBASE; i++)
+            {
+                status = Imports.GetTimebase(_handle, i, BUFFER_SIZE, out timeInterval, out timeunit, _oversample, out maxSamples);
+
+                if (status == 1)
+                {
+                    Console.WriteLine("{0,2}: {1} ns", i, timeInterval);
+                    maxTimebaseIndex = i;
+                }
+            }
 
             do
             {
+                Console.WriteLine("\nSpecify timebase index:");
+
                 try
                 {
                     _timebase = short.Parse(Console.ReadLine());
-                    valid = true;
+                    
+                    if (_timebase < 0 || _timebase > maxTimebaseIndex)
+                    {
+                        valid = false;
+                    }
+                    else
+                    {
+                        valid = true;
+                    }
+
                 }
                 catch (FormatException)
                 {
@@ -908,6 +931,8 @@ namespace PS2000CSConsoleExample
                 }
 
             } while (!valid);
+
+            status = 0;
 
             do
             {
