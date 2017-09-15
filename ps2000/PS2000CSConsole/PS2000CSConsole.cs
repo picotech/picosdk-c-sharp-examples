@@ -829,14 +829,16 @@ namespace PS2000CSConsoleExample
         {
             bool valid = false;
 
+            Console.WriteLine("Available voltage ranges:\n");
+
             /* See what ranges are available... */
             for (int i = (int) _firstRange; i <= (int) _lastRange; i++)
             {
-                Console.WriteLine("{0} . {1} mV", i, inputRanges[i]);
+                Console.WriteLine("{0}: {1} mV", i, inputRanges[i]);
             }
 
             /* Ask the user to select a range */
-            Console.WriteLine("Specify voltage range ({0}..{1})", _firstRange, _lastRange);
+            Console.WriteLine("\nSpecify voltage range ({0}..{1})", _firstRange, _lastRange);
             Console.WriteLine("99 - switches channel off");
 
             for (int ch = 0; ch < _channelCount; ch++)
@@ -848,7 +850,7 @@ namespace PS2000CSConsoleExample
                 {
                     try
                     {
-                        Console.WriteLine("Channel: {0}", (char)('A' + ch));
+                        Console.WriteLine("Channel {0}:", (char)('A' + ch));
                         range = uint.Parse(Console.ReadLine());
                         valid = true;
                     }
@@ -869,7 +871,7 @@ namespace PS2000CSConsoleExample
                 }
                 else
                 {
-                    Console.WriteLine("Channel Switched off");
+                    Console.WriteLine("Channel switched off");
                     _channelSettings[ch].enabled = 0;
                 }
             }
@@ -888,8 +890,9 @@ namespace PS2000CSConsoleExample
             int maxSamples;
             short timeunit;
             bool valid = false;
+            short status = 0;
 
-            Console.WriteLine("Specify timebase");
+            Console.WriteLine("Specify timebase index:");
 
             do
             {
@@ -906,12 +909,18 @@ namespace PS2000CSConsoleExample
 
             } while (!valid);
 
-            while ((Imports.GetTimebase(_handle, _timebase, BUFFER_SIZE, out timeInterval, out timeunit, _oversample, out maxSamples)) == 0)
+            do
             {
-                Console.WriteLine("Selected timebase {0} could not be used", _timebase);
-                _timebase++;
-            }
+                status = Imports.GetTimebase(_handle, _timebase, BUFFER_SIZE, out timeInterval, out timeunit, _oversample, out maxSamples);
 
+                if (status == 0)
+                {
+                    Console.WriteLine("Selected timebase {0} could not be used", _timebase);
+                    _timebase++;
+                }
+            }   
+            while (status == 0);
+            
             Console.WriteLine("Timebase {0} - {1} ns", _timebase, timeInterval);
             _oversample = 1;
         }
