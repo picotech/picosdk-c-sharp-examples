@@ -24,6 +24,8 @@ namespace PS2000CSConsoleExample
         public const int PS2000_LOST_DATA = -32768;
 
         public const int PS2000_MAX_VALUE = 32767;
+
+        public const int PS2200_MAX_TIMEBASE = 23;
         #endregion
 
         #region Driver enums
