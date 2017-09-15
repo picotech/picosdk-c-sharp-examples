@@ -91,7 +91,7 @@ namespace PS2000CSConsoleExample
         private int _channelCount = DUAL_SCOPE;
         private Imports.Range _firstRange;
         private Imports.Range _lastRange;
-        PinnedArray<short>[] Pinned = new PinnedArray<short>[4];
+        PinnedArray<short>[] pinned = new PinnedArray<short>[4];
         private string BlockFile = "block.txt";
         private string StreamFile = "stream.txt";
 
@@ -190,61 +190,79 @@ namespace PS2000CSConsoleExample
         void BlockDataHandler(string text, int offset)
         {
             int sampleCount = BUFFER_SIZE;
-            short timeunit = 0;
+            short timeUnit = 0;
             int timeIndisposed;
+            short status = 0;
 
+            // Buffer to hold time data
+
+            int[] times = new int[sampleCount];
+            PinnedArray<int> pinnedTimes = new PinnedArray<int>(times);
+
+            // Channel buffers
             for (int i = 0; i < _channelCount; i++)
             {
                 short[] buffer = new short[sampleCount];
-                Pinned[i] = new PinnedArray<short>(buffer);
+                pinned[i] = new PinnedArray<short>(buffer);
             }
 
-            /* Find the maximum number of samples, the time interval (in timeUnits),
-                * the most suitable time units, and the maximum _oversample at the current _timebase*/
+            /* Find the maximum number of samples, the time interval (in nanoseconds),
+                * the most suitable time units (ReportedTimeUnits), and the maximum _oversample at the current _timebase*/
             int timeInterval = 0;
             int maxSamples;
 
-            while ((Imports.GetTimebase(_handle, _timebase, sampleCount, out timeInterval, out timeunit, _oversample, out maxSamples)) == 0)
+            do
             {
-                Console.WriteLine("Selected timebase {0} could not be used\n", _timebase);
-                _timebase++;
+                status = Imports.GetTimebase(_handle, _timebase, sampleCount, out timeInterval, out timeUnit, _oversample, out maxSamples);
+
+                if (status != 1)
+                {
+                    Console.WriteLine("Selected timebase {0} could not be used\n", _timebase);
+                    _timebase++;
+                }
 
             }
+            while (status == 0);
 
             Console.WriteLine("Timebase: {0}\toversample:{1}\n", _timebase, _oversample);
 
-            /* Start it collecting, then wait for completion*/
+            /* Start the device collecting, then wait for completion*/
 
             Imports.RunBlock(_handle, sampleCount, _timebase, _oversample, out timeIndisposed);
 
             Console.WriteLine("Waiting for data...Press a key to abort");
             short ready = 0;
 
-            while ((ready = Imports.Isready(_handle)) == 0 && !Console.KeyAvailable)
+            while (ready == 0 && !Console.KeyAvailable)
             {
+                ready = Imports.Isready(_handle);
                 Thread.Sleep(1);
             }
 
             if (Console.KeyAvailable)
             {
-                Console.ReadKey(true); // clear the key
+                Console.ReadKey(true); // Clear the key
             }
-
 
             if (ready > 0)
             {
 
                 short overflow;
 
-                Imports.GetValues(_handle, Pinned[0], Pinned[1], null, null, out overflow, sampleCount);
+                Imports.GetTimesAndValues(_handle, pinnedTimes, pinned[0], pinned[1], null, null, out overflow, timeUnit, sampleCount);
 
                 /* Print out the first 10 readings, converting the readings to mV if required */
-                Console.WriteLine(text);
+                Console.WriteLine(text + "\n");
 
                 for (int ch = 0; ch < _channelCount; ch++)
                 {
-                    Console.Write("Channel{0}                 ", (char)('A' + ch));
+                    if (_channelSettings[ch].enabled == 1)
+                    {
+                        Console.Write("Channel {0}\t", (char)('A' + ch));
+                    }
                 }
+
+                Console.WriteLine("\n");
 
                 for (int i = offset; i < offset + 10; i++)
                 {
@@ -252,7 +270,7 @@ namespace PS2000CSConsoleExample
                     {
                         if (_channelSettings[ch].enabled == 1)
                         {
-                            Console.Write("{0,8}                 ", adc_to_mv(Pinned[ch].Target[i], (int)_channelSettings[ch].range));
+                            Console.Write("{0,8}\t", adc_to_mv(pinned[ch].Target[i], (int)_channelSettings[ch].range));
                         }
 
                     }
@@ -262,30 +280,38 @@ namespace PS2000CSConsoleExample
 
                 sampleCount = Math.Min(sampleCount, BUFFER_SIZE);
                 TextWriter writer = new StreamWriter(BlockFile, false);
-                writer.Write("For each of the {0} Channels, results shown are....", _channelCount);
+
+                writer.Write("This file contains the following data from a block mode capture:");
                 writer.WriteLine();
-                writer.WriteLine("Time interval Maximum Aggregated value ADC Count & mV, Minimum Aggregated value ADC Count & mV");
+                writer.WriteLine("Time interval");
+                writer.WriteLine("ADC Count & millivolt (mV) for each enabled channel.");
                 writer.WriteLine();
+
+                writer.Write("Time\t\t");
 
                 for (int i = 0; i < _channelCount; i++)
                 {
-                    writer.Write("Time  Ch  Max ADC    Max mV   Min ADC    Min mV   ");
+                    if (_channelSettings[i].enabled == 1)
+                    {
+                        writer.Write("Ch\t\tADC Count\t\tmV\t\t");
+                    }
                 }
 
                 writer.WriteLine();
 
                 for (int i = 0; i < sampleCount; i++)
                 {
+                    writer.Write("{0}\t\t", pinnedTimes.Target[i]);
+
                     for (int ch = 0; ch < _channelCount; ch++)
                     {
-                        writer.Write("{0,5}  ", (i * timeInterval));
-
+                       
                         if (_channelSettings[ch].enabled == 1)
                         {
-                            writer.Write("Ch{0} {1,7}   {2,7}   ",
+                            writer.Write("Ch{0}\t\t{1,7}\t\t{2,7}\t\t",
                                            (char)('A' + ch),
-                                           Pinned[ch].Target[i],
-                                           adc_to_mv(Pinned[ch].Target[i],
+                                           pinned[ch].Target[i],
+                                           adc_to_mv(pinned[ch].Target[i],
                                                      (int)_channelSettings[ch].range));
                         }
                     }
@@ -298,7 +324,7 @@ namespace PS2000CSConsoleExample
             }
             else
             {
-                Console.WriteLine("data collection aborted");
+                Console.WriteLine("Data collection aborted");
             }
 
             Imports.Stop(_handle);
@@ -429,7 +455,7 @@ namespace PS2000CSConsoleExample
                     if (Convert.ToBoolean(_channelSettings[i].enabled))
                     {
                         short[] buffer = new short[_MaxSamples];
-                        Pinned[i] = new PinnedArray<short>(buffer);
+                        pinned[i] = new PinnedArray<short>(buffer);
                     }
                 }
 
@@ -440,7 +466,7 @@ namespace PS2000CSConsoleExample
 
                 while (!Console.KeyAvailable)
                 {
-                    no_of_samples = Imports.GetValues(_handle, Pinned[0], Pinned[1], null, null, out overflow, BUFFER_SIZE);
+                    no_of_samples = Imports.GetValues(_handle, pinned[0], pinned[1], null, null, out overflow, BUFFER_SIZE);
 
                     if (no_of_samples > 0)
                     {
@@ -460,8 +486,8 @@ namespace PS2000CSConsoleExample
                                 {
                                     writer.Write("Ch{0} {1,7}   {2,7}   ",
                                                    (char) ('A' + ch),
-                                                   Pinned[ch].Target[i],
-                                                   adc_to_mv(Pinned[ch].Target[i],
+                                                   pinned[ch].Target[i],
+                                                   adc_to_mv(pinned[ch].Target[i],
                                                              (int) _channelSettings[ch].range));
                                 }
                             }
@@ -480,7 +506,7 @@ namespace PS2000CSConsoleExample
                 {
                     if (Convert.ToBoolean(_channelSettings[i].enabled))
                     {
-                        Pinned[i].Dispose();
+                        pinned[i].Dispose();
                     }
                 }
             }
@@ -638,7 +664,7 @@ namespace PS2000CSConsoleExample
             Console.WriteLine("Collect Block Triggered");
             Console.WriteLine("Data is written to disk file ({0})", BlockFile);
 
-            Console.Write("Collects when value rises past {0}mV", adc_to_mv(sourceDetails[0].ThresholdMajor,
+            Console.WriteLine("Collects when value rises past {0} mV", adc_to_mv(sourceDetails[0].ThresholdMajor,
                                     (int)_channelSettings[(int)Imports.Channel.ChannelA].range));
 
             Console.WriteLine("Press a key to start...");
@@ -1018,7 +1044,7 @@ namespace PS2000CSConsoleExample
 
         static void Main()
         {
-            Console.WriteLine("PS2000 Driver C# Console Example Program");
+            Console.WriteLine("PicoScope 2000 Series (ps2000) C# Console Example Program");
 
 
             // Open unit and show splash screen
