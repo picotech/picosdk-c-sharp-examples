@@ -15,7 +15,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace PS2000CSConsoleExample
+namespace PS2000Imports
 {
 	class Imports
     {
@@ -26,6 +26,13 @@ namespace PS2000CSConsoleExample
         public const int PS2000_MAX_VALUE = 32767;
 
         public const int PS2200_MAX_TIMEBASE = 23;
+
+        // AWG Parameters - 2203, 2204, 2204A, 2205 & 2205A
+        public const int PS2000_AWG_MAX_BUFFER_SIZE = 4096;
+        public const double PS2000_AWG_DAC_FREQUENCY = 2e6;
+        public const double PS2000_AWG_DDS_FREQUENCY = 48e6;
+        public const double PS2000_AWG_PHASE_ACCUMULATOR = 4294967296.0;
+
         #endregion
 
         #region Driver enums
@@ -393,8 +400,32 @@ namespace PS2000CSConsoleExample
             short handle, 
             StringBuilder infoString, 
             short stringLength, 
-            short info); 
+            short info);
 
-		#endregion
-	}
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps2000_set_sig_gen_built_in")]
+        public static extern short SetSigGenBuiltIn(short handle,
+                                                    int offsetVoltage,
+                                                    uint pkTopk,
+                                                    WaveType waveType,
+                                                    float startFrequency,
+                                                    float stopFrequency,
+                                                    float increment,
+                                                    float dwellTime,
+                                                    SweepType sweepType,
+                                                    uint sweeps);
+
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps2000_set_sig_gen_arbitrary")]
+        public static extern short SetSigGenArbitrary(short handle,
+                                                      int offsetVoltage,
+                                                      uint pkTopk,
+                                                      uint startDeltaPhase,
+                                                      uint stopDeltaPhase,
+                                                      uint deltaPhaseIncrement,
+                                                      uint dwellCount,
+                                                      byte[] arbitraryWaveform,
+                                                      uint arbitraryWaveformSize,
+                                                      SweepType sweepType,
+                                                      uint sweeps);
+        #endregion
+    }
 }

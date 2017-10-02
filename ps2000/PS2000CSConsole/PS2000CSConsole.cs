@@ -28,6 +28,7 @@ using System.IO;
 using System.Threading;
 
 using PicoPinnedArray;
+using PS2000Imports;
 
 namespace PS2000CSConsoleExample
 {
