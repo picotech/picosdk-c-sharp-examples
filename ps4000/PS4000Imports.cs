@@ -96,7 +96,8 @@ namespace PS4000Imports
 		public enum DownSamplingMode : int
 		{
 			None,
-			Aggregate
+			Aggregate,
+            Average
 		}
 
 		public enum PulseWidthType : int
