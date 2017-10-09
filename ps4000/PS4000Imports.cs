@@ -282,7 +282,15 @@ namespace PS4000Imports
 												short[] bufferMin,
 												int bufferLth);
 
-		[DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000SetTriggerChannelDirections")]
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000SetDataBufferWithMode")]
+        public static extern short SetDataBufferWithMode(
+                                                short handle,
+                                                Channel channel,
+                                                short[] buffer,
+                                                int bufferLth,
+                                                DownSamplingMode mode);
+
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000SetTriggerChannelDirections")]
 		public static extern short SetTriggerChannelDirections(
 												short handle,
 												ThresholdDirection channelA,
