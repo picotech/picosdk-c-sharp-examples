@@ -10,12 +10,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("PS2000CSConsoleExample")]
+[assembly: AssemblyTitle("PS2000CSConsole")]
 [assembly: AssemblyDescription("PicoScope 2000 Series C# Console Example")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Pico Technology Ltd.")]
 [assembly: AssemblyProduct("PicoScope 2000 Series Oscilloscopes")]
-[assembly: AssemblyCopyright("Copyright © 2014 - 2017. Pico Technology Ltd. All rights reserved.")]
+[assembly: AssemblyCopyright("Copyright © 2014-2017 Pico Technology Ltd. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
