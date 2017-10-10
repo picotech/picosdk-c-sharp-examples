@@ -8,7 +8,7 @@
  *      functions. It also has the enums and structs required by the (wrapped) 
  *      function calls.
  *   
- * Copyright (C) 2014 - 2017 Pico Technology Ltd. See LICENSE file for terms.
+ * Copyright © 2014-2017 Pico Technology Ltd. See LICENSE file for terms.
  *
  ******************************************************************************/
 
