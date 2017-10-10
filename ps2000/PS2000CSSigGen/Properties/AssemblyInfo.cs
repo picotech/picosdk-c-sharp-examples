@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("PS2000CSSigGen")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("PicoScope 2000 Series C# Signal Generator Example")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("PS2000CSSigGen")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyCompany("Pico Technology Ltd.")]
+[assembly: AssemblyProduct("PicoScope 2000 Series Oscilloscopes")]
+[assembly: AssemblyCopyright("Copyright ©  2017 Pico Technology Ltd. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
