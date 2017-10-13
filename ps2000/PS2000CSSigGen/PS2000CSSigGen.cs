@@ -95,14 +95,11 @@ namespace PS2000CSSigGen
             awgFileInfoLabel.Visible = sigToAWG.Checked;
             signalTypeComboBox.Visible = !sigToAWG.Checked;
 
-            sweepCheckBox.Enabled = !sigToAWG.Checked; 
-
             if (sigToAWG.Checked)
             {
                 fileNameTextBox.Clear();
                 fileNameTextBox.ReadOnly = false;
                 SweepController.Visible = false;
-                sweepCheckBox.Checked = false;
             }
             else
             {
@@ -227,15 +224,18 @@ namespace PS2000CSSigGen
                 Array.Resize(ref waveform, (int)waveformSize);
 
                 // As frequency depends on the number or points need to use delta phase                             
-                double deltaPhase = GetDeltaPhase(startFreq, waveformSize);
+                double startDeltaPhase = GetDeltaPhase(startFreq, waveformSize);
+                double stopDeltaPhase = GetDeltaPhase(stopFreq, waveformSize);
+                double deltaPhaseIncrement = GetDeltaPhase(increment, waveformSize);
+                double dwellCount = dwellTime / (1 / Imports.PS2000_AWG_DDS_FREQUENCY);
 
                 status = Imports.SetSigGenArbitrary(handle, 
                                                     offset, 
                                                     pkToPk,
-                                                    (uint)deltaPhase,
-                                                    (uint)deltaPhase, 
-                                                    0, 
-                                                    0, 
+                                                    (uint)startDeltaPhase,
+                                                    (uint)stopDeltaPhase,
+                                                    (uint)deltaPhaseIncrement,
+                                                    (uint)dwellCount, 
                                                     waveform, 
                                                     waveformSize, 
                                                     sweeptype,
@@ -277,17 +277,18 @@ namespace PS2000CSSigGen
                 }
             }
         }
+
         /// <summary>
         /// Calc and return delta phase
         /// </summary>
         /// <param name="startFreq"></param>
         /// <param name="waveformSize"></param>
         /// <returns></returns>
-        private double GetDeltaPhase(double startFreq, uint waveformSize)
+        private double GetDeltaPhase(double Freq, uint waveformSize)
         {
             double deltaPhase = 0;
 
-            deltaPhase = ((startFreq * waveformSize) / 
+            deltaPhase = ((Freq * waveformSize) / 
                          Imports.PS2000_AWG_MAX_BUFFER_SIZE) *
                          Imports.PS2000_AWG_PHASE_ACCUMULATOR * 
                          (1 / Imports.PS2000_AWG_DDS_FREQUENCY);
