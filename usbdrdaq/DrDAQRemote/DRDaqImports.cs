@@ -280,6 +280,15 @@ namespace DrDAQRemote
 				short handle
 		);
 
-				#endregion
-	}
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "UsbDrDaqGetValuesF")]
+            public static extern short GetValuesF(
+                short handle,
+                out float values,
+                out ulong noOfValues,
+                out ushort overflow,
+                out ulong triggerIndex
+        );
+
+        #endregion
+    }
 }
