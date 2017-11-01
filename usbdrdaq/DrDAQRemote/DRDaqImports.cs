@@ -289,6 +289,15 @@ namespace DrDAQRemote
                 out ulong triggerIndex
         );
 
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "UsbDrDaqSetIntervalF")]
+            public static extern short SetIntervalF(
+                short handle,
+                out float us_for_block,
+                uint ideal_no_of_samples,
+                out Inputs channels,
+                short no_of_channels
+        );
+
         #endregion
     }
 }
