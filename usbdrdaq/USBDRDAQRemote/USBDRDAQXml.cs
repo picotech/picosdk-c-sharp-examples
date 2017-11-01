@@ -10,7 +10,7 @@ using System.IO;
 namespace DrDAQRemote
 {
 
-    public partial class DrDAQXml {
+    public partial class USBDRDAQXml {
 
         public static XmlDocument PostXMLTransaction(string v_strURL, XmlDocument v_objXMLDoc )
         {

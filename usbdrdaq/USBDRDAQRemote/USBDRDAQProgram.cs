@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace DrDAQRemote
 {
-    static class DrDAQProgram
+    static class USBDRDAQProgram
     {
         /// <summary>
         /// The main entry point for the application.
@@ -15,7 +15,7 @@ namespace DrDAQRemote
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new DrDAQForm());
+            Application.Run(new USBDRDAQForm());
         }
     }
 }

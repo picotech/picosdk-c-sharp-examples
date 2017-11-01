@@ -11,11 +11,11 @@ using System.Xml;
 
 namespace DrDAQRemote
 {
-    public partial class DrDAQForm : Form
+    public partial class USBDRDAQForm : Form
     {
         public short handleDAQ1, handleDAQ2, handleDAQ3;
 
-        public DrDAQForm()
+        public USBDRDAQForm()
         {
 
             InitializeComponent();
@@ -40,7 +40,7 @@ namespace DrDAQRemote
                 if (serverActive.Checked)
                 {
                     xmlDAQ.LoadXml(xmitStringData.ToString());
-                    DrDAQXml.PostXMLTransaction("http://" + serverAddr.Text, xmlDAQ);
+                    USBDRDAQXml.PostXMLTransaction("http://" + serverAddr.Text, xmlDAQ);
                     logBox.AppendText("Sent to " + serverAddress.Text + "\r\n");
                 }
             }
@@ -54,7 +54,7 @@ namespace DrDAQRemote
                 if (serverActive.Checked)
                 {
                     xmlDAQ.LoadXml(xmitStringData.ToString());
-                    DrDAQXml.PostXMLTransaction("http://" + serverAddr.Text, xmlDAQ);
+                    USBDRDAQXml.PostXMLTransaction("http://" + serverAddr.Text, xmlDAQ);
                     logBox.AppendText("Sent to " + serverAddress.Text + "\r\n");
                 }
             }
@@ -68,7 +68,7 @@ namespace DrDAQRemote
                 if (serverActive.Checked)
                 {
                     xmlDAQ.LoadXml(xmitStringData.ToString());
-                    DrDAQXml.PostXMLTransaction("http://" + serverAddr.Text, xmlDAQ);
+                    USBDRDAQXml.PostXMLTransaction("http://" + serverAddr.Text, xmlDAQ);
                     logBox.AppendText("Sent to " + serverAddress.Text + "\r\n");
                 }
             }

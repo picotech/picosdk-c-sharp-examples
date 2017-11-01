@@ -1,6 +1,6 @@
 ﻿namespace DrDAQRemote
 {
-    partial class DrDAQForm
+    partial class USBDRDAQForm
     {
         /// <summary>
         /// Required designer variable.

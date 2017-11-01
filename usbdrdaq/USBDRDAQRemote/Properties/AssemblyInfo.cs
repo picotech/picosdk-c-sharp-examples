@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DrDAQRemote")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("USBDRDAQRemote")]
+[assembly: AssemblyDescription("Remote Server Application")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Pico Technology Ltd")]
-[assembly: AssemblyProduct("DrDAQRemote")]
+[assembly: AssemblyCompany("Pico Technology Ltd.")]
+[assembly: AssemblyProduct("USB DrDAQ Data Logger")]
 [assembly: AssemblyCopyright("Copyright © Pico Technology Ltd 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
