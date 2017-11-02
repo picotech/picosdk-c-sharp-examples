@@ -82,6 +82,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\USBDRDAQImports.cs">
+      <Link>USBDRDAQImports.cs</Link>
+    </Compile>
     <Compile Include="USBDRDAQXml.cs" />
     <Compile Include="USBDRDAQForm.cs">
       <SubType>Form</SubType>
@@ -91,7 +94,6 @@
     </Compile>
     <Compile Include="USBDRDAQProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="USBDRDAQImports.cs" />
     <EmbeddedResource Include="USBDRDAQForm.resx">
       <DependentUpon>USBDRDAQForm.cs</DependentUpon>
     </EmbeddedResource>
