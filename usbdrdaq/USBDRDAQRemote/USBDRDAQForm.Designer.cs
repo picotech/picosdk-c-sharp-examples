@@ -376,14 +376,15 @@
             this.tabControl.Size = new System.Drawing.Size(430, 241);
             this.tabControl.TabIndex = 1;
             // 
-            // DrDAQForm
+            // USBDRDAQForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(427, 243);
             this.Controls.Add(this.tabControl);
-            this.Name = "DrDAQForm";
-            this.Text = "DrDAQ Remote";
+            this.Name = "USBDRDAQForm";
+            this.Text = "USB DrDAQ Remote";
+            this.Load += new System.EventHandler(this.USBDRDAQForm_Load);
             this.tabDevice1.ResumeLayout(false);
             this.tabDevice1.PerformLayout();
             this.tabSettings.ResumeLayout(false);
