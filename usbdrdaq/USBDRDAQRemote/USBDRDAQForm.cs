@@ -1,13 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
+﻿/******************************************************************************
+ * 
+ *  Filename: USBDRDAQForm.cs
+ *
+ *  Description:
+ *            
+ *  Examples:
+ *       
+ *  Copyright © 2012-2017 Pico Technology Ltd. See LICENSE file for terms.
+ *
+ ******************************************************************************/
+ 
+using System;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-
 
 namespace DrDAQRemote
 {
@@ -17,9 +23,7 @@ namespace DrDAQRemote
 
         public USBDRDAQForm()
         {
-
-            InitializeComponent();
-            
+            InitializeComponent();            
         }
 
         private void refreshrate_Tick(object sender, EventArgs e)
@@ -28,8 +32,8 @@ namespace DrDAQRemote
             XmlDocument xmlDAQ = new XmlDocument();
             XmlDocumentType doctype;
             
-                doctype = xmlDAQ.CreateDocumentType("DrDaq", null, null, "<!ELEMENT DrDaq ANY>");
-                xmlDAQ.AppendChild(doctype);
+            doctype = xmlDAQ.CreateDocumentType("DrDaq", null, null, "<!ELEMENT DrDaq ANY>");
+            xmlDAQ.AppendChild(doctype);
             //Create the root element and 
             //add it to the document.
 
@@ -72,7 +76,6 @@ namespace DrDAQRemote
                     logBox.AppendText("Sent to " + serverAddress.Text + "\r\n");
                 }
             }
-
         }
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
@@ -130,8 +133,7 @@ namespace DrDAQRemote
                 //{
                 //    handleDAQ3 = handleDAQ;
                 //}
-            }
-        
+            }        
         }
 
         private void closeDrDAQ()
@@ -148,8 +150,6 @@ namespace DrDAQRemote
         {
             short level;
             ushort overflow;
-
-
 
             short[] data = new short[200];
             ulong nsamplesCollected;
@@ -169,10 +169,7 @@ namespace DrDAQRemote
                 Imports.Ready(handleDAQ, out isReady);
             }
 
-           Imports.GetValues(handleDAQ, out data[0], out nsamplesCollected, out overflow, out triggerIndex);
-
-
-
+            Imports.GetValues(handleDAQ, out data[0], out nsamplesCollected, out overflow, out triggerIndex);
 
             xmitData.Append("<" + nameDevice.Text + ">");
             if (settingsDevice.GetItemChecked(0))
@@ -223,7 +220,6 @@ namespace DrDAQRemote
                     level = -102;
                 deviceXMLComponent(xmitData, "tempExt3", level);
             }
-
             xmitData.Append("</" + nameDevice.Text + ">");
         }
 

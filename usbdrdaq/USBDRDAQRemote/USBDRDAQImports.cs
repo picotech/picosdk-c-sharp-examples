@@ -1,4 +1,17 @@
-using System;
+/******************************************************************************
+ * 
+ *  Filename: USBDRDAQImports.cs
+ *
+ *  Description:
+ *      This file contains .NET wrapper calls needed to support the 
+ *      PicoLog USB DrDAQ using the USBDrDAQ driver API functions. 
+ *      It also has the enums and structs required by the (wrapped) 
+ *      function calls.
+ *   
+ *  Copyright © 2012-2017 Pico Technology Ltd. See LICENSE file for terms.
+ *
+ ******************************************************************************/
+
 using System.Runtime.InteropServices;
 using System.Text;
 

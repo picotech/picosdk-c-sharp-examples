@@ -1,15 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿/******************************************************************************
+ * 
+ *  Filename: USBDRDAQXml.cs
+ *
+ *  Description: This file provides remote server functionality 
+ *            
+ *  Copyright © 2012-2017 Pico Technology Ltd. See LICENSE file for terms.
+ *
+ ******************************************************************************/
+ 
+using System;
 using System.Net;
 using System.Xml;
 using System.IO;
 
-
 namespace DrDAQRemote
 {
-
     public partial class USBDRDAQXml {
 
         public static XmlDocument PostXMLTransaction(string v_strURL, XmlDocument v_objXMLDoc )
@@ -92,6 +97,5 @@ namespace DrDAQRemote
             //Return
             return XMLResponse;
         }
-
     }
 }
