@@ -59,13 +59,13 @@ namespace PS3000ASigGen
             sweepTypeComboBox.SelectedIndex = 0;
         }
 
-        //opens device
+        // Opens device
         private void Start_button_Click(object sender, EventArgs e)
         {
-            //opens device 
+            // Open connection to device
             status = Imports.OpenUnit(out handle, null);
 
-            //if handle is zero there is a issue, will also need to change power source if the power supply is not connected (for PicoScope 3400/ 3400D models) or if not using a USB 3.0 port
+            // If handle is zero there is a issue, will also need to change power source if the power supply is not connected (for PicoScope 3400/ 3400D models) or if not using a USB 3.0 port
             if (handle == 0)
             {
                 MessageBox.Show("Cannot open device error code: " + status.ToString(), "Error Opening Device", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -98,14 +98,14 @@ namespace PS3000ASigGen
             Imports.CloseUnit(handle);
         }
 
-        //changes from signal generator to abitary waveform geerator
+        // Changes from signal generator to arbitary waveform geerator
         private void SIGtoAWG_CheckedChanged(object sender, EventArgs e)
         {
             awgLabel.Visible = sigToAWG.Checked;
             awgFileInfoLabel.Visible = sigToAWG.Checked;
             signalTypeComboBox.Visible = !sigToAWG.Checked;
 
-            if (sigToAWG.Checked)
+            if (sigToAWG.Checked == true)
             {
                 fileNameTextBox.Clear();
                 fileNameTextBox.ReadOnly = false;
@@ -117,16 +117,16 @@ namespace PS3000ASigGen
             }
         }
 
-        //enables sweep controls
+        // Enables sweep controls
         private void Sweep_CheckedChanged(object sender, EventArgs e)
         {
             SweepController.Visible = sweepCheckBox.Checked;
         }
 
-        //If dc or white noise sweep is not enable so hides button
+        // If wave type is DC or White Noise, sweep is not enabled, hide button
         private void signal_type_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (signalTypeComboBox.SelectedIndex == 8 || signalTypeComboBox.SelectedIndex == 9)
+            if (signalTypeComboBox.SelectedIndex == (int) Imports.WaveType.PS3000A_DC_VOLTAGE || signalTypeComboBox.SelectedIndex == 9)
             {
                 sweepCheckBox.Checked = false;
                 sweepCheckBox.Enabled = false;
@@ -138,23 +138,29 @@ namespace PS3000ASigGen
 
         }
 
-
+        /**
+         * Update_button_click 
+         * 
+         * 
+         */
         private void Update_button_Click(object sender, EventArgs e)
         {
-            Imports.SweepType sweeptype = Imports.SweepType.PS3000A_UP;
+            Imports.SweepType sweepType = Imports.SweepType.PS3000A_UP;
             Imports.ExtraOperations operations = Imports.ExtraOperations.PS3000A_ES_OFF;
+
             uint shots = 0;
             uint sweeps = 0;
-            Imports.SigGenTrigType triggertype = Imports.SigGenTrigType.PS3000A_SIGGEN_RISING;
-            Imports.SigGenTrigSource triggersource = Imports.SigGenTrigSource.PS3000A_SIGGEN_NONE;
-            short extinthreshold = 0;
+
+            Imports.SigGenTrigType triggerType = Imports.SigGenTrigType.PS3000A_SIGGEN_RISING;
+            Imports.SigGenTrigSource triggerSource = Imports.SigGenTrigSource.PS3000A_SIGGEN_NONE;
+
+            short extInThreshold = 0;
             double stopFreq;
             double startFreq;
             double increment;
             double dwellTime;
             int offset;
             uint pkToPk;
-
 
             try
             {
@@ -169,14 +175,14 @@ namespace PS3000ASigGen
                 return;
             }
 
-            if (sweepCheckBox.Checked)
+            if (sweepCheckBox.Checked == true)
             {
                 try
                 {
                     stopFreq = Convert.ToDouble(stopFreqTextBox.Text);
                     increment = Convert.ToDouble(frequencyIncrementTextBox.Text);
                     dwellTime = Convert.ToDouble(timeIncrementTextBox.Text);
-                    sweeptype = (Imports.SweepType)(sweepTypeComboBox.SelectedIndex);
+                    sweepType = (Imports.SweepType)(sweepTypeComboBox.SelectedIndex);
                 }
                 catch
                 {
@@ -190,10 +196,10 @@ namespace PS3000ASigGen
                 stopFreq = startFreq;
                 increment = 0;
                 dwellTime = 0;
-                sweeptype = Imports.SweepType.PS3000A_UP;
+                sweepType = Imports.SweepType.PS3000A_UP;
             }
 
-            if (sigToAWG.Checked)
+            if (sigToAWG.Checked == true)
             {
                 Imports.IndexMode indexMode = Imports.IndexMode.PS3000A_SINGLE;
                 int waveformsize = 0;
@@ -230,6 +236,7 @@ namespace PS3000ASigGen
                         }
 
                     }
+
                     waveformsize++;
                 }
 
@@ -252,8 +259,8 @@ namespace PS3000ASigGen
                 status = Imports.SigGenFrequencyToPhase(handle, increment, indexMode, (uint) waveformsize, out deltaPhaseIncrement);
                 status = Imports.SigGenFrequencyToPhase(handle, (double) (1.0 / dwellTime), indexMode, (uint) waveformsize, out dwellCount);
                 
-                status = Imports.SetSigGenArbitrary(handle, offset, pkToPk, startDeltaPhase, stopDeltaPhase, deltaPhaseIncrement, dwellCount, waveform, waveformsize, sweeptype,
-                                                        operations, indexMode, shots, sweeps, triggertype, triggersource, extinthreshold);
+                status = Imports.SetSigGenArbitrary(handle, offset, pkToPk, startDeltaPhase, stopDeltaPhase, deltaPhaseIncrement, dwellCount, waveform, waveformsize, sweepType,
+                                                        operations, indexMode, shots, sweeps, triggerType, triggerSource, extInThreshold);
 
                 if (status != StatusCodes.PICO_OK)
                 {
@@ -263,11 +270,13 @@ namespace PS3000ASigGen
             }
             else
             {
-                Imports.WaveType wavetype = Imports.WaveType.PS3000A_SINE;
+                Imports.WaveType waveType = Imports.WaveType.PS3000A_SINE;
 
                 if (signalTypeComboBox.SelectedIndex < (int) Imports.WaveType.PS3000A_MAX_WAVE_TYPES)
                 {
-                    if ((wavetype = (Imports.WaveType)(signalTypeComboBox.SelectedIndex)) == Imports.WaveType.PS3000A_DC_VOLTAGE)
+                    waveType = (Imports.WaveType) signalTypeComboBox.SelectedIndex;
+
+                    if (waveType == Imports.WaveType.PS3000A_DC_VOLTAGE)
                     {
                         pkToPk = 0;
                     }
@@ -279,8 +288,8 @@ namespace PS3000ASigGen
                 }
 
 
-                status = Imports.SetSigGenBuiltInV2(handle, offset, pkToPk, wavetype, startFreq, stopFreq, increment, dwellTime, sweeptype,
-                                                        operations, shots, sweeps, triggertype, triggersource, extinthreshold);
+                status = Imports.SetSigGenBuiltInV2(handle, offset, pkToPk, waveType, startFreq, stopFreq, increment, dwellTime, sweepType,
+                                                        operations, shots, sweeps, triggerType, triggerSource, extInThreshold);
 
                 if (status != StatusCodes.PICO_OK)
                 {
