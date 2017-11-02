@@ -139,9 +139,9 @@ namespace PS3000ASigGen
         }
 
         /**
-         * Update_button_click 
+         * Update_button_Click 
          * 
-         * 
+         * Apply settings to signal generator
          */
         private void Update_button_Click(object sender, EventArgs e)
         {
