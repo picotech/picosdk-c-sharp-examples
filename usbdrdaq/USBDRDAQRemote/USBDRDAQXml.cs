@@ -2,7 +2,7 @@
  * 
  *  Filename: USBDRDAQXml.cs
  *
- *  Description: This file provides remote server functionality 
+ *  Description: This class provides remote server functionality 
  *            
  *  Copyright © 2012-2017 Pico Technology Ltd. See LICENSE file for terms.
  *

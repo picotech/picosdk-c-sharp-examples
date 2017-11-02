@@ -3,8 +3,7 @@
  *  Filename: USBDRDAQForm.cs
  *
  *  Description:
- *            
- *  Examples:
+ *      Class for application graphical user interface.              
  *       
  *  Copyright © 2012-2017 Pico Technology Ltd. See LICENSE file for terms.
  *
@@ -228,6 +227,11 @@ namespace DrDAQRemote
             xmitDataBuilder.Append("<" + component + ">");
             xmitDataBuilder.Append(level.ToString());
             xmitDataBuilder.Append("</" + component + ">");
+        }
+
+        private void USBDRDAQForm_Load(object sender, EventArgs e)
+        {
+
         }
 
         private void checkBoxRunning_CheckedChanged(object sender, EventArgs e)
