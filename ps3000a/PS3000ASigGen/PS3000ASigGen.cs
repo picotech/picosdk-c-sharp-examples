@@ -65,10 +65,11 @@ namespace PS3000ASigGen
             // Open connection to device
             status = Imports.OpenUnit(out handle, null);
 
-            // If handle is zero there is a issue, will also need to change power source if the power supply is not connected (for PicoScope 3400/ 3400D models) or if not using a USB 3.0 port
-            if (handle == 0)
+            // If handle is zero or -1 there is an issue, will also need to change power source if the power supply is not connected 
+            // (for PicoScope 3400/ 3400D models) or if not using a USB 3.0 port
+            if (handle == 0 || handle == -1)
             {
-                MessageBox.Show("Cannot open device error code: " + status.ToString(), "Error Opening Device", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Cannot open device - status code: " + status.ToString(), "Error Opening Device", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Close();
             }
             else if (status != StatusCodes.PICO_OK)
