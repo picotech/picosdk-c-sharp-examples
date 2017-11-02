@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Pico Technology Ltd.")]
 [assembly: AssemblyProduct("USB DrDAQ Data Logger")]
-[assembly: AssemblyCopyright("Copyright © Pico Technology Ltd 2012-2017")]
+[assembly: AssemblyCopyright("Copyright © 2012-2017 Pico Technology Ltd. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
