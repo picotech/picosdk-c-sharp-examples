@@ -222,7 +222,7 @@ namespace PS3000ASigGen
             this.offsetVoltageLabel.Name = "offsetVoltageLabel";
             this.offsetVoltageLabel.Size = new System.Drawing.Size(489, 34);
             this.offsetVoltageLabel.TabIndex = 32;
-            this.offsetVoltageLabel.Text = "Offset  Voltage (mV)";
+            this.offsetVoltageLabel.Text = "Offset Voltage (mV)";
             this.offsetVoltageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // fileNameTextBox
@@ -383,7 +383,7 @@ namespace PS3000ASigGen
             this.frequencyIncrementTextBox.Name = "frequencyIncrementTextBox";
             this.frequencyIncrementTextBox.Size = new System.Drawing.Size(239, 30);
             this.frequencyIncrementTextBox.TabIndex = 11;
-            this.frequencyIncrementTextBox.Text = "10";
+            this.frequencyIncrementTextBox.Text = "100";
             this.frequencyIncrementTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // timeIncrementTextBox
@@ -395,7 +395,7 @@ namespace PS3000ASigGen
             this.timeIncrementTextBox.Name = "timeIncrementTextBox";
             this.timeIncrementTextBox.Size = new System.Drawing.Size(239, 30);
             this.timeIncrementTextBox.TabIndex = 12;
-            this.timeIncrementTextBox.Text = "10";
+            this.timeIncrementTextBox.Text = "1";
             this.timeIncrementTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // startFrequencyLabel
