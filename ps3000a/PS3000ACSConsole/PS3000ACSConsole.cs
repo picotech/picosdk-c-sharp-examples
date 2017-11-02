@@ -43,7 +43,7 @@ using System.Threading;
 using System.Text;
 
 using PS3000AImports;
-using PS3000APinnedArray;
+using PicoPinnedArray;
 using PicoStatus;
 
 namespace PS3000ACSConsole
