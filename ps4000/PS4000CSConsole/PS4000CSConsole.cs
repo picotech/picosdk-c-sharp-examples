@@ -29,7 +29,7 @@ using System.IO;
 using System.Threading;
 
 using PS4000Imports;
-using PS4000PinnedArray;
+using PicoPinnedArray;
 using PicoStatus;
 
 namespace PS4000CSConsole
@@ -280,7 +280,6 @@ namespace PS4000CSConsole
                 writer.WriteLine();
 
 
-
                 for (int i = 0; i < sampleCount; i++)
                 {
                     for (int ch = 0; ch < _channelCount; ch++)
@@ -341,6 +340,7 @@ namespace PS4000CSConsole
             _ready = false;
 
             _callbackDelegate = BlockCallback;
+
             Imports.RunBlock(_handle,
                         0,
                         (int)numSamples,
@@ -359,6 +359,7 @@ namespace PS4000CSConsole
             {
                 Thread.Sleep(100);
             }
+
             if (Console.KeyAvailable) Console.ReadKey(true); // clear the key
 
             Imports.Stop(_handle);
