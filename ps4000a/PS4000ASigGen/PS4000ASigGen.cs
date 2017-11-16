@@ -68,13 +68,13 @@ namespace PS4000ASigGen
             controls.Visible = true;
         }
 
-        // When the form is closed, diconnect device
+        // When the form is closed, disconnect device
         private void AWG_SIGGEN_Close(object sender, FormClosedEventArgs e)
         {
             Imports.CloseUnit(handle);
         }
 
-        //changes from signal generator to abitary waveform geerator
+        // Changes from signal generator to arbitary waveform generator
         private void SIGtoAWG_CheckedChanged(object sender, EventArgs e)
         {
             awg_label.Visible = SIGtoAWG.Checked;
@@ -93,13 +93,13 @@ namespace PS4000ASigGen
             }
         }
 
-        //enables sweep controls
+        // Enables sweep controls
         private void Sweep_CheckedChanged(object sender, EventArgs e)
         {
             SweepController.Visible = Sweep.Checked;
         }
 
-        //If dc or white noise sweep is not enable so hides button
+        // If DC or white noise sweep is not enabled so hides button
         private void signal_type_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (signal_type.SelectedIndex == 8 || signal_type.SelectedIndex == 9)
@@ -197,7 +197,7 @@ namespace PS4000ASigGen
 
                 Array.Resize(ref waveform, waveformsize);
 
-                //As frequency depends on the number or points need to use delta phase 
+                // As frequency depends on the number or points need to use delta phase 
                 uint startdeltaphase = (uint)(((1.0 * startfreq * waveformsize) / Imports.SIG_GEN_BUFFER_SIZE) * (1.0 * Imports.AWG_PHASE_ACCUMULATOR / Imports.AWG_DAC_FREQUENCY));
                 uint stopdeltaphase = (uint)(((1.0 * stopfreq * waveformsize) / Imports.SIG_GEN_BUFFER_SIZE) * (1.0 * Imports.AWG_PHASE_ACCUMULATOR / Imports.AWG_DAC_FREQUENCY));
                 uint _increment = (uint)(((1.0 * increment * waveformsize) / Imports.SIG_GEN_BUFFER_SIZE) * (1.0 * Imports.AWG_PHASE_ACCUMULATOR / Imports.AWG_DAC_FREQUENCY));
