@@ -136,8 +136,7 @@ namespace PS4000ASigGen
             {
                 startfreq = Convert.ToDouble(start_freq.Text);
                 pktopk = Convert.ToUInt32(pk_pk.Text) * 1000;
-                offset = Convert.ToInt32(offsetvoltage.Text);
-
+                offset = Convert.ToInt32(offsetvoltage.Text) * 1000;
             }
             catch
             {

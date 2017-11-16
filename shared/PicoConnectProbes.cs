@@ -22,13 +22,13 @@ namespace PicoConnectProbes
         #region PicoConnectProbe constants
 
         // Input ranges (amps) when using 200 A - 2 kA current clamp
-        public const ushort[] inputRanges2kA = {1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000};
+        public static readonly ushort[] inputRanges2kA = {1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000};
 
         // Input ranges (milliamperes) when using 40 A current clamp
-        public const ushort[] inputRanges40A = {100, 200, 500, 1000, 2000, 5000, 10000, 20000, 40000};
+        public static readonly ushort[] inputRanges40A = {100, 200, 500, 1000, 2000, 5000, 10000, 20000, 40000};
 
         // Input ranges (volts) when using CAT III High Voltage probe
-        public const float[] inputRanges1kV = {2.5, 5, 12.5, 25, 50, 125, 250, 500, 1000};
+        public static readonly float[] inputRanges1kV = {2.5F, 5, 12.5F, 25, 50, 125, 250, 500, 1000};
 
         #endregion
 

@@ -151,8 +151,7 @@ namespace PS5000ASigGen
             {
                 startFreq = Convert.ToDouble(startFrequencyTextBox.Text);
                 pkToPk = Convert.ToUInt32(peatkToPeakVoltageTextBox.Text) * 1000;
-                offset = Convert.ToInt32(offsetVoltageTextBox.Text);
-
+                offset = Convert.ToInt32(offsetVoltageTextBox.Text) * 1000;
             }
             catch
             {
