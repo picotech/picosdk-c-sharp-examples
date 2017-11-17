@@ -150,10 +150,11 @@ namespace DrDAQRemote
             short level;
             ushort overflow;
 
-            short[] data = new short[200];
-            ulong nsamplesCollected;
-            ulong triggerIndex = 0;
             uint samples = 200;
+            short[] data = new short[samples];
+            ulong nsamplesCollected = samples;
+            ulong triggerIndex = 0;
+            
             short isReady = 0;
             ulong us_for_block = 100000;
             short nchannels = 1;
@@ -168,7 +169,7 @@ namespace DrDAQRemote
                 Imports.Ready(handleDAQ, out isReady);
             }
 
-            Imports.GetValues(handleDAQ, out data[0], out nsamplesCollected, out overflow, out triggerIndex);
+            Imports.GetValues(handleDAQ, out data[0], ref nsamplesCollected, out overflow, out triggerIndex);
 
             xmitData.Append("<" + nameDevice.Text + ">");
             if (settingsDevice.GetItemChecked(0))

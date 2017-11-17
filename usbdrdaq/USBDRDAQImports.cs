@@ -154,7 +154,7 @@ namespace DrDAQRemote
 			public static extern short GetValues(
 				short	handle,
 				out short	values,
-				out ulong	noOfValues, 
+				ref ulong	noOfValues, 
 				out ushort	overflow,
 				out ulong	triggerIndex
 		);
