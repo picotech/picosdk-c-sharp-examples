@@ -139,7 +139,6 @@ namespace PS2000AImports
             PS2205MSO = 2205
         }
 
-
         public enum DigitalDirection : int
         {
             PS2000A_DIGITAL_DONT_CARE,
@@ -251,6 +250,12 @@ namespace PS2000AImports
             PS2000A_SIGGEN_SOFT_TRIG
         }
 
+        public enum CouplingType : int
+        {
+            PS2000A_AC,
+            PS2000A_DC
+        }
+        
         #endregion
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
