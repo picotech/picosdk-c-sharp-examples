@@ -296,9 +296,9 @@ namespace DrDAQRemote
             public static extern short GetValuesF(
                 short handle,
                 out float values,
-                out ulong noOfValues,
+                out uint noOfValues,
                 out ushort overflow,
-                out ulong triggerIndex
+                out uint triggerIndex
         );
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "UsbDrDaqSetIntervalF")]
