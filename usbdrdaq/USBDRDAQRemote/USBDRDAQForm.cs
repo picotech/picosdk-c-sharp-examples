@@ -152,8 +152,8 @@ namespace DrDAQRemote
 
             uint samples = 200;
             short[] data = new short[samples];
-            ulong nsamplesCollected = samples;
-            ulong triggerIndex = 0;
+            uint nsamplesCollected = samples;
+            uint triggerIndex = 0;
             
             short isReady = 0;
             uint us_for_block = 100000;

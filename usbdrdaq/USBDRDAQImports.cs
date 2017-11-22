@@ -154,9 +154,9 @@ namespace DrDAQRemote
 			public static extern short GetValues(
 				short	handle,
 				out short	values,
-				ref ulong	noOfValues, 
+				ref uint	noOfValues, 
 				out ushort	overflow,
-				out ulong	triggerIndex
+				out uint	triggerIndex
 		);
 
 		[DllImport(_DRIVER_FILENAME, EntryPoint = "UsbDrDaqGetTriggerTimeOffsetNs")]
@@ -191,7 +191,7 @@ namespace DrDAQRemote
 				Inputs	channel,
                 out short nScales,
                 out short currentScale,
-                out char names, 
+                out byte names, 
 				short	namesSize
 		);
 
@@ -205,8 +205,8 @@ namespace DrDAQRemote
 		[DllImport(_DRIVER_FILENAME, EntryPoint = "UsbDrDaqSetSigGenBuiltIn")]
 			public static extern short SetSigGenBuiltIn(
 				short	handle, 
-				long	offsetVoltage,
-				ulong	pkToPk,
+				int	offsetVoltage,
+				uint	pkToPk,
 				short	frequency,
 				Wave	waveType
 		);
@@ -214,11 +214,11 @@ namespace DrDAQRemote
 		[DllImport(_DRIVER_FILENAME, EntryPoint = "UsbDrDaqSetSigGenArbitrary")]
 			public static extern short SetSigGenArbitrary(
 				short	handle, 
-				long	offsetVoltage,
-				ulong	pkToPk,
-                out short arbitraryWaveform,
+				int	offsetVoltage,
+				uint	pkToPk,
+                ref short arbitraryWaveform,
 				short	arbitraryWaveformSize,
-				long	updateRate
+				int	updateRate
 		);
 
 		[DllImport(_DRIVER_FILENAME, EntryPoint = "UsbDrDaqStopSigGen")]
@@ -238,7 +238,7 @@ namespace DrDAQRemote
 				short	handle,
 				DigOut	IOChannel,
 				ushort	period,
-				char	cycle
+				byte	cycle
 		);
 
 		[DllImport(_DRIVER_FILENAME, EntryPoint = "UsbDrDaqGetInput")]
@@ -296,7 +296,7 @@ namespace DrDAQRemote
             public static extern short GetValuesF(
                 short handle,
                 out float values,
-                out uint noOfValues,
+                ref uint noOfValues,
                 out ushort overflow,
                 out uint triggerIndex
         );
