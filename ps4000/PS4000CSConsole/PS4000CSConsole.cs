@@ -268,12 +268,12 @@ namespace PS4000CSConsole
 
                 sampleCount = Math.Min(sampleCount, BUFFER_SIZE);
                 TextWriter writer = new StreamWriter("block.txt", false);
-                writer.Write("For each of the {0} Channels, results shown are....", _channelCount);
+                writer.Write("For each active channel(s), results shown are....");
                 writer.WriteLine();
                 writer.WriteLine("Time interval Maximum Aggregated value ADC Count & mV, Minimum Aggregated value ADC Count & mV");
                 writer.WriteLine();
 
-                for (int i = 0; i < _channelCount; i++)
+                for (int i = 0; (i < _channelCount) && (_channelSettings[i].enabled); i++)
                 {
                     writer.Write("Time  Ch  Max ADC    Max mV   Min ADC    Min mV   ");
                 }
@@ -284,10 +284,10 @@ namespace PS4000CSConsole
                 {
                     for (int ch = 0; ch < _channelCount; ch++)
                     {
-                        writer.Write("{0,4}  ", (i * timeInterval));
-
                         if (_channelSettings[ch].enabled)
                         {
+                            writer.Write("{0,4}  ", (i * timeInterval));
+
                             writer.Write("Ch{0} {1,7}   {2,7}   {3,7}   {4,7}   ",
                                            (char)('A' + ch),
                                            maxPinned[ch].Target[i],
