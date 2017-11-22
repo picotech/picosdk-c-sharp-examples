@@ -409,7 +409,7 @@ namespace PS2000AImports
                                                 short handle,
                                                 Channel channel,
                                                 short enabled,
-                                                short dc,
+                                                CouplingType couplingType,
                                                 Range range,
                                                 float analogueOffset);
 

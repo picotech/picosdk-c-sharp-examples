@@ -187,9 +187,10 @@ namespace PS2000ACSConsole
         {
             for (int i = 0; i < _channelCount; i++) // reset channels to most recent settings
             {
-                Imports.SetChannel(_handle, Imports.Channel.ChannelA + i,
+                Imports.SetChannel(_handle, 
+                                   Imports.Channel.ChannelA + i,
                                    (short)(_channelSettings[(int)(Imports.Channel.ChannelA + i)].enabled ? 1 : 0),
-                                   (short)(_channelSettings[(int)(Imports.Channel.ChannelA + i)].DCcoupled ? 1 : 0),
+                                   _channelSettings[(int)(Imports.Channel.ChannelA + i)].DCcoupled ? Imports.CouplingType.PS2000A_DC : Imports.CouplingType.PS2000A_AC,
                                    _channelSettings[(int)(Imports.Channel.ChannelA + i)].range,
                                    0);
             }
