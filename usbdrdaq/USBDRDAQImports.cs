@@ -131,9 +131,9 @@ namespace DrDAQRemote
 		[DllImport(_DRIVER_FILENAME, EntryPoint = "UsbDrDaqSetInterval")]
 			public static extern short SetInterval(	
 				short	handle,
-				out ulong	us_for_block,
+				ref uint	us_for_block,
 				uint	ideal_no_of_samples,
-				out Inputs	channels,
+				ref Inputs	channels,
 				short	no_of_channels
 		);
 
@@ -304,9 +304,9 @@ namespace DrDAQRemote
         [DllImport(_DRIVER_FILENAME, EntryPoint = "UsbDrDaqSetIntervalF")]
             public static extern short SetIntervalF(
                 short handle,
-                out float us_for_block,
+                ref float us_for_block,
                 uint ideal_no_of_samples,
-                out Inputs channels,
+                ref Inputs channels,
                 short no_of_channels
         );
 

@@ -156,12 +156,12 @@ namespace DrDAQRemote
             ulong triggerIndex = 0;
             
             short isReady = 0;
-            ulong us_for_block = 100000;
+            uint us_for_block = 100000;
             short nchannels = 1;
             Imports.Inputs[] channels = { Imports.Inputs.USB_DRDAQ_CHANNEL_LIGHT };
             Imports.SetTrigger(handleDAQ, 0, 0, 0, 0, 0, 0, 0, 0);
 
-            Imports.SetInterval(handleDAQ, out us_for_block, samples, out channels[0], nchannels);
+            Imports.SetInterval(handleDAQ, ref us_for_block, samples, ref channels[0], nchannels);
                        
             Imports.Run(handleDAQ, samples, Imports._BLOCK_METHOD.BM_STREAM);
             while (isReady == 0)
