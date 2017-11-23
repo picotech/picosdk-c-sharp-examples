@@ -191,7 +191,7 @@ namespace DrDAQRemote
 				Inputs	channel,
                 out short nScales,
                 out short currentScale,
-                out byte names, 
+                StringBuilder names, 
 				short	namesSize
 		);
 
