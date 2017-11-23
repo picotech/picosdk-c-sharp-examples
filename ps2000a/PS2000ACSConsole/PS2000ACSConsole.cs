@@ -36,7 +36,7 @@ namespace PS2000ACSConsole
 {
     struct ChannelSettings
     {
-        public bool DCcoupled;
+        public Imports.CouplingType couplingType;
         public Imports.Range range;
         public bool enabled;
     }
@@ -187,10 +187,10 @@ namespace PS2000ACSConsole
         {
             for (int i = 0; i < _channelCount; i++) // reset channels to most recent settings
             {
-                Imports.SetChannel(_handle, 
+                uint status = Imports.SetChannel(_handle, 
                                    Imports.Channel.ChannelA + i,
                                    (short)(_channelSettings[(int)(Imports.Channel.ChannelA + i)].enabled ? 1 : 0),
-                                   _channelSettings[(int)(Imports.Channel.ChannelA + i)].DCcoupled ? Imports.CouplingType.PS2000A_DC : Imports.CouplingType.PS2000A_AC,
+                                   _channelSettings[(int)(Imports.Channel.ChannelA + i)].couplingType,
                                    _channelSettings[(int)(Imports.Channel.ChannelA + i)].range,
                                    0);
             }
@@ -928,7 +928,7 @@ namespace PS2000ACSConsole
         }
 
         /****************************************************************************
-         * Select input voltage ranges for channels A and B
+         * Select input voltage ranges for analogue channels
          ****************************************************************************/
         void SetVoltages()
         {
@@ -1941,12 +1941,13 @@ namespace PS2000ACSConsole
                     _channelSettings[i].enabled = false;
                 }
 
-                _channelSettings[i].DCcoupled = true;
+                _channelSettings[i].couplingType = Imports.CouplingType.PS2000A_DC;
                 _channelSettings[i].range = Imports.Range.Range_5V;
             }
 
             // main loop - read key and call routine
             char ch = ' ';
+
             while (ch != 'X')
             {
                 DisplaySettings();
