@@ -147,29 +147,34 @@ namespace DrDAQRemote
 
         private void deviceXmlBuilder(short handleDAQ, TextBox nameDevice, CheckedListBox settingsDevice, StringBuilder xmitData)
         {
-            short level;
-            ushort overflow;
+            short level = 0;
+            ushort overflow = 0;
 
-            uint samples = 200;
-            short[] data = new short[samples];
-            uint nsamplesCollected = samples;
+            uint totalSamples = 200;
+            short[] data = new short[totalSamples];
+            
             uint triggerIndex = 0;
             
             short isReady = 0;
             uint us_for_block = 100000;
-            short nchannels = 1;
+            
             Imports.Inputs[] channels = { Imports.Inputs.USB_DRDAQ_CHANNEL_LIGHT };
+            short numChannels = (short) channels.Length;
+            uint numSamplesPerChannel = totalSamples / (uint) numChannels;
+            uint numSamplesCollected = numSamplesPerChannel; // If collecting data in a loop, reset this value each time as it could be modified in the call to GetValues()
+
             Imports.SetTrigger(handleDAQ, 0, 0, 0, 0, 0, 0, 0, 0);
 
-            Imports.SetInterval(handleDAQ, ref us_for_block, samples, ref channels[0], nchannels);
+            Imports.SetInterval(handleDAQ, ref us_for_block, numSamplesPerChannel, ref channels[0], numChannels);
                        
-            Imports.Run(handleDAQ, samples, Imports._BLOCK_METHOD.BM_STREAM);
+            Imports.Run(handleDAQ, totalSamples, Imports._BLOCK_METHOD.BM_STREAM);
+
             while (isReady == 0)
             {
                 Imports.Ready(handleDAQ, out isReady);
             }
 
-            Imports.GetValues(handleDAQ, out data[0], ref nsamplesCollected, out overflow, out triggerIndex);
+            Imports.GetValues(handleDAQ, out data[0], ref numSamplesCollected, out overflow, out triggerIndex);
 
             xmitData.Append("<" + nameDevice.Text + ">");
             if (settingsDevice.GetItemChecked(0))
