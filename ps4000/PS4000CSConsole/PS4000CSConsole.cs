@@ -248,7 +248,10 @@ namespace PS4000CSConsole
 
                 for (int ch = 0; ch < _channelCount; ch++)
                 {
-                    Console.Write("   Ch{0}    ", (char)('A' + ch));
+                    if (_channelSettings[ch].enabled)
+                    {
+                        Console.Write("   Ch{0}    ", (char)('A' + ch));
+                    }
                 }
                 Console.WriteLine();
 
@@ -268,27 +271,44 @@ namespace PS4000CSConsole
 
                 sampleCount = Math.Min(sampleCount, BUFFER_SIZE);
                 TextWriter writer = new StreamWriter("block.txt", false);
-                writer.Write("For each active channel(s), results shown are....");
+                writer.Write("For each active channel(s), results shown are...");
                 writer.WriteLine();
-                writer.WriteLine("Time interval Maximum Aggregated value ADC Count & mV, Minimum Aggregated value ADC Count & mV");
+                writer.WriteLine("Time interval | Channel | Max Aggregated value - ADC Count & mV | Min Aggregated value  - ADC Count & mV");
                 writer.WriteLine();
 
-                for (int i = 0; (i < _channelCount) && (_channelSettings[i].enabled); i++)
+                // Display Header Text
+                int chEnabledCount = 0;
+                for (int ch = 0; ch < _channelCount; ch++)
                 {
-                    writer.Write("Time  Ch  Max ADC    Max mV   Min ADC    Min mV   ");
+                    if (_channelSettings[ch].enabled)
+                    {
+                        writer.Write("Time ns  Ch   Max ADC  Max mV  Min ADC  Min mV  ");
+                        chEnabledCount++;
+                    }
                 }
                 writer.WriteLine();
 
+                // Display Header/Data Separator   
+                for (int i = 0; i < chEnabledCount; i++)
+                {
+                    if(i > 0)
+                    {
+                        writer.Write("--");                                               
+                    }
+                    writer.Write("----------------------------------------------");
+                }
+                writer.WriteLine();                
 
+                // Display Data Values
                 for (int i = 0; i < sampleCount; i++)
                 {
                     for (int ch = 0; ch < _channelCount; ch++)
                     {
                         if (_channelSettings[ch].enabled)
                         {
-                            writer.Write("{0,4}  ", (i * timeInterval));
+                            writer.Write("{0,7}  ", (i * timeInterval));
 
-                            writer.Write("Ch{0} {1,7}   {2,7}   {3,7}   {4,7}   ",
+                            writer.Write("Ch{0}  {1,7}  {2,6}  {3,7}  {4,6}  ",
                                            (char)('A' + ch),
                                            maxPinned[ch].Target[i],
                                            adc_to_mv(maxPinned[ch].Target[i],
