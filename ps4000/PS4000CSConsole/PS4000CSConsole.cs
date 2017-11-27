@@ -95,7 +95,7 @@ namespace PS4000CSConsole
 
         /****************************************************************************
          * Callback
-         * used by PS4000 data streaimng collection calls, on receipt of data.
+         * used by PS4000 data streaming collection calls, on receipt of data.
          * used to set global flags etc checked by user routines
          ****************************************************************************/
         void StreamingCallback(short handle,
@@ -208,8 +208,7 @@ namespace PS4000CSConsole
                 int status = Imports.SetDataBuffers(_handle, (Imports.Channel)i, maxBuffers, minBuffers, (int)sampleCount);
             }
 
-            /*  Find the maximum number of samples, the time interval (in timeUnits),
-             *		 the most suitable time units, and the maximum _oversample at the current _timebase*/
+            /*  Verify the currently selected timebase index, and the maximum number of samples per channel with the current settings. */
             int timeInterval;
             int maxSamples;
 
@@ -278,11 +277,12 @@ namespace PS4000CSConsole
 
                 // Display Header Text
                 int chEnabledCount = 0;
+
                 for (int ch = 0; ch < _channelCount; ch++)
                 {
                     if (_channelSettings[ch].enabled)
                     {
-                        writer.Write("Time ns  Ch   Max ADC  Max mV  Min ADC  Min mV  ");
+                        writer.Write("Time (ns)  Ch   Max ADC  Max mV  Min ADC  Min mV  ");
                         chEnabledCount++;
                     }
                 }
@@ -291,11 +291,11 @@ namespace PS4000CSConsole
                 // Display Header/Data Separator   
                 for (int i = 0; i < chEnabledCount; i++)
                 {
-                    if(i > 0)
+                    if (i > 0)
                     {
                         writer.Write("--");                                               
                     }
-                    writer.Write("----------------------------------------------");
+                    writer.Write("------------------------------------------------");
                 }
                 writer.WriteLine();                
 
@@ -306,7 +306,7 @@ namespace PS4000CSConsole
                     {
                         if (_channelSettings[ch].enabled)
                         {
-                            writer.Write("{0,7}  ", (i * timeInterval));
+                            writer.Write("{0,7}    ", (i * timeInterval));
 
                             writer.Write("Ch{0}  {1,7}  {2,6}  {3,7}  {4,6}  ",
                                            (char)('A' + ch),
@@ -421,10 +421,6 @@ namespace PS4000CSConsole
             short[] overflows = new short[nRapidCaptures];
 
             status = Imports.GetValuesRapid(_handle, ref numSamples, 0, (ushort)(nRapidCaptures - 1), overflows);
-
-
-
-
 
             /* Print out the first 10 readings, converting the readings to mV if required */
             Console.WriteLine("\nValues in {0}", (_scaleVoltages) ? ("mV") : ("ADC Counts"));
@@ -591,7 +587,7 @@ namespace PS4000CSConsole
 
         /****************************************************************************
        * CollectBlockTriggered
-       *  this function demonstrates how to collect a single block of data from the
+       *  This function demonstrates how to collect a single block of data from the
        *  unit, when a trigger event occurs.
        ****************************************************************************/
         void CollectBlockTriggered()
@@ -638,7 +634,7 @@ namespace PS4000CSConsole
 
             /* Trigger enabled
              * Rising edge
-             * Threshold = 1000mV */
+             * Threshold = 1000 mV */
             SetTrigger(sourceDetails, 1, conditions, 1, directions, null, 0, 0, 0);
 
             BlockDataHandler("Ten readings after trigger", 0);
