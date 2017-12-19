@@ -91,15 +91,35 @@ namespace PicoHRDL
 
             if (picoHRDLConsole.hasDigitalIO == true)
             {
-                // Set digital channels 1 as input
-                short directionOut = (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_2 + (short) Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_3 + (short) Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_4;
+                // Set digital channel 2, 3 & 4 as output, channel 1 as input
+                short directionOut = (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_2 + 
+                                     (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_3 + 
+                                     (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_4;
                 short digitalPinOutState = 0; // All digital I/O pins that are outputs are set to low
-                short enabledDigitalIn = 0;
+                short enabledDigitalIn = 0; // All digital I/O pins that are inputs are disabled by default
 
-                // If at least one I/O pin is set as an input
-                if (directionOut < 15)
+                // Check for any I/O pins set as an input
+                if (directionOut != (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_1 + 
+                                    (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_2 +
+                                    (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_3 +
+                                    (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_4)
                 {
-                    enabledDigitalIn = 1;
+                    if ((directionOut & (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_1) == 0)
+                    {
+                        enabledDigitalIn += (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_1;
+                    }
+                    if ((directionOut & (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_2) == 0)
+                    {
+                        enabledDigitalIn += (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_2;
+                    }
+                    if ((directionOut & (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_3) == 0)
+                    {
+                        enabledDigitalIn += (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_3;
+                    }
+                    if ((directionOut & (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_4) == 0)
+                    {
+                        enabledDigitalIn += (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_4;
+                    }                    
                 }
 
                 picoHRDLChannelSettings[(int)Imports.HRDLInputs.HRDL_DIGITAL_CHANNELS].enabled = true;
