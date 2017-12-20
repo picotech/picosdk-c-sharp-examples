@@ -6,6 +6,8 @@
  *     This is a console-mode program that demonstrates how to use the
  *     PicoLog High Resolution Data Logger (picohrdl) driver functions 
  *     using .NET to collect data on Channel 1 of an ADC-20/24 device.
+ *     If the device is an ADC-24, data will also be displayed for the 
+ *     digital I/O channels, with digital I/O channel 1 set as an input. 
  *      
  * Supported PicoLog models:
  *  
@@ -46,6 +48,8 @@ namespace PicoHRDL
         {
 
             Console.WriteLine("PicoLog High Resolution Data Logger (picohrdl) Driver C# Example Program");
+
+            short status = 0;
 
             short handle = Imports.HRDLOpenUnit();
 
@@ -95,6 +99,7 @@ namespace PicoHRDL
                 short directionOut = (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_2 + 
                                      (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_3 + 
                                      (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_4;
+
                 short digitalPinOutState = 0; // All digital I/O pins that are outputs are set to low
                 short enabledDigitalIn = 0; // All digital I/O pins that are inputs are disabled by default
 
@@ -108,14 +113,17 @@ namespace PicoHRDL
                     {
                         enabledDigitalIn += (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_1;
                     }
+
                     if ((directionOut & (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_2) == 0)
                     {
                         enabledDigitalIn += (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_2;
                     }
+
                     if ((directionOut & (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_3) == 0)
                     {
                         enabledDigitalIn += (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_3;
                     }
+
                     if ((directionOut & (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_4) == 0)
                     {
                         enabledDigitalIn += (short)Imports.HRDLDigitalIOChannel.HRDL_DIGITAL_IO_CHANNEL_4;
@@ -136,24 +144,11 @@ namespace PicoHRDL
             }
 
             // Set Interval
-            short returnIntervalStatus = Imports.SetInterval(handle, 80, (short) Imports.HRDLConversionTime.HRDL_60MS); // sample interval time= 80 ms, conversion time = 60ms
+            short returnIntervalStatus = Imports.SetInterval(handle, 80, (short) Imports.HRDLConversionTime.HRDL_60MS); // sample interval time = 80 ms, conversion time = 60 ms
 
             // Specify number of values to collect and capture block of data
 
-            int numberOfValues = 100;
-            
-            Console.WriteLine();
-            Console.WriteLine("Collecting block of data...");
-
-            short status = Imports.HRDLRun(handle, numberOfValues, (short) Imports.BlockMethod.HRDL_BM_BLOCK);
-
-            short ready = Imports.HRDLReady(handle);
-
-            while (ready != 1)
-            {
-                ready = Imports.HRDLReady(handle);
-                Thread.Sleep(100);
-            }
+            int totalValues = 100;
 
             // Find the number of enabled channels (including digital for the ADC-24)
             short numberOfEnabledChannels = 0;
@@ -164,11 +159,24 @@ namespace PicoHRDL
                 numberOfEnabledChannels = (short)(numberOfEnabledChannels + 1);
             }
 
-            int numberOfValuesPerChannel = numberOfValues / numberOfEnabledChannels;
+            int numberOfValuesPerChannel = totalValues / numberOfEnabledChannels;
+
+            Console.WriteLine();
+            Console.WriteLine("Collecting block of data...");
+
+            status = Imports.HRDLRun(handle, totalValues, (short) Imports.BlockMethod.HRDL_BM_BLOCK);
+
+            short ready = Imports.HRDLReady(handle);
+
+            while (ready != 1)
+            {
+                ready = Imports.HRDLReady(handle);
+                Thread.Sleep(100);
+            }
 
             // Set up data array to retrieve values
-            int[] times = new int[numberOfValues];
-            int[] data = new int[numberOfValues];
+            int[] times = new int[totalValues];
+            int[] data = new int[totalValues];
 
             short overflow = 0;
             int numValues = 0;
@@ -193,69 +201,61 @@ namespace PicoHRDL
             Console.WriteLine("Min ADC: {0}", minAdc);
 
             Console.WriteLine();
-            Console.WriteLine("Collected {0} values:\n", numValues);
-
-            Console.WriteLine("Time shown in each row is for the first reading in the set.\n");
-            Console.Write("Time\t");
+            Console.WriteLine("Collected {0} values per channel:\n", numValues);
 
             for (int ch = (int) Imports.HRDLInputs.HRDL_DIGITAL_CHANNELS; ch <= (int) Imports.HRDLInputs.HRDL_MAX_ANALOG_CHANNELS; ch++)
             {
                 if (picoHRDLChannelSettings[ch].enabled == true && ch == (int) Imports.HRDLInputs.HRDL_DIGITAL_CHANNELS)
                 {
-                    Console.Write("1234\t");
+                    Console.Write("Time\t1234\t");
                 }
                 else if (picoHRDLChannelSettings[ch].enabled == true)
                 {
-                    Console.Write("Ch{0}\t", ch);
+                    Console.Write("Time\tCh{0}\t", ch);
                 }
             }
 
             Console.WriteLine();
 
-            Console.Write("(ms)\t");
-
             for (int ch = (int)Imports.HRDLInputs.HRDL_DIGITAL_CHANNELS; ch <= (int)Imports.HRDLInputs.HRDL_MAX_ANALOG_CHANNELS; ch++)
             {
                 if (picoHRDLChannelSettings[ch].enabled == true && ch == (int)Imports.HRDLInputs.HRDL_DIGITAL_CHANNELS)
                 {
-                    Console.Write(" DO \t");
+                    Console.Write("(ms)\t DO \t");
                 }
                 else if (picoHRDLChannelSettings[ch].enabled == true)
                 {
-                    Console.Write("(mV)\t");
+                    Console.Write("(ms)\t(mV)\t");
                 }
             }
 
             Console.WriteLine("\n");
             
-            float[] scaledData = new float[numValues];
-
-            int timeCount = 0;
+            float[] scaledData = new float[totalValues];
 
             // Display the 10 readings for each active channel
-            // The time displayed will be for the first reading in each row
-            for (int n = 0; n < (numValues / numberOfEnabledChannels); n++)
+            for (int n = 0; n < numValues; n++)
             {
-                Console.Write("{0}\t", times[timeCount * numberOfEnabledChannels]);
-
                 for (int channel = (int) Imports.HRDLInputs.HRDL_DIGITAL_CHANNELS; channel <= (int)Imports.HRDLInputs.HRDL_MAX_ANALOG_CHANNELS; channel++)
                 {
                     if (picoHRDLChannelSettings[channel].enabled == true)
                     {
+                        Console.Write("{0}\t", times[(n * numberOfEnabledChannels) + channel]);
+
                         if (channel == (int) Imports.HRDLInputs.HRDL_DIGITAL_CHANNELS)
                         {
-                            Console.Write("{0}{1}{2}{3}\t", 0x01 & (data[n]), 0x01 & (data[n] >> 0x1), 0x01 & (data[n] >> 0x2), 0x01 & (data[n] >> 0x3));
-                            n++;
+                            int tempValue = data[(n * numberOfEnabledChannels) + channel];
+                            Console.Write("{0}{1}{2}{3}\t", 0x01 & tempValue, 0x01 & (tempValue >> 0x1), 0x01 & (tempValue >> 0x2), 0x01 & (tempValue >> 0x3));
                         }
                         else
                         {
-                            scaledData[n] = picoHRDLConsole.adcToMv(data[n], (short) picoHRDLChannelSettings[channel].range, maxAdc);
-                            Console.Write("{0}\t", scaledData[n]);
+                            scaledData[(n * numberOfEnabledChannels) + channel] = picoHRDLConsole.adcToMv(data[(n * numberOfEnabledChannels) + channel], (short) picoHRDLChannelSettings[channel].range, maxAdc);
+                            Console.Write("{0}\t", scaledData[(n * numberOfEnabledChannels) + channel]);
                         }
                     }
                 }
+
                 Console.WriteLine();
-                timeCount++;
             }
 
             Imports.HRDLStop(handle);
