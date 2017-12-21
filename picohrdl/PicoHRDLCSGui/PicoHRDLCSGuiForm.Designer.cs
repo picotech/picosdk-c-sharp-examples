@@ -41,9 +41,9 @@ namespace PicoHRDLGui
             this.channel1DataTextBox = new System.Windows.Forms.TextBox();
             this.closeButton = new System.Windows.Forms.Button();
             this.numValuesCollectedLabel = new System.Windows.Forms.Label();
-            this.numvaluesCollectedTextBox = new System.Windows.Forms.TextBox();
+            this.numSamplesCollectedTextBox = new System.Windows.Forms.TextBox();
             this.openButton = new System.Windows.Forms.Button();
-            this.numValuesToCollectedTextBox = new System.Windows.Forms.TextBox();
+            this.numSamplesPerChannelTextBox = new System.Windows.Forms.TextBox();
             this.numValuesToCollectLabel = new System.Windows.Forms.Label();
             this.channel1DataLabel = new System.Windows.Forms.Label();
             this.unitInformationLabel = new System.Windows.Forms.Label();
@@ -91,17 +91,17 @@ namespace PicoHRDLGui
             this.numValuesCollectedLabel.AutoSize = true;
             this.numValuesCollectedLabel.Location = new System.Drawing.Point(18, 344);
             this.numValuesCollectedLabel.Name = "numValuesCollectedLabel";
-            this.numValuesCollectedLabel.Size = new System.Drawing.Size(113, 13);
+            this.numValuesCollectedLabel.Size = new System.Drawing.Size(122, 13);
             this.numValuesCollectedLabel.TabIndex = 4;
-            this.numValuesCollectedLabel.Text = "Num Values collected:";
+            this.numValuesCollectedLabel.Text = "Num Samples Collected:";
             // 
-            // numvaluesCollectedTextBox
+            // numSamplesCollectedTextBox
             // 
-            this.numvaluesCollectedTextBox.Location = new System.Drawing.Point(21, 360);
-            this.numvaluesCollectedTextBox.Name = "numvaluesCollectedTextBox";
-            this.numvaluesCollectedTextBox.ReadOnly = true;
-            this.numvaluesCollectedTextBox.Size = new System.Drawing.Size(100, 20);
-            this.numvaluesCollectedTextBox.TabIndex = 5;
+            this.numSamplesCollectedTextBox.Location = new System.Drawing.Point(21, 360);
+            this.numSamplesCollectedTextBox.Name = "numSamplesCollectedTextBox";
+            this.numSamplesCollectedTextBox.ReadOnly = true;
+            this.numSamplesCollectedTextBox.Size = new System.Drawing.Size(100, 20);
+            this.numSamplesCollectedTextBox.TabIndex = 5;
             // 
             // openButton
             // 
@@ -113,22 +113,22 @@ namespace PicoHRDLGui
             this.openButton.UseVisualStyleBackColor = true;
             this.openButton.Click += new System.EventHandler(this.button3_Click);
             // 
-            // numValuesToCollectedTextBox
+            // numSamplesPerChannelTextBox
             // 
-            this.numValuesToCollectedTextBox.Location = new System.Drawing.Point(21, 298);
-            this.numValuesToCollectedTextBox.Name = "numValuesToCollectedTextBox";
-            this.numValuesToCollectedTextBox.Size = new System.Drawing.Size(100, 20);
-            this.numValuesToCollectedTextBox.TabIndex = 7;
-            this.numValuesToCollectedTextBox.Text = "10";
+            this.numSamplesPerChannelTextBox.Location = new System.Drawing.Point(21, 298);
+            this.numSamplesPerChannelTextBox.Name = "numSamplesPerChannelTextBox";
+            this.numSamplesPerChannelTextBox.Size = new System.Drawing.Size(100, 20);
+            this.numSamplesPerChannelTextBox.TabIndex = 7;
+            this.numSamplesPerChannelTextBox.Text = "10";
             // 
             // numValuesToCollectLabel
             // 
             this.numValuesToCollectLabel.AutoSize = true;
             this.numValuesToCollectLabel.Location = new System.Drawing.Point(18, 282);
             this.numValuesToCollectLabel.Name = "numValuesToCollectLabel";
-            this.numValuesToCollectLabel.Size = new System.Drawing.Size(112, 13);
+            this.numValuesToCollectLabel.Size = new System.Drawing.Size(120, 13);
             this.numValuesToCollectLabel.TabIndex = 8;
-            this.numValuesToCollectLabel.Text = "Num values to collect:";
+            this.numValuesToCollectLabel.Text = "Num Sample / Channel:";
             // 
             // channel1DataLabel
             // 
@@ -156,9 +156,9 @@ namespace PicoHRDLGui
             this.Controls.Add(this.unitInformationLabel);
             this.Controls.Add(this.channel1DataLabel);
             this.Controls.Add(this.numValuesToCollectLabel);
-            this.Controls.Add(this.numValuesToCollectedTextBox);
+            this.Controls.Add(this.numSamplesPerChannelTextBox);
             this.Controls.Add(this.openButton);
-            this.Controls.Add(this.numvaluesCollectedTextBox);
+            this.Controls.Add(this.numSamplesCollectedTextBox);
             this.Controls.Add(this.numValuesCollectedLabel);
             this.Controls.Add(this.closeButton);
             this.Controls.Add(this.channel1DataTextBox);
@@ -178,9 +178,9 @@ namespace PicoHRDLGui
         private System.Windows.Forms.TextBox channel1DataTextBox;
         private System.Windows.Forms.Button closeButton;
         private System.Windows.Forms.Label numValuesCollectedLabel;
-        private System.Windows.Forms.TextBox numvaluesCollectedTextBox;
+        private System.Windows.Forms.TextBox numSamplesCollectedTextBox;
         private System.Windows.Forms.Button openButton;
-        private System.Windows.Forms.TextBox numValuesToCollectedTextBox;
+        private System.Windows.Forms.TextBox numSamplesPerChannelTextBox;
         private System.Windows.Forms.Label numValuesToCollectLabel;
         private System.Windows.Forms.Label channel1DataLabel;
         private System.Windows.Forms.Label unitInformationLabel;

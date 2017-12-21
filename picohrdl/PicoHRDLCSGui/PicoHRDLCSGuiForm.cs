@@ -36,51 +36,57 @@ namespace PicoHRDLGui
         private void button1_Click(object sender, EventArgs e)
         {
             channel1DataTextBox.Clear();
-            numvaluesCollectedTextBox.Clear();
+            numSamplesCollectedTextBox.Clear();
 
             Thread.Sleep(1000);
 
             if (handle > 0)
             {
-                // Set Input channel
+                // Set Input channel 1 - enabled, range = 2500mV, single ended
+                short analogChannelStatus = Imports.SetAnalogInChannel(handle, 
+                                                                       (short)Imports.HRDLInputs.HRDL_ANALOG_IN_CHANNEL_1, 
+                                                                       1,
+                                                                       (short)Imports.HRDLRange.HRDL_2500_MV, 
+                                                                       1);
 
-                short analogChannelStatus = Imports.SetAnalogInChannel(handle, (short)Imports.HRDLInputs.HRDL_ANALOG_IN_CHANNEL_1, 1,
-                                                (short)Imports.HRDLRange.HRDL_2500_MV, (short)1); //set channel 1, enabled, range = 2500mV, single ended
-
-                // Set Interval
-                short returnIntervalStatus = Imports.SetInterval(handle, 80, (short)Imports.HRDLConversionTime.HRDL_60MS); //sample interval time= 80ms, conversion time = 60ms
+                // Set Interval time = 80 ms, conversion time = 60 ms
+                short returnIntervalStatus = Imports.SetInterval(handle, 80, (short)Imports.HRDLConversionTime.HRDL_60MS); 
 
                 // Specify number of values to collect and capture block of data
+                int numSamplesPerChannel = 0;
+                
+                Int32.TryParse(numSamplesPerChannelTextBox.Text, out numSamplesPerChannel);
 
-                int values = 0;
-            
-                Int32.TryParse(numValuesToCollectedTextBox.Text, out values);
-
-                short status = Imports.HRDLRun(handle, values, (short)Imports.BlockMethod.HRDL_BM_BLOCK);
+                short status = Imports.HRDLRun(handle, numSamplesPerChannel, (short)Imports.BlockMethod.HRDL_BM_BLOCK);
 
                 short ready = Imports.HRDLReady(handle);
 
                 while (ready != 1)
                 {
                     ready = Imports.HRDLReady(handle);
-                    System.Threading.Thread.Sleep(100);
+                    Thread.Sleep(100);
                 }
 
                 short stopStatus = Imports.HRDLStop(handle);
 
-                // Set up data array to retrieve values
-                int[] data = new int[100];
+                // Get data values
+                int numActiveChannels = 1; // Channel 1
+                int[] data = new int[numActiveChannels * numSamplesPerChannel];
                 short overflow = 0;
 
-                int numValues = Imports.GetValues(handle, data, out overflow, values);
+                int numValues = Imports.GetValues(handle, data, out overflow, numSamplesPerChannel);
 
+                // Get Max Min ADC Count values for Channel 1
                 int minAdc = 0;
                 int maxAdc = 0;
 
-                // Obtain Max Min ADC Count values for Channel 1
-                short returnAdcMaxMin = Imports.GetMinMaxAdcCounts(handle, out minAdc, out maxAdc, (short)Imports.HRDLInputs.HRDL_ANALOG_IN_CHANNEL_1);
+                short returnAdcMaxMin = Imports.GetMinMaxAdcCounts(handle, 
+                                                                   out minAdc, 
+                                                                   out maxAdc, 
+                                                                   (short)Imports.HRDLInputs.HRDL_ANALOG_IN_CHANNEL_1);
 
-                numvaluesCollectedTextBox.Text += numValues.ToString();
+                // Display retreived data
+                numSamplesCollectedTextBox.Text += numValues.ToString();
 
                 float[] scaledData = new float[numValues];
 
@@ -94,7 +100,6 @@ namespace PicoHRDLGui
             {
                 MessageBox.Show("No connection to device.");
             }
-
         }
 
         /**
