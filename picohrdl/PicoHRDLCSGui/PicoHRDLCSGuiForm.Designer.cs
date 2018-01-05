@@ -57,7 +57,7 @@ namespace PicoHRDLGui
             this.runButton.TabIndex = 0;
             this.runButton.Text = "Run";
             this.runButton.UseVisualStyleBackColor = true;
-            this.runButton.Click += new System.EventHandler(this.button1_Click);
+            this.runButton.Click += new System.EventHandler(this.runButton_Click);
             // 
             // unitInfoTextBox
             // 
@@ -84,7 +84,7 @@ namespace PicoHRDLGui
             this.closeButton.TabIndex = 3;
             this.closeButton.Text = "Close";
             this.closeButton.UseVisualStyleBackColor = true;
-            this.closeButton.Click += new System.EventHandler(this.button2_Click);
+            this.closeButton.Click += new System.EventHandler(this.closeButton_Click);
             // 
             // numValuesCollectedLabel
             // 
@@ -111,7 +111,7 @@ namespace PicoHRDLGui
             this.openButton.TabIndex = 6;
             this.openButton.Text = "Open";
             this.openButton.UseVisualStyleBackColor = true;
-            this.openButton.Click += new System.EventHandler(this.button3_Click);
+            this.openButton.Click += new System.EventHandler(this.openButton_Click);
             // 
             // numSamplesPerChannelTextBox
             // 
@@ -126,9 +126,9 @@ namespace PicoHRDLGui
             this.numValuesToCollectLabel.AutoSize = true;
             this.numValuesToCollectLabel.Location = new System.Drawing.Point(18, 282);
             this.numValuesToCollectLabel.Name = "numValuesToCollectLabel";
-            this.numValuesToCollectLabel.Size = new System.Drawing.Size(120, 13);
+            this.numValuesToCollectLabel.Size = new System.Drawing.Size(125, 13);
             this.numValuesToCollectLabel.TabIndex = 8;
-            this.numValuesToCollectLabel.Text = "Num Sample / Channel:";
+            this.numValuesToCollectLabel.Text = "Num Samples / Channel:";
             // 
             // channel1DataLabel
             // 

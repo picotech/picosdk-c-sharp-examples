@@ -33,7 +33,7 @@ namespace PicoHRDLGui
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void runButton_Click(object sender, EventArgs e)
         {
             channel1DataTextBox.Clear();
             numSamplesCollectedTextBox.Clear();
@@ -70,11 +70,14 @@ namespace PicoHRDLGui
                 short stopStatus = Imports.HRDLStop(handle);
 
                 // Get data values
-                int numActiveChannels = 1; // Channel 1
+                short numActiveChannels = 0;
+
+                short numAnalogueChannelsStatus = Imports.GetNumberOfEnabledChannels(handle, out numActiveChannels);
+
                 int[] data = new int[numActiveChannels * numSamplesPerChannel];
                 short overflow = 0;
 
-                int numValues = Imports.GetValues(handle, data, out overflow, numSamplesPerChannel);
+                int numSamplesCollectedPerChannel = Imports.GetValues(handle, data, out overflow, numSamplesPerChannel);
 
                 // Get Max Min ADC Count values for Channel 1
                 int minAdc = 0;
@@ -86,11 +89,11 @@ namespace PicoHRDLGui
                                                                    (short)Imports.HRDLInputs.HRDL_ANALOG_IN_CHANNEL_1);
 
                 // Display retreived data
-                numSamplesCollectedTextBox.Text += numValues.ToString();
+                numSamplesCollectedTextBox.Text += numSamplesCollectedPerChannel.ToString();
 
-                float[] scaledData = new float[numValues];
+                float[] scaledData = new float[numSamplesCollectedPerChannel * numActiveChannels];
 
-                for (int n = 0; n < numValues; n++)
+                for (int n = 0; n < numSamplesCollectedPerChannel; n++)
                 {
                     scaledData[n] = adcToMv(data[n], (short)Imports.HRDLRange.HRDL_2500_MV, maxAdc);
                     channel1DataTextBox.Text += "Raw: " + data[n] + "\tScaled: " + scaledData[n] + "\r\n";
@@ -153,14 +156,7 @@ namespace PicoHRDLGui
             return mvValue;
         }
 
-        private void button2_Click(object sender, EventArgs e)
-        {
-            short closeStatus = Imports.HRDLCloseUnit(handle);
-
-            System.Windows.Forms.Application.Exit();
-        }
-
-        private void button3_Click(object sender, EventArgs e)
+        private void openButton_Click(object sender, EventArgs e)
         {
             // Clear text boxes
             unitInfoTextBox.Clear();
@@ -173,6 +169,13 @@ namespace PicoHRDLGui
 
             short setMainsStatus = Imports.SetMains(handle, Imports.HRDLMainsRejection.HRDL_FIFTY_HERTZ);   // Set noise rejection for 50Hz  
         }
-        
+
+        private void closeButton_Click(object sender, EventArgs e)
+        {
+            short closeStatus = Imports.HRDLCloseUnit(handle);
+
+            System.Windows.Forms.Application.Exit();
+        }
+
     }
 }
