@@ -1,16 +1,16 @@
 /******************************************************************************
- * 
- *  Filename: PS4000AImports.cs
- *
- *  Description:
- *      This file contains .NET wrapper calls needed to support the 
- *      PicoScope 4000 Series Oscilloscopes using the ps4000a driver API 
- *      functions. It also has the enums and structs required by the 
- *      (wrapped) function calls.
- *   
- *  Copyright (C) 2014 - 2017 Pico Technology Ltd. See LICENSE file for terms.
- *
- ******************************************************************************/
+*
+* Filename: PS4000AImports.cs
+*  
+* Description:
+*  This file contains .NET wrapper calls correseponding to  
+*  function calls defined in the ps4000aApi.h C header file. 
+*  It also has the enums and structs required by the (wrapped) 
+*  function calls.
+*   
+* Copyright © 2014-2018 Pico Technology Ltd. See LICENSE file for terms.
+*
+******************************************************************************/
 
 using System;
 using System.Runtime.InteropServices;
@@ -287,8 +287,6 @@ namespace PS4000AImports
                 this.ThresholdMode = thresholdMode;
             }
         }
-
-
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct TriggerConditions

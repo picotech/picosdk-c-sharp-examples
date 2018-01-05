@@ -1,16 +1,16 @@
-/**************************************************************************
- *
- * Filename: USBTC08CSConsole.cs
- * 
- * Description:
- *   This file contains .NET wrapper calls needed to support the 
- *   USB TC-08 Thermocouple Data Logger using the usbtc08 driver API 
- *   functions. It also has the enums and structs required by the 
- *   (wrapped) function calls.
- *   
- * Copyright (C) 2011 - 2017 Pico Technology Ltd. See LICENSE file for terms. 
- * 
- **************************************************************************/
+/******************************************************************************
+*
+* Filename: USBTC08Imports.cs
+*  
+* Description:
+*  This file contains .NET wrapper calls correseponding to  
+*  function calls defined in the usbtc08.h C header file. 
+*  It also has the enums and structs required by the (wrapped) 
+*  function calls.
+*   
+* Copyright © 2011-2018 Pico Technology Ltd. See LICENSE file for terms.
+*
+******************************************************************************/
 
 using System.Runtime.InteropServices;
 using System.Text;

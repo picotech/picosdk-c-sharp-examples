@@ -1,16 +1,16 @@
 ﻿/******************************************************************************
- * 
- *  Filename: PicoHRDLImports.cs
- *
- *  Description:
- *      This file contains .NET wrapper calls needed to support the 
- *      PicoLog High Resolution Data Loggers using the picohrdl driver API 
- *      functions. It also has the enums required by the (wrapped) function 
- *      calls.
- *   
- *  Copyright © 2015-2017 Pico Technology Ltd. See LICENSE file for terms.
- *   
- ******************************************************************************/
+*
+* Filename: PicoHRDLImports.cs
+*  
+* Description:
+*  This file contains .NET wrapper calls correseponding to  
+*  function calls defined in the HRDL.h C header file. 
+*  It also has the enums and structs required by the (wrapped) 
+*  function calls.
+*   
+* Copyright © 2015-2018 Pico Technology Ltd. See LICENSE file for terms.
+*
+******************************************************************************/
 
 using System.Text;
 using System.Runtime.InteropServices;

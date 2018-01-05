@@ -1,17 +1,16 @@
-/**************************************************************************
- *
- * Filename: PS2000AImports.cs
- * 
- * Description:
- *   This file contains .NET wrapper calls needed to support the 
- *   PicoScope 2000 Series Oscilloscopes using the ps2000a driver API 
- *   functions. It also has the enums and structs required by the 
- *   (wrapped) function calls.
- *
- * Copyright © 2011-2017 Pico Technology Ltd. See LICENSE file for terms.
- * 
- **************************************************************************/
-
+/******************************************************************************
+*
+* Filename: PS2000AImports.cs
+*  
+* Description:
+*  This file contains .NET wrapper calls correseponding to  
+*  function calls defined in the ps2000aAPI.h C header file. 
+*  It also has the enums and structs required by the (wrapped) 
+*  function calls.
+*   
+* Copyright © 2011-2018 Pico Technology Ltd. See LICENSE file for terms.
+*
+******************************************************************************/
 
 using System;
 using System.Runtime.InteropServices;

@@ -1,16 +1,16 @@
 /******************************************************************************
- *
- *  Filename: PS4000Imports.cs
- *
- *  Description:
- *      This file contains .NET wrapper calls needed to support the 
- *      PicoScope 4000 Series Oscilloscopes using the ps4000 driver API 
- *      functions. It also has the enums and structs required by the 
- *      (wrapped) function calls.
- *   
- * Copyright (C) 2009 - 2017 Pico Technology Ltd. See LICENSE file for terms.
- *   
- *****************************************************************************/
+*
+* Filename: PS4000Imports.cs
+*  
+* Description:
+*  This file contains .NET wrapper calls correseponding to  
+*  function calls defined in the ps4000Api.h C header file. 
+*  It also has the enums and structs required by the (wrapped) 
+*  function calls.
+*   
+* Copyright © 2009-2018 Pico Technology Ltd. See LICENSE file for terms.
+*
+******************************************************************************/
 
 using System;
 using System.Runtime.InteropServices;
