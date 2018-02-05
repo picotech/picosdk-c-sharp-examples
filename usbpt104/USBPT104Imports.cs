@@ -3,10 +3,9 @@
 * Filename: USBPT104Imports.cs
 *  
 * Description:
-*  This file contains .NET wrapper calls correseponding to  
-*  function calls defined in the usbPT104Api.h C header file. 
-*  It also has the enums and structs required by the (wrapped) 
-*  function calls.
+*  This file contains .NET wrapper calls corresponding to function calls 
+*  defined in the usbPT104Api.h C header file. 
+*  It also has the enums and structs required by the (wrapped) function calls.
 *   
 * Copyright © 2015-2018 Pico Technology Ltd. See LICENSE file for terms.
 *
@@ -19,7 +18,7 @@ namespace USBPT104Imports
 {
 	class Imports
 	{
-		#region constants
+		#region Constants
 
         private const string _DRIVER_FILENAME = "USBPT104.dll";
 
@@ -30,7 +29,7 @@ namespace USBPT104Imports
 
         #endregion
 
-		#region Driver enums
+		#region Driver Enums
 
         public enum UsbPt104Channels : uint
         {

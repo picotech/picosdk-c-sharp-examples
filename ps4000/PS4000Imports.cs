@@ -3,10 +3,9 @@
 * Filename: PS4000Imports.cs
 *  
 * Description:
-*  This file contains .NET wrapper calls correseponding to  
-*  function calls defined in the ps4000Api.h C header file. 
-*  It also has the enums and structs required by the (wrapped) 
-*  function calls.
+*  This file contains .NET wrapper calls corresponding to function calls 
+*  defined in the ps4000Api.h C header file. 
+*  It also has the enums and structs required by the (wrapped) function calls.
 *   
 * Copyright © 2009-2018 Pico Technology Ltd. See LICENSE file for terms.
 *
@@ -20,13 +19,13 @@ namespace PS4000Imports
 {
 	class Imports
 	{
-		#region constants
+		#region Constants
 		private const string _DRIVER_FILENAME = "ps4000.dll";
 
 		public const int MaxValue = 32764;
 		#endregion
 
-		#region Driver enums
+		#region Driver Enums
 
 		public enum Channel : int
 		{
@@ -128,9 +127,10 @@ namespace PS4000Imports
             PS4262 = 4262,
         }
 
-#endregion
+        #endregion
 
-		[StructLayout(LayoutKind.Sequential, Pack = 1)]
+        #region Driver Structs
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
 		public struct TriggerChannelProperties
 		{
 			public short ThresholdMajor;
@@ -215,9 +215,11 @@ namespace PS4000Imports
 			}
 		}
 
-		#region Driver Imports
-		#region Callback delegates
-		public delegate void ps4000BlockReady(short handle, short status, IntPtr pVoid);
+        #endregion
+
+        #region Driver Imports
+        #region Callback delegates
+        public delegate void ps4000BlockReady(short handle, short status, IntPtr pVoid);
 
 		public delegate void ps4000StreamingReady(
 												short handle,

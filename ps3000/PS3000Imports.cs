@@ -3,10 +3,9 @@
 * Filename: PS3000Imports.cs
 *  
 * Description:
-*  This file contains .NET wrapper calls correseponding to  
-*  function calls defined in the ps3000.h C header file. 
-*  It also has the enums and structs required by the (wrapped) 
-*  function calls.
+*  This file contains .NET wrapper calls corresponding to function calls 
+*  defined in the ps3000.h C header file. 
+*  It also has the enums and structs required by the (wrapped) function calls.
 *   
 * Copyright © 2007-2018 Pico Technology Ltd. See LICENSE file for terms.
 *
@@ -26,7 +25,7 @@ namespace PS3000Imports
     private const string _DRIVER_FILENAME = "ps3000.dll";
     private const int _NUM_UNIT_INFO_CHARS = 256;
 
-    #region Driver enums
+    #region Driver Enums
     public enum ErrorCode : short
     {
       Ok,
@@ -113,7 +112,7 @@ namespace PS3000Imports
     }
     #endregion
 
-    #region Driver imports
+    #region Driver Imports
     [DllImport(_DRIVER_FILENAME)]
     private static extern short ps3000_open_unit();
 

@@ -3,10 +3,9 @@
 * Filename: USBTC08Imports.cs
 *  
 * Description:
-*  This file contains .NET wrapper calls correseponding to  
-*  function calls defined in the usbtc08.h C header file. 
-*  It also has the enums and structs required by the (wrapped) 
-*  function calls.
+*  This file contains .NET wrapper calls correseponding to function calls 
+*  defined in the usbtc08.h C header file. 
+*  It also has the enums and structs required by the (wrapped) function calls.
 *   
 * Copyright © 2011-2018 Pico Technology Ltd. See LICENSE file for terms.
 *
@@ -19,13 +18,13 @@ namespace USBTC08Imports
 {
 	unsafe class Imports
 	{
-		#region constants
+		#region Constants
 		private const string _DRIVER_FILENAME = "usbtc08.dll";
 
 
 		#endregion
 
-		#region Driver enums
+		#region Driver Enums
 
 
         public enum TempUnit : short 

@@ -3,10 +3,9 @@
 * Filename: PS5000AImports.cs
 *  
 * Description:
-*  This file contains .NET wrapper calls correseponding to  
-*  function calls defined in the ps5000aApi.h C header file. 
-*  It also has the enums and structs required by the (wrapped) 
-*  function calls.
+*  This file contains .NET wrapper calls corresponding to function calls 
+*  defined in the ps5000aApi.h C header file. 
+*  It also has the enums and structs required by the (wrapped) function calls.
 *   
 * Copyright © 2013-2018 Pico Technology Ltd. See LICENSE file for terms.
 *
@@ -20,12 +19,12 @@ namespace PS5000AImports
 {
 	class Imports
 	{
-		#region constants
+		#region Constants
 		private const string _DRIVER_FILENAME = "ps5000a.dll";
 
         #endregion
 
-		#region Driver enums
+		#region Driver Enums
 
 		public enum Channel : uint
 		{
@@ -202,7 +201,7 @@ namespace PS5000AImports
 
         #endregion
 
-        # region structs
+        # region Driver Structs
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
 		public struct TriggerChannelProperties
