@@ -15,7 +15,7 @@ using System.IO;
 using System.Threading;
 
 using USBTC08Imports;
-using USBTC08PinnedArray;
+using PicoPinnedArray;
 
 namespace USBTC08ConsoleExample
 {
