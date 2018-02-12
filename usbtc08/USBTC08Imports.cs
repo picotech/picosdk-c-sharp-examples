@@ -5,7 +5,7 @@
 * Description:
 *  This file contains .NET wrapper calls correseponding to function calls 
 *  defined in the usbtc08.h C header file. 
-*  It also has the enums and structs required by the (wrapped) function calls.
+*  It also has the enums required by the (wrapped) function calls.
 *   
 * Copyright © 2011-2018 Pico Technology Ltd. See LICENSE file for terms.
 *
@@ -38,9 +38,6 @@ namespace USBTC08Imports
 		#endregion
 
 		#region Driver Imports
-		#region Callback delegates
-		
-		#endregion
 
 		[DllImport(_DRIVER_FILENAME, EntryPoint = "usb_tc08_open_unit")]
 		public static extern short TC08OpenUnit();
