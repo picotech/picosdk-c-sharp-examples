@@ -3,10 +3,9 @@
 * Filename: USBDRDAQImports.cs
 *  
 * Description:
-*  This file contains .NET wrapper calls correseponding to  
-*  function calls defined in the usbDrDaqApi.h C header file. 
-*  It also has the enums and structs required by the (wrapped) 
-*  function calls.
+*  This file contains .NET wrapper calls corresponding to function calls 
+*  defined in the usbDrDaqApi.h C header file. 
+*  It also has the enums required by the (wrapped) function calls.
 *   
 * Copyright © 2012-2018 Pico Technology Ltd. See LICENSE file for terms.
 *
@@ -19,12 +18,12 @@ namespace DrDAQRemote
 {
 	class Imports
 	{
-		#region constants
+		#region Constants
 		private const string _DRIVER_FILENAME = "usbdrdaq.dll";
 
 		#endregion
 
-		#region Driver enums
+		#region Driver Enums
 
 		public enum Inputs : int
 		{

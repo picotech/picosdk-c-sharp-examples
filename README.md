@@ -40,5 +40,5 @@ See [LICENSE.md](LICENSE.md) for license terms.
 
 *Windows* and *Visual Studio* are registered trademarks of Microsoft Corporation.
 
-Copyright © 2007-2017 Pico Technology Ltd. All rights reserved.
+Copyright © 2007-2018 Pico Technology Ltd. All rights reserved.
 

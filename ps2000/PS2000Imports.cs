@@ -3,8 +3,8 @@
  * Filename: PS2000Imports.cs
  *  
  * Description:
- *  This file contains .NET wrapper calls correseponding to  
- *  function calls defined in the ps2000.h C header file. 
+ *  This file contains .NET wrapper calls corresponding to function calls 
+ *  defined in the ps2000.h C header file. 
  *  It also has the enums and structs required by the (wrapped) 
  *  function calls.
  *   
@@ -19,7 +19,7 @@ namespace PS2000Imports
 {
 	class Imports
     {
-        #region constants
+        #region Constants
         private const string _DRIVER_FILENAME = "ps2000.dll";
         public const int PS2000_LOST_DATA = -32768;
 
@@ -35,7 +35,7 @@ namespace PS2000Imports
 
         #endregion
 
-        #region Driver enums
+        #region Driver Enums
 
         public enum WaveType : int
         {
@@ -183,7 +183,8 @@ namespace PS2000Imports
 
         #endregion
 
-		[StructLayout(LayoutKind.Sequential, Pack = 1)]
+        #region Driver Structs
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
 		public struct TriggerChannelProperties
 		{
 			public short ThresholdMajor;
@@ -260,7 +261,9 @@ namespace PS2000Imports
             }
         }
 
-		#region Driver Imports
+        #endregion
+
+        #region Driver Imports
 
         public unsafe delegate void ps2000StreamingReady(short** overviewBuffers,
                                         short overFlow,

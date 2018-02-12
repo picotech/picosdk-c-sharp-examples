@@ -3,10 +3,9 @@
 * Filename: PS2000AImports.cs
 *  
 * Description:
-*  This file contains .NET wrapper calls correseponding to  
-*  function calls defined in the ps2000aAPI.h C header file. 
-*  It also has the enums and structs required by the (wrapped) 
-*  function calls.
+*  This file contains .NET wrapper calls corresponding to function calls 
+*  defined in the ps2000aAPI.h C header file. 
+*  It also has the enums and structs required by the (wrapped) function calls.
 *   
 * Copyright © 2011-2018 Pico Technology Ltd. See LICENSE file for terms.
 *
@@ -20,14 +19,14 @@ namespace PS2000AImports
 {
     class Imports
     {
-        #region constants
+        #region Constants
         private const string _DRIVER_FILENAME = "ps2000a.dll";
 
         public const int MaxValue = 32512;
         public const int MaxLogicLevel = 32767;
         #endregion
 
-        #region Driver enums
+        #region Driver Enums
 
         public enum Channel : int
         {
@@ -254,9 +253,10 @@ namespace PS2000AImports
             PS2000A_AC,
             PS2000A_DC
         }
-        
+
         #endregion
 
+        #region Driver Structs
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct TriggerChannelProperties
         {
@@ -359,6 +359,8 @@ namespace PS2000AImports
                 this.DigiDirection = digiDirection;
             }
         }
+
+        #endregion
 
         #region Driver Imports
         #region Callback delegates
