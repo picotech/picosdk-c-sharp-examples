@@ -18,13 +18,7 @@ namespace USBTC08Imports
 {
 	unsafe class Imports
 	{
-<<<<<<< HEAD
-		#region constants
-=======
 		#region Constants
-		private const string _DRIVER_FILENAME = "usbtc08.dll";
->>>>>>> ee870494d83cd6f2d7356b26861331b14914e676
-
 		private const string _DRIVER_FILENAME = "usbtc08.dll";
 
 		#endregion
@@ -44,17 +38,9 @@ namespace USBTC08Imports
             USBTC08_MAINS_SIXTY_HERTZ = 1,
         }
 
-<<<<<<< HEAD
         #endregion
-=======
-		#region Driver Imports
->>>>>>> ee870494d83cd6f2d7356b26861331b14914e676
 
         #region Driver Imports
-
-        #region Callback delegates
-
-        #endregion
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "usb_tc08_open_unit")]
 		public static extern short TC08OpenUnit();
