@@ -97,10 +97,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\shared\PicoPinnedArray.cs">
+      <Link>PicoPinnedArray.cs</Link>
+    </Compile>
     <Compile Include="..\USBTC08Imports.cs">
       <Link>USBTC08Imports.cs</Link>
     </Compile>
-    <Compile Include="PicoPinnedArray.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="USBTC08CSConsole.cs">
       <SubType>Code</SubType>
