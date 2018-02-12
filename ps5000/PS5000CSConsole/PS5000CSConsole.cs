@@ -28,7 +28,7 @@ using System.IO;
 using System.Threading;
 
 using PS5000Imports;
-using PS5000PinnedArray;
+using PicoPinnedArray;
 
 namespace PS5000CSConsole
 {
