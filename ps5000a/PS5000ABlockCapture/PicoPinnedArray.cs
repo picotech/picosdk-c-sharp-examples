@@ -1,12 +1,19 @@
-/**************************************************************************
-// PICO_SIGNATURE
+/*****************************************************************************
  *
- **************************************************************************/
+ * Filename: PicoPinnedArray.cs
+ * 
+ * Description:
+ *   This file defines an object to hold an array in memory when 
+ *   registering a data buffer with a driver.
+ *   
+ * Copyright (C) 2017 Pico Technology Ltd. See LICENSE file for terms.
+ *
+ ****************************************************************************/
 
 using System;
 using System.Runtime.InteropServices;
 
-namespace PS5000APinnedArray
+namespace PicoPinnedArray
 {
     public class PinnedArray<T> : IDisposable
     {

@@ -31,7 +31,7 @@ using System.Windows.Forms;
 using System.Threading;
 
 using PS5000AImports;
-using PS5000APinnedArray;
+using PicoPinnedArray;
 using PicoStatus;
 
 namespace PS5000A

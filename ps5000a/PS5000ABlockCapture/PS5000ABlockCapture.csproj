@@ -68,9 +68,7 @@
     <Compile Include="..\PS5000AImports.cs">
       <Link>PS5000AImports.cs</Link>
     </Compile>
-    <Compile Include="..\PS5000APinnedArray.cs">
-      <Link>PS5000APinnedArray.cs</Link>
-    </Compile>
+    <Compile Include="PicoPinnedArray.cs" />
     <Compile Include="PS5000ABlockForm.cs">
       <SubType>Form</SubType>
     </Compile>
