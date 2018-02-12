@@ -32,7 +32,7 @@ using System.Threading;
 using System.Text;
 
 using PS6000Imports;
-using PS6000PinnedArray;
+using PicoPinnedArray;
 using PicoStatus;
 
 namespace PS6000CSConsole
