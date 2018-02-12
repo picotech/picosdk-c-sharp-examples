@@ -20,13 +20,12 @@ namespace USBTC08Imports
 	unsafe class Imports
 	{
 		#region constants
-		private const string _DRIVER_FILENAME = "usbtc08.dll";
 
+		private const string _DRIVER_FILENAME = "usbtc08.dll";
 
 		#endregion
 
 		#region Driver enums
-
 
         public enum TempUnit : short 
         {   USBTC08_UNITS_CENTIGRADE, 
@@ -35,15 +34,21 @@ namespace USBTC08Imports
             USBTC08_UNITS_RANKINE
         }
 
-		
-		#endregion
+        public enum MainsFrequency : short
+        {
+            USBTC08_MAINS_FIFTY_HERTZ = 0,
+            USBTC08_MAINS_SIXTY_HERTZ = 1,
+        }
 
-		#region Driver Imports
-		#region Callback delegates
-		
-		#endregion
+        #endregion
 
-		[DllImport(_DRIVER_FILENAME, EntryPoint = "usb_tc08_open_unit")]
+        #region Driver Imports
+
+        #region Callback delegates
+
+        #endregion
+
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "usb_tc08_open_unit")]
 		public static extern short TC08OpenUnit();
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "usb_tc08_close_unit")]
@@ -90,7 +95,12 @@ namespace USBTC08Imports
         [DllImport(_DRIVER_FILENAME, EntryPoint = "usb_tc08_get_minimum_interval_ms")]
         public static extern int TC08GetMinIntervalMS(short handle);
 
-		#endregion
-	}
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "usb_tc08_set_mains")]
+        public static extern short TC08SetMains(short handle,
+                                               MainsFrequency freq
+                                               );
+
+        #endregion
+    }
 }
 
