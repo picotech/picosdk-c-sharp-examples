@@ -454,6 +454,7 @@ namespace PS4000ASigGen
             this.Controls.Add(this.Start);
             this.Name = "PS4000ASigGen";
             this.Text = "PicoScope 4000 Series (A API) Signal Generator Example";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PS4000ASigGen_FormClosing);
             this.controls.ResumeLayout(false);
             this.controls.PerformLayout();
             this.SweepController.ResumeLayout(false);

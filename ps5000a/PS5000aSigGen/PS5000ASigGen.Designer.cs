@@ -465,6 +465,7 @@ namespace PS5000ASigGen
             this.Controls.Add(this.Start);
             this.Name = "AWG_SIGGEN";
             this.Text = "PicoScope 5000 Series (A API) Signal Generator Example";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AWG_SIGGEN_FormClosing);
             this.controls.ResumeLayout(false);
             this.controls.PerformLayout();
             this.SweepController.ResumeLayout(false);

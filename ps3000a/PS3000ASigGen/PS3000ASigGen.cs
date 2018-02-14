@@ -91,13 +91,7 @@ namespace PS3000ASigGen
             }
 
             controls.Visible = true;
-        }
-
-        // When the form is closed, disconnect device
-        private void AWG_SIGGEN_Close(object sender, FormClosedEventArgs e)
-        {
-            Imports.CloseUnit(handle);
-        }
+        }        
 
         // Changes from signal generator to arbitary waveform geerator
         private void SIGtoAWG_CheckedChanged(object sender, EventArgs e)
@@ -300,5 +294,14 @@ namespace PS3000ASigGen
             }
         }
 
+        /// <summary>
+        /// When the form is closed, disconnect device
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AWG_SIGGEN_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Imports.CloseUnit(handle);
+        }
     }
 }

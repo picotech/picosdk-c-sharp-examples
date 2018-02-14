@@ -82,12 +82,6 @@ namespace PS2000CSSigGen
             }
         }
 
-        // When the form is closed, disconnect device
-        private void AWG_SIGGEN_Close(object sender, FormClosedEventArgs e)
-        {
-            Imports.CloseUnit(handle);
-        }
-
         // Changes from signal generator to abitary waveform generator
         private void SIGtoAWG_CheckedChanged(object sender, EventArgs e)
         {
@@ -294,6 +288,16 @@ namespace PS2000CSSigGen
                          (1 / Imports.PS2000_AWG_DDS_FREQUENCY);
 
             return deltaPhase;
+        }
+
+        /// <summary>
+        /// When the form is closed, disconnect device
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AWG_SIGGEN_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Imports.CloseUnit(handle);
         }
     }
 }
