@@ -94,6 +94,9 @@ namespace USBTC08Imports
                                                MainsFrequency freq
                                                );
 
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "usb_tc08_get_last_error")]
+        public static extern short TC08GetLastError(short handle);
+
         #endregion
     }
 }
