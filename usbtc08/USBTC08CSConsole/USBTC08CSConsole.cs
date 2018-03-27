@@ -6,12 +6,11 @@
  *   This is a console-mode program that demonstrates how to use the
  *   USBTC08 driver using .NET
  *   
- * Copyright (C) 2011 - 2017 Pico Technology Ltd. See LICENSE file for terms. 
+ * Copyright (C) 2011-2018 Pico Technology Ltd. See LICENSE file for terms. 
  *   
  **************************************************************************/
 
 using System;
-using System.IO;
 using System.Threading;
 
 using USBTC08Imports;
@@ -243,9 +242,66 @@ namespace USBTC08ConsoleExample
     ****************************************************************************/
     public void Run()
     {
-       
-         //// main loop - read key and call routine
-        char ch = ' ';
+            short status = 0;
+            short errorCode = 0;
+
+            Console.WriteLine("Set mains rejection frequency? (Y/N)");
+
+            char input = char.ToUpper(Console.ReadKey().KeyChar);
+            Console.WriteLine();
+
+            if (input.Equals('Y'))
+            {
+                Console.WriteLine("Select mains frequency to reject:");
+                Console.WriteLine("0 - 50 Hz");
+                Console.WriteLine("1 - 60 Hz");
+
+                short mainsRejectionFrequency = 0;
+                string mainsRejectionInput = "";
+                bool validInput = false;
+
+                do
+                {
+                    mainsRejectionInput =  Console.ReadLine();
+
+                    validInput = Int16.TryParse(mainsRejectionInput, out mainsRejectionFrequency);
+
+                    if (validInput == true)
+                    {
+                        if (mainsRejectionFrequency != (short)Imports.MainsFrequency.USBTC08_MAINS_FIFTY_HERTZ &&
+                        mainsRejectionFrequency != (short)Imports.MainsFrequency.USBTC08_MAINS_SIXTY_HERTZ)
+                        {
+                            validInput = false;
+                        }
+                    }
+                }
+                while (validInput == false);
+
+                status = Imports.TC08SetMains(_handle, (Imports.MainsFrequency)mainsRejectionFrequency);
+
+                if (status == 1)
+                {
+                    Console.WriteLine("Mains rejection set successfully.");
+                }
+                else
+                {
+                    errorCode = Imports.TC08GetLastError(_handle);
+
+                    Console.WriteLine("Error calling TCO8SetMains: {0}", errorCode);
+                    Imports.TC08CloseUnit(_handle);
+                    WaitForKey();
+                    Environment.Exit(-1);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Mains rejection not set.");
+            }
+
+            Console.WriteLine();
+
+            //// main loop - read key and call routine
+            char ch = ' ';
 
         while (ch != 'X')
         {
@@ -303,6 +359,7 @@ namespace USBTC08ConsoleExample
 
       short handle = Imports.TC08OpenUnit();
       Console.WriteLine("Handle: {0}", handle);
+
       if (handle == 0)
       {
         Console.WriteLine("Unable to open device");
