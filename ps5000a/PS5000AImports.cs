@@ -612,6 +612,9 @@ namespace PS5000AImports
                                                                 out uint minArbitraryWaveformSize,
                                                                 out uint maxArbitraryWaveformSize);
 
-		#endregion
-	}
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps5000aSetBandwidthFilter")]
+        public static extern uint SetBandwidthFilter(short handle, BandwidthLimiter bandwidth);
+
+        #endregion
+    }
 }
