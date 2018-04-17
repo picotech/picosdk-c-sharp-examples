@@ -195,7 +195,7 @@ namespace PS5000AImports
 
         public enum BandwidthLimiter : uint
         {
-            S5000A_BW_FULL,
+            PS5000A_BW_FULL,
             PS5000A_BW_20MHZ
         }
 
