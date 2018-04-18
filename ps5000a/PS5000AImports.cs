@@ -615,6 +615,9 @@ namespace PS5000AImports
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps5000aSetBandwidthFilter")]
         public static extern uint SetBandwidthFilter(short handle, Channel channel, BandwidthLimiter bandwidth);
 
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps5000aPingUnit")]
+        public static extern uint PingUnit(short handle);
+
         #endregion
     }
 }
