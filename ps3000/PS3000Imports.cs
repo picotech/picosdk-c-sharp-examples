@@ -1,15 +1,16 @@
-/******************************************************************************
-*
-* Filename: PS3000Imports.cs
-*  
-* Description:
-*  This file contains .NET wrapper calls corresponding to function calls 
-*  defined in the ps3000.h C header file. 
-*  It also has the enums and structs required by the (wrapped) function calls.
-*   
-* Copyright © 2007-2018 Pico Technology Ltd. See LICENSE file for terms.
-*
-******************************************************************************/
+/*******************************************************************************
+ *
+ * Filename: PS3000.cs
+ *
+ * Description:
+ *      This file contains .NET wrapper calls needed to support the 
+ *      PicoScope 3000 Series Oscilloscopes using the ps3000 driver API 
+ *      functions. It also has the enums required by the (wrapped) function 
+ *      calls.
+ *    
+ * Copyright (C) 2007 - 2017 Pico Technology Ltd. See LICENSE file for terms.    
+ *    
+ *******************************************************************************/
 
 using System;
 using System.Runtime.InteropServices;
@@ -17,7 +18,7 @@ using System.Text;
 
 namespace PS3000Imports
 {
-  class Imports
+  public class PS3000
   {
     private short _handle = -1;
     private bool _disposed = false;
@@ -25,7 +26,7 @@ namespace PS3000Imports
     private const string _DRIVER_FILENAME = "ps3000.dll";
     private const int _NUM_UNIT_INFO_CHARS = 256;
 
-    #region Driver Enums
+    #region Driver enums
     public enum ErrorCode : short
     {
       Ok,
@@ -67,6 +68,9 @@ namespace PS3000Imports
       Range10V,
       Range20V,
       Range50V,
+      Range100V,
+      Range200V,
+      Range400V
     }
 
     public enum SiggenWaveType : short
@@ -112,7 +116,7 @@ namespace PS3000Imports
     }
     #endregion
 
-    #region Driver Imports
+    #region Driver imports
     [DllImport(_DRIVER_FILENAME)]
     private static extern short ps3000_open_unit();
 
@@ -400,7 +404,7 @@ namespace PS3000Imports
     #endregion
 
     #region Destructor and Disposal
-    ~PS3000Imports()
+    ~PS3000()
     {
       Dispose();
     }
