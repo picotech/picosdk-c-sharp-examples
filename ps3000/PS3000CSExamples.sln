@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS3000CSBlockConsole", "PS3000CSBlockConsole\PS3000CSBlockConsole.csproj", "{9F85B60D-B75C-4322-AF65-E76EA23D641E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS3000CSStreamingConsole", "PS3000CSStreamingConsole\PS3000CSStreamingConsole.csproj", "{460CF1A3-7CCC-46BD-8075-6FCCE2CA2C8D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9F85B60D-B75C-4322-AF65-E76EA23D641E}.Debug|x64.ActiveCfg = Debug|x64
+		{9F85B60D-B75C-4322-AF65-E76EA23D641E}.Debug|x64.Build.0 = Debug|x64
+		{9F85B60D-B75C-4322-AF65-E76EA23D641E}.Debug|x86.ActiveCfg = Debug|x86
+		{9F85B60D-B75C-4322-AF65-E76EA23D641E}.Debug|x86.Build.0 = Debug|x86
+		{9F85B60D-B75C-4322-AF65-E76EA23D641E}.Release|x64.ActiveCfg = Release|x64
+		{9F85B60D-B75C-4322-AF65-E76EA23D641E}.Release|x64.Build.0 = Release|x64
+		{9F85B60D-B75C-4322-AF65-E76EA23D641E}.Release|x86.ActiveCfg = Release|x86
+		{9F85B60D-B75C-4322-AF65-E76EA23D641E}.Release|x86.Build.0 = Release|x86
+		{460CF1A3-7CCC-46BD-8075-6FCCE2CA2C8D}.Debug|x64.ActiveCfg = Debug|x64
+		{460CF1A3-7CCC-46BD-8075-6FCCE2CA2C8D}.Debug|x64.Build.0 = Debug|x64
+		{460CF1A3-7CCC-46BD-8075-6FCCE2CA2C8D}.Debug|x86.ActiveCfg = Debug|x86
+		{460CF1A3-7CCC-46BD-8075-6FCCE2CA2C8D}.Debug|x86.Build.0 = Debug|x86
+		{460CF1A3-7CCC-46BD-8075-6FCCE2CA2C8D}.Release|x64.ActiveCfg = Release|x64
+		{460CF1A3-7CCC-46BD-8075-6FCCE2CA2C8D}.Release|x64.Build.0 = Release|x64
+		{460CF1A3-7CCC-46BD-8075-6FCCE2CA2C8D}.Release|x86.ActiveCfg = Release|x86
+		{460CF1A3-7CCC-46BD-8075-6FCCE2CA2C8D}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
