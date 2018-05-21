@@ -1,7 +1,8 @@
 ﻿// <copyright file="PicoStatus.cs" company="Pico Technology Ltd">
-// Copyright(C) 2009 - 2017 Pico Technology Ltd. See LICENSE file for terms.
+// Copyright(C) 2009-2018 Pico Technology Ltd. See LICENSE file for terms.
 // </copyright>
 
+namespace PicoStatus
 {
     /// <summary>
     /// PICO_INFO Values
@@ -603,28 +604,28 @@
         /// <summary></summary>
         public const uint PICO_WARNING_NUMBER_OF_SEGMENTS_REDUCED = (uint)0x00000147UL;
 
-        /// <summary>the calibration pin states argument is out of range</summary>
+        /// <summary>The calibration pin states argument is out of range</summary>
         public const uint PICO_CAL_PINS_STATES = (uint)0x00000148UL;
 
-        /// <summary>the calibration pin frequency argument is out of range</summary>
+        /// <summary>The calibration pin frequency argument is out of range</summary>
         public const uint PICO_CAL_PINS_FREQUENCY = (uint)0x00000149UL;
 
-        /// <summary>the calibration pin amplitude argument is out of range</summary>
+        /// <summary>The calibration pin amplitude argument is out of range</summary>
         public const uint PICO_CAL_PINS_AMPLITUDE = (uint)0x0000014AUL;
 
-        /// <summary>the calibration pin wavetype argument is out of range</summary>
+        /// <summary>The calibration pin wavetype argument is out of range</summary>
         public const uint PICO_CAL_PINS_WAVETYPE = (uint)0x0000014BUL;
 
-        /// <summary>the calibration pin offset argument is out of range</summary>
+        /// <summary>The calibration pin offset argument is out of range</summary>
         public const uint PICO_CAL_PINS_OFFSET = (uint)0x0000014CUL;
 
-        /// <summary>the probe's identity has a problem</summary>
+        /// <summary>The probe's identity has a problem</summary>
         public const uint PICO_PROBE_FAULT = (uint)0x0000014DUL;
 
-        /// <summary>the probe has not been identified</summary>
+        /// <summary>The probe has not been identified</summary>
         public const uint PICO_PROBE_IDENTITY_UNKNOWN = (uint)0x0000014EUL;
 
-        /// <summary>enabling the probe would cause the device to exceed the allowable current limit</summary>
+        /// <summary>Enabling the probe would cause the device to exceed the allowable current limit</summary>
         public const uint PICO_PROBE_POWER_DC_POWER_SUPPLY_REQUIRED = (uint)0x0000014FUL;
 
         /// <summary>
@@ -633,16 +634,16 @@
         /// </summary>
         public const uint PICO_PROBE_NOT_POWERED_WITH_DC_POWER_SUPPLY = (uint)0x00000150UL;
 
-        /// <summary>failed to complete probe configuration</summary>
+        /// <summary>Failed to complete probe configuration</summary>
         public const uint PICO_PROBE_CONFIG_FAILURE = (uint)0x00000151UL;
 
-        /// <summary>failed to set the callback function, as currently in current callback function</summary>
+        /// <summary>Failed to set the callback function, as currently in current callback function</summary>
         public const uint PICO_PROBE_INTERACTION_CALLBACK = (uint)0x00000152UL;
 
-        /// <summary>the probe has been verified but not know on this driver</summary>
+        /// <summary>The probe has been verified but not know on this driver</summary>
         public const uint PICO_UNKNOWN_INTELLIGENT_PROBE = (uint)0x00000153UL;
 
-        /// <summary>the intelligent probe cannot be verified</summary>
+        /// <summary>The intelligent probe cannot be verified</summary>
         public const uint PICO_INTELLIGENT_PROBE_CORRUPT = (uint)0x00000154UL;
 
         /// <summary>
@@ -651,7 +652,7 @@
         /// </summary>
         public const uint PICO_PROBE_COLLECTION_NOT_STARTED = (uint)0x00000155UL;
 
-        /// <summary>the current drawn by the probe(s) has exceeded the allowed limit</summary>
+        /// <summary>The current drawn by the probe(s) has exceeded the allowed limit</summary>
         public const uint PICO_PROBE_POWER_CONSUMPTION_EXCEEDED = (uint)0x00000156UL;
 
         /// <summary>
@@ -687,7 +688,7 @@
         /// <summary>The shadow calibration is corrupt.</summary>
         public const uint PICO_SHADOW_CAL_CORRUPT = (uint)0x10000007UL;
 
-        /// <summary>the memory onboard the device has overflowed</summary>
+        /// <summary>The memory onboard the device has overflowed</summary>
         public const uint PICO_DEVICE_MEMORY_OVERFLOW = (uint)0x10000008UL;
 
         /// <summary>Reserved</summary>
