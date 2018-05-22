@@ -157,6 +157,8 @@ namespace PS4000AImports
         public enum Model : int
         {
             NONE = 0,
+            PS4225 = 4225,
+            PS4425 = 4425,
             PS4444 = 4444,
             PS4824 = 4824
         }
@@ -410,7 +412,7 @@ namespace PS4000AImports
                                                 short handle,
                                                 Channel channel,
                                                 short enabled,
-                                                short dc,
+                                                Coupling dc,
                                                 Range range,
                                                 float analogOffset);
 
