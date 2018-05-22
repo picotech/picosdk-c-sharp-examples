@@ -236,6 +236,12 @@ namespace PS3000AImports
             PS3000A_MAX_INDEX_MODES
         }
 
+        public enum Coupling : int
+        {
+            AC,
+            DC
+        }
+
         #endregion
 
         # region Driver Structs
@@ -453,7 +459,7 @@ namespace PS3000AImports
 												short handle,
 												Channel channel,
 												short enabled,
-												short dc,
+												Coupling dc,
 												Range range,
                                                 float analogueOffset);
 

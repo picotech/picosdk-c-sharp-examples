@@ -33,7 +33,7 @@
  *    Collect a stream of Digital Samples 
  *    Collect a stream of Digital Samples and show Aggregated results
  *
- * Copyright (C) 2011 - 2017 Pico Technology Ltd. See LICENSE file for terms.
+ * Copyright (C) 2011-2018 Pico Technology Ltd. See LICENSE file for terms.
  *  
  **************************************************************************/
 
@@ -50,7 +50,7 @@ namespace PS3000ACSConsole
 {
     struct ChannelSettings
     {
-        public bool DCcoupled;
+        public Imports.Coupling DCcoupled;
         public Imports.Range range;
         public bool enabled;
     }
@@ -204,7 +204,7 @@ namespace PS3000ACSConsole
             {
                 Imports.SetChannel(_handle, Imports.Channel.ChannelA + i,
                                    (short)(_channelSettings[(int)(Imports.Channel.ChannelA + i)].enabled ? 1 : 0),
-                                   (short)(_channelSettings[(int)(Imports.Channel.ChannelA + i)].DCcoupled ? 1 : 0),
+                                   _channelSettings[(int)(Imports.Channel.ChannelA + i)].DCcoupled,
                                    _channelSettings[(int)(Imports.Channel.ChannelA + i)].range,
                                    (float) 0.0);
             }
@@ -269,7 +269,7 @@ namespace PS3000ACSConsole
             // Disable analogue ports
             for (int i = 0; i < _channelCount; i++)
             {
-                status = Imports.SetChannel(_handle, Imports.Channel.ChannelA + i, 0, 0, 0, 0);
+                status = Imports.SetChannel(_handle, Imports.Channel.ChannelA + i, 0, Imports.Coupling.DC, 0, (float) 0.0);
             }
 
             Console.WriteLine(status != StatusCodes.PICO_OK ? "DisableAnalogue:Imports.SetChannel Status = 0x{0:X6}" : "", status);
@@ -1985,7 +1985,7 @@ namespace PS3000ACSConsole
             for (int i = 0; i < MAX_CHANNELS; i++)
             {
                 _channelSettings[i].enabled = true;
-                _channelSettings[i].DCcoupled = true;
+                _channelSettings[i].DCcoupled = Imports.Coupling.DC;
                 _channelSettings[i].range = Imports.Range.Range_5V;
             }
 
