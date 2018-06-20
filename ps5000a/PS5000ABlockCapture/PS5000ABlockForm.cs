@@ -173,7 +173,7 @@ namespace PS5000A
                 if (handle > 0) {
                     _handle = handle;
 
-                    if (status == StatusCodes.PICO_POWER_SUPPLY_NOT_CONNECTED)
+                    if (status == StatusCodes.PICO_POWER_SUPPLY_NOT_CONNECTED || status == StatusCodes.PICO_USB3_0_DEVICE_NON_USB3_0_PORT)
                     {
                         status = Imports.ChangePowerSource(_handle, status);
                     }
@@ -197,7 +197,7 @@ namespace PS5000A
                     }
                     buttonOpen.Text = "Close";
                 }
-            }
+            }  
         }
 
         private void buttonStart_Click(object sender, EventArgs e)
