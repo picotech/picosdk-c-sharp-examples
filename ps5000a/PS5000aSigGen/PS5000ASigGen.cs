@@ -53,7 +53,7 @@ namespace PS5000ASigGen
             status = Imports.OpenUnit(out handle, null, Imports.DeviceResolution.PS5000A_DR_8BIT);
 
             // If handle is valid but device is USB powered, then the device power status will need to be changed
-            if (status == StatusCodes.PICO_POWER_SUPPLY_NOT_CONNECTED)
+            if (status == StatusCodes.PICO_POWER_SUPPLY_NOT_CONNECTED || status == StatusCodes.PICO_USB3_0_DEVICE_NON_USB3_0_PORT)
             {
                 status = Imports.ChangePowerSource(handle, status);
             }
@@ -64,7 +64,7 @@ namespace PS5000ASigGen
             }
             else
             {
-                // Do nothing - device has DC power connected
+                // Do nothing - device has DC power connected 
             }
 
             // Find max AWG Buffer Size
@@ -83,7 +83,7 @@ namespace PS5000ASigGen
             controls.Visible = true;
         }
 
-        //changes from signal generator to abitary waveform geerator
+        //changes from signal generator to abitary waveform generator
         private void SIGtoAWG_CheckedChanged(object sender, EventArgs e)
         {
             awgLabel.Visible = sigToAWG.Checked;
@@ -282,6 +282,11 @@ namespace PS5000ASigGen
         private void AWG_SIGGEN_FormClosing(object sender, FormClosingEventArgs e)
         {
             Imports.CloseUnit(handle);
+        }
+
+        private void startFrequencyLabel_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
