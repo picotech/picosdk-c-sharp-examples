@@ -81,15 +81,19 @@ namespace PS3000AImports
 		{
 			// Values for level threshold mode
 			//
-			Above,
-			Below,
-			Rising,
-			Falling,
-			RisingOrFalling,
+			Above,              // Using upper threshold
+            Below,              // Using upper threshold
+            Rising,             // Using upper threshold
+            Falling,            // Using upper threshold
+            RisingOrFalling,    // Using both thresholds
+            AboveLower,         // Using lower threshold
+            BelowLower,         // Using lower threshold
+            RisingLower,        // Using lower threshold
+            FallingLower,       // Using lower threshold
 
-			// Values for window threshold mode
-			//
-			Inside = Above,
+            // Values for window threshold mode
+            //
+            Inside = Above,
 			Outside = Below,
 			Enter = Rising,
 			Exit = Falling,
