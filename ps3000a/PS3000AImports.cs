@@ -748,6 +748,11 @@ namespace PS3000AImports
                                                                 out uint minArbitraryWaveformSize,
                                                                 out uint maxArbitraryWaveformSize);
 
-		#endregion
-	}
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps3000aNoOfStreamingValues")]
+        public static extern uint NoOfStreamingValues(
+                                                        short handle,
+                                                        out uint noOfValues);
+
+        #endregion
+    }
 }
