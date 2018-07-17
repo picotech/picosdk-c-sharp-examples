@@ -1,79 +1,217 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿/**************************************************************************
+ *
+ * Filename: PS3000ACSStreamingExample.cs
+ *
+ * Description:
+ *  This is a console-mode program that demonstrates how to use the
+ *  PicoScope 3000 Series (ps3000) driver functions. using .NET
+ *
+ * Supported PicoScope models:
+ *
+ *	PicoScope 3204
+ *	PicoScope 3205
+ *	PicoScope 3206
+ *	PicoScope 3224
+ *	PicoScope 3424
+ *	PicoScope 3425
+ *		
+ * Examples:
+ *   Collect a stream of data
+ *   
+ * Copyright © 2018 Pico Technology Ltd. See LICENSE file for terms.
+ *  
+ **************************************************************************/
+using System;
 using System.Threading;
-using System.Threading.Tasks;
-
 using PS3000Imports;
 
 namespace PS3000CSStreamingExample
 {
-  class PS3000CSStreamingExample
-  {
-    static void Main(string[] args)
+    class PS3000CSStreamingExample
     {
-      Console.WriteLine("PicoScope 3000 Series (ps3000) Driver C# Console Streaming Example Program");
-      
-      // Open unit and show splash screen
-      Console.WriteLine("\n\nOpening the device...");
+        private const int DualScope = 2;
+        private const int QuadScope = 4;
+        private const int MaxSamples = 1024;
+        private const int NumberOfSamples = 1000;
+        private const short OverSample = 1;
 
-      var ps3000 = new PS3000();
-      ps3000.Open();
-      Console.WriteLine(ps3000.Serial);
+        private static int _channelCount = 0;
+        private static int _samples = 0;
 
-      ps3000.SetEts(PS3000.EtsMode.Off, 0, 0);
-      ps3000.SetChannel(PS3000.Channel.ChannelA, true, PS3000.Coupling.AC, PS3000.Range.Range2V);
-      ps3000.SetChannel(PS3000.Channel.ChannelB, false, PS3000.Coupling.AC, PS3000.Range.Range20V);
-      ps3000.SetChannel(PS3000.Channel.ChannelC, false, PS3000.Coupling.AC, PS3000.Range.Range20V);
-      ps3000.SetChannel(PS3000.Channel.ChannelD, false, PS3000.Coupling.AC, PS3000.Range.Range20V);
-      ps3000.SetTrigger(PS3000.Channel.None, 0, PS3000.TriggerThresholdDirection.Falling, 0, 0);
+        private static short[] _bufferA;
+        private static short[] _bufferB;
+        private static short[] _bufferC;
+        private static short[] _bufferD;
 
-      const int numberOfSamples = 10000;
+        private static PS3000 ps3000 = new PS3000();
 
-      int nsInterval;
-      PS3000.TimeUnits timeUnits;
-      const short oversample = 0;
-      int maxSamples;
-      short timebase = 0;
-      while (!ps3000.GetTimebase(timebase, numberOfSamples, out nsInterval, out timeUnits, oversample, out maxSamples))
-        timebase++;
 
-      Console.WriteLine("Starting Stream");
-      ps3000.RunStreaming(10, 1000, 0);
-      //ps3000.RunBlock(numberOfSamples, timebase, oversample, out timeIndisposed);
-      Thread.Sleep(1000);
-      Console.WriteLine("Finished streaming");
-      var bufferA = new short[maxSamples];
-      var bufferB = new short[maxSamples];
-      var bufferC = new short[maxSamples];
-      var bufferD = new short[maxSamples];
-      short overflows;
-      var samples = ps3000.GetValues(bufferA, bufferB, bufferC, bufferD, out overflows, numberOfSamples);
-      ps3000.Close();
+        /// <summary>
+        /// Application entry point
+        /// </summary>
+        /// <param name="args"></param>
+        static void Main(string[] args)
+        {
+            Console.WriteLine("PicoScope 3000 Series (ps3000) Driver C# Streaming Example Program\n");
 
-      for (var i = 0; i < samples; i++)
-        Console.WriteLine($"{bufferA[i]}\t {bufferB[i]}\t {bufferC[i]}\t {bufferD[i]}");
+            if (SetUpDevice())
+            {
+                CollectData();
+                DisplayData();
+                CloseDevice();
+            }
 
-      var resolution = Math.Log(oversample) / Math.Log(4);
-      Console.WriteLine($"nsInterval {nsInterval}\t numberOfSamplesRequested {numberOfSamples}\t numberOfSamplesReceived {samples}\t timebase {timebase}\t maxSamples {maxSamples}");
-      Console.WriteLine(resolution);
-      Console.ReadKey();
-      /*if ((handle = PS3000.OpenUnit()) <= 0)
-      {
-        Console.WriteLine("Unable to open device");
-        Console.WriteLine("Error code : {0}", handle);
-        Console.ReadKey();
-      }
-      else
-      {
-        Console.WriteLine("Device opened successfully\n");
+            Console.ReadKey();
+        }
 
-        PS3000CSStreamingExample streamingExample = new PS3000CSStreamingExample(handle);
-        streamingExample.Run();
+        /// <summary>
+        /// Intialise and setup device
+        /// </summary>
+        private static bool SetUpDevice()
+        {
+            bool isDeviceOpened = OpenDevice();
 
-        PS3000.CloseUnit(handle);
-      }*/
+            if (isDeviceOpened)
+            {               
+                SetChannels();
+                ps3000.SetTrigger(PS3000.Channel.None, 0, 0, 0, 0);
+                ps3000.SetEts(PS3000.EtsMode.Off, 0, 0);
+            }
+
+            return isDeviceOpened;
+        }
+
+        /// <summary>
+        /// Open the device
+        /// </summary>
+        /// <returns></returns>
+        private static bool OpenDevice()
+        {
+            bool isDeviceOpened = false;
+
+            Console.WriteLine("Opening the device...\n");
+
+            isDeviceOpened = ps3000.Open();
+
+            if (isDeviceOpened)
+            {
+                Console.WriteLine("Device opened successfully\n");
+
+                // Display device info
+                Console.WriteLine($"Driver Version:   { ps3000.DriverVersion }");
+                Console.WriteLine($"USB Version:      { ps3000.UsbVersion }");
+                Console.WriteLine($"Hardware Version: { ps3000.HardwareVersion }");
+                Console.WriteLine($"Variant Info:     { ps3000.VariantInfo }");
+                Console.WriteLine($"Serial:           { ps3000.Serial }");
+                Console.WriteLine($"Cal Date:         { ps3000.KernelDriverVersion }");
+                Console.WriteLine($"Hardware Version: { ps3000.HardwareVersion} \n");
+            }
+            else
+            {
+                Console.WriteLine("Unable to open device\n");
+            }
+
+            return isDeviceOpened;
+        }
+
+        /// <summary>
+        /// Initialise device input channels
+        /// </summary>
+        private static void SetChannels()
+        {
+            _channelCount = int.Parse(ps3000.VariantInfo[1].ToString());
+
+            if (_channelCount == DualScope)
+            {
+                ps3000.SetChannel(PS3000.Channel.ChannelA, 1, PS3000.Coupling.DC, PS3000.Range.Range2V);
+                ps3000.SetChannel(PS3000.Channel.ChannelB, 0, PS3000.Coupling.DC, PS3000.Range.Range20V);                
+            }
+            else if (_channelCount == QuadScope)
+            {
+                ps3000.SetChannel(PS3000.Channel.ChannelA, 1, PS3000.Coupling.DC, PS3000.Range.Range2V);
+                ps3000.SetChannel(PS3000.Channel.ChannelB, 0, PS3000.Coupling.DC, PS3000.Range.Range20V);
+                ps3000.SetChannel(PS3000.Channel.ChannelC, 0, PS3000.Coupling.DC, PS3000.Range.Range20V);
+                ps3000.SetChannel(PS3000.Channel.ChannelD, 0, PS3000.Coupling.DC, PS3000.Range.Range20V);
+            }
+            else
+            {
+                Console.WriteLine("Error: Invalid Number of Channels\n");
+            }
+        }        
+
+        /// <summary>
+        /// Collect data from device
+        /// </summary>
+        private static void CollectData()
+        {
+            Console.WriteLine("Collecting Device Data...\n");
+
+            Console.WriteLine("Starting Streaming Capture");
+
+            ps3000.RunStreaming(10, NumberOfSamples, 0);            
+
+            Thread.Sleep(1000);
+
+            Console.WriteLine("Finished Streaming Capture\n");
+
+            _bufferA = new short[MaxSamples];
+            _bufferB = new short[MaxSamples];
+            _bufferC = new short[MaxSamples];
+            _bufferD = new short[MaxSamples];
+
+            _samples = ps3000.GetValues(_bufferA,
+                                        _bufferB,
+                                        _bufferC,
+                                        _bufferD,
+                                        out short overflows,
+                                        MaxSamples);            
+        }
+
+        /// <summary>
+        /// Display collected data
+        /// </summary>
+        private static void DisplayData()
+        {
+            if (_channelCount == DualScope)
+            {
+                Console.WriteLine($"ChA\tChB");
+                Console.WriteLine($"---\t---");
+
+
+                for (var i = 0; i < _samples; i++)
+                {
+                    Console.WriteLine($"{ _bufferA[i] }\t{ _bufferB[i] }");
+                }
+
+            }
+            else if (_channelCount == QuadScope)
+            {
+                Console.WriteLine($"ChA\tChB\tChC\tChD");
+
+                for (var i = 0; i < _samples; i++)
+                {
+                    Console.WriteLine($"{ _bufferA[i] }\t{ _bufferB[i] }\t{ _bufferC[i] }\t{ _bufferD[i] }");
+                }
+            }
+
+            Console.WriteLine($"\nStreaming Mode Statistics");
+            Console.WriteLine($"---------------------");
+
+            Console.WriteLine($"Requested Samples:\t { NumberOfSamples }");
+            Console.WriteLine($"Received Samples:\t { _samples }");
+            Console.WriteLine($"Available Samples:\t { MaxSamples }");
+        }
+
+        /// <summary>
+        /// Stop and Close the device
+        /// </summary>
+        private static void CloseDevice()
+        {
+            ps3000.Stop();
+            ps3000.Close();
+        }
     }
-  }
 }
+
+
+
