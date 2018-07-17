@@ -81,15 +81,19 @@ namespace PS3000AImports
 		{
 			// Values for level threshold mode
 			//
-			Above,
-			Below,
-			Rising,
-			Falling,
-			RisingOrFalling,
+			Above,              // Using upper threshold
+            Below,              // Using upper threshold
+            Rising,             // Using upper threshold
+            Falling,            // Using upper threshold
+            RisingOrFalling,    // Using both thresholds
+            AboveLower,         // Using lower threshold
+            BelowLower,         // Using lower threshold
+            RisingLower,        // Using lower threshold
+            FallingLower,       // Using lower threshold
 
-			// Values for window threshold mode
-			//
-			Inside = Above,
+            // Values for window threshold mode
+            //
+            Inside = Above,
 			Outside = Below,
 			Enter = Rising,
 			Exit = Falling,
@@ -234,6 +238,12 @@ namespace PS3000AImports
             PS3000A_DUAL,
             PS3000A_QUAD,
             PS3000A_MAX_INDEX_MODES
+        }
+
+        public enum Coupling : int
+        {
+            AC,
+            DC
         }
 
         #endregion
@@ -453,7 +463,7 @@ namespace PS3000AImports
 												short handle,
 												Channel channel,
 												short enabled,
-												short dc,
+												Coupling dc,
 												Range range,
                                                 float analogueOffset);
 
@@ -738,6 +748,11 @@ namespace PS3000AImports
                                                                 out uint minArbitraryWaveformSize,
                                                                 out uint maxArbitraryWaveformSize);
 
-		#endregion
-	}
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps3000aNoOfStreamingValues")]
+        public static extern uint NoOfStreamingValues(
+                                                        short handle,
+                                                        out uint noOfValues);
+
+        #endregion
+    }
 }

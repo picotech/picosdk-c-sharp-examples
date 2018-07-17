@@ -15,7 +15,7 @@
  *     Collect a stream of data immediately
  *     Collect a stream of data when a trigger event occurs
  *    
- *  Copyright (C) 2015 - 2017 Pico Technology Ltd. See LICENSE file for terms.
+ *  Copyright © 2015-2018 Pico Technology Ltd. See LICENSE file for terms.
  *
  ******************************************************************************/
 
@@ -60,8 +60,8 @@ namespace PS4000AStreamingConsole
 
         /****************************************************************************
         * Callback
-        * used by PS4000a data streaming collection calls, on receipt of data.
-        * used to set global flags etc checked by user routines
+        * Used by PS4000a data streaming collection calls, on receipt of data.
+        * Used to set global flags etc checked by user routines
         ****************************************************************************/
         void StreamingCallback(short handle,
                                 int noOfSamples,
@@ -313,7 +313,7 @@ namespace PS4000AStreamingConsole
 
                     if (range != 99)
                     {
-                        status = Imports.SetChannel(_handle, Imports.Channel.CHANNEL_A + ch, 1, 0, (Imports.Range)range, 0);
+                        status = Imports.SetChannel(_handle, Imports.Channel.CHANNEL_A + ch, 1, Imports.Coupling.DC, (Imports.Range)range, 0);
                         _channelSettings[ch].enabled = true;
                         _channelSettings[ch].range = (Imports.Range)range;
                         Console.WriteLine(" = {0} mV", inputRanges[range]);
@@ -321,7 +321,7 @@ namespace PS4000AStreamingConsole
                     }
                     else
                     {
-                        status = Imports.SetChannel(_handle, Imports.Channel.CHANNEL_A + ch, 0, 0, Imports.Range.Range_1V, 0);
+                        status = Imports.SetChannel(_handle, Imports.Channel.CHANNEL_A + ch, 0, Imports.Coupling.DC, Imports.Range.Range_1V, 0);
                         _channelSettings[ch].enabled = false;
                         Console.WriteLine("Channel Switched off");
 
@@ -391,7 +391,7 @@ namespace PS4000AStreamingConsole
 
                 for (int ch = 0; ch < _channelCount; ch++)
                 {
-                    Imports.SetChannel(_handle, Imports.Channel.CHANNEL_A + ch, 1, 0, Imports.Range.Range_5V, 0);
+                    Imports.SetChannel(_handle, Imports.Channel.CHANNEL_A + ch, 1, Imports.Coupling.DC, Imports.Range.Range_5V, 0);
                     _channelSettings[ch].enabled = true;
                     _channelSettings[ch].range = Imports.Range.Range_5V;
                     Console.WriteLine("Channel {0}: 5V", (char)('A' + ch));
@@ -399,7 +399,7 @@ namespace PS4000AStreamingConsole
             }
         }
 
-        /****************************************************************************
+    /****************************************************************************
     * CollectStreamingImmediate
     *  this function demonstrates how to collect a stream of data
     *  from the unit (start collecting immediately)
@@ -442,7 +442,7 @@ namespace PS4000AStreamingConsole
 
         /*************************************************************************************
         * Run
-        *  main menu
+        *  Main menu
         *  
         **************************************************************************************/
         public void Run()
@@ -497,8 +497,8 @@ namespace PS4000AStreamingConsole
 
         static void Main()
         {
-            Console.WriteLine("C# PS4000A driver streaming example program");
-            Console.WriteLine("Version 1.2\n");
+            Console.WriteLine("PicoScope 4000 Series (ps4000a) Driver Streaming Data Collection Example Program.");
+            Console.WriteLine("Version 1.3\n");
 
             Console.WriteLine("Enumerating devices...\n");
 

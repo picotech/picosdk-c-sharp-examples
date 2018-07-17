@@ -10,7 +10,7 @@
  *    Collect a stream of data immediately
  *    Collect a stream of data when a trigger event occurs
  *    
- * Copyright (C) 2015 - 2017 Pico Technology Ltd. See LICENSE file for terms.
+ * Copyright (C) 2015-2018 Pico Technology Ltd. See LICENSE file for terms.
  *
  **************************************************************************/
 
@@ -329,7 +329,7 @@ namespace PS5000AStreamingConsole
 
                     if (range != 99)
                     {
-                        status = Imports.SetChannel(_handle, Imports.Channel.ChannelA + ch, 1, 0, (Imports.Range)range, 0);
+                        status = Imports.SetChannel(_handle, Imports.Channel.ChannelA + ch, 1, Imports.Coupling.PS5000A_DC, (Imports.Range)range, 0);
                         _channelSettings[ch].enabled = true;
                         _channelSettings[ch].range = (Imports.Range)range;
                         Console.WriteLine(" = {0} mV", inputRanges[range]);
@@ -339,7 +339,7 @@ namespace PS5000AStreamingConsole
                     }
                     else
                     {
-                        status = Imports.SetChannel(_handle, Imports.Channel.ChannelA + ch, 0, 0, Imports.Range.Range_1V, 0);
+                        status = Imports.SetChannel(_handle, Imports.Channel.ChannelA + ch, 0, Imports.Coupling.PS5000A_DC, Imports.Range.Range_1V, 0);
                         _channelSettings[ch].enabled = false;
                         Console.WriteLine("Channel Switched off");
 

@@ -6,7 +6,7 @@
  *   This file defines an object to hold an array in memory when 
  *   registering a data buffer with a driver.
  *   
- * Copyright (C) 2017 Pico Technology Ltd. See LICENSE file for terms.
+ * Copyright © 2017-2018 Pico Technology Ltd. See LICENSE file for terms.
  *
  ****************************************************************************/
 
