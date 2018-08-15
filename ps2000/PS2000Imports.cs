@@ -305,8 +305,8 @@ namespace PS2000Imports
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps2000_get_streaming_last_values")]
         public static extern short ps2000_get_streaming_last_values(
-                                                short handle,
-                                                ps2000StreamingReady lpGetOverviewBuffersMaxMin);
+                                                                    short handle,
+                                                                    ps2000StreamingReady lpGetOverviewBuffersMaxMin);
 
 		[DllImport(_DRIVER_FILENAME, EntryPoint = "ps2000_stop")]
 		public static extern short Stop(short handle);
@@ -325,12 +325,12 @@ namespace PS2000Imports
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps2000SetAdvTriggerChannelDirections")]
 		public static extern short SetTriggerChannelDirections(
-												short handle,
-												ThresholdDirection channelA,
-												ThresholdDirection channelB,
-            ThresholdDirection channelC,
-                                                ThresholdDirection channelD,
-                                                ThresholdDirection ext);
+												                short handle,
+												                ThresholdDirection channelA,
+												                ThresholdDirection channelB,
+                                                                ThresholdDirection channelC,
+                                                                ThresholdDirection channelD,
+                                                                ThresholdDirection ext);
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps2000_get_timebase")]
         public static extern short GetTimebase(
@@ -400,10 +400,10 @@ namespace PS2000Imports
 
 		[DllImport(_DRIVER_FILENAME, EntryPoint = "ps2000_get_unit_info")]
 		public static extern short GetUnitInfo(
-            short handle, 
-            StringBuilder infoString, 
-            short stringLength, 
-            short info);
+                                                short handle, 
+                                                StringBuilder infoString, 
+                                                short stringLength, 
+                                                short info);
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps2000_set_sig_gen_built_in")]
         public static extern short SetSigGenBuiltIn(short handle,
