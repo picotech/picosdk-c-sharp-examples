@@ -118,8 +118,8 @@ namespace PS5000AImports
         {
             None = 0,
             Aggregate = 1,
-            Average = 4,
-            Decimate = 2
+            Decimate = 2,
+            Average = 4
         }
 
         public enum DeviceResolution : uint
