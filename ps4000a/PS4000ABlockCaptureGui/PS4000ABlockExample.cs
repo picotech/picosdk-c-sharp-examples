@@ -160,11 +160,11 @@ namespace PS4000ABlockCaptureGui
 
             for (int ch = 0; ch < numberOfChannels; ch++)
             {
-                 status = Imports.SetChannel(handle,                                         // the device handle
-                                            Imports.Channel.CHANNEL_A + ch,                  // the channel you wish to set
-                                            (short)(combobox_values[ch] != (Imports.Range)(-1) ? 1 : 0),                          // is enabled if off is not selected
-                                            (short)1,                                       // always DC coupled
-                                            combobox_values[ch] != (Imports.Range)(-1) ? combobox_values[ch] : (Imports.Range)(0),                            // -1 is not a correct range will cause an error
+                 status = Imports.SetChannel(handle,                                                                                // the device handle
+                                            Imports.Channel.CHANNEL_A + ch,                                                         // the channel you wish to set
+                                            (short)(combobox_values[ch] != (Imports.Range)(-1) ? 1 : 0),                            // is enabled if off is not selected
+                                            Imports.Coupling.DC,
+                                            combobox_values[ch] != (Imports.Range)(-1) ? combobox_values[ch] : (Imports.Range)(0),  // -1 is not a correct range will cause an error
                                              0); // no analogue offset 
 
                  if (combobox_values[ch] != (Imports.Range)(-1))
