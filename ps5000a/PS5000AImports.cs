@@ -92,12 +92,6 @@ namespace PS5000AImports
 			None = Rising,
 		}
 
-		public enum DownSamplingMode : uint
-		{
-			None,
-			Aggregate
-		}
-
 		public enum PulseWidthType : uint
 		{
 			None,
@@ -118,8 +112,8 @@ namespace PS5000AImports
         {
             None = 0,
             Aggregate = 1,
-            Average = 4,
-            Decimate = 2
+            Decimate = 2,
+            Average = 4
         }
 
         public enum DeviceResolution : uint
@@ -429,7 +423,7 @@ namespace PS5000AImports
 				                                uint startIndex,
 				                                ref uint noOfSamples,
 				                                uint downSampleRatio,
-				                                DownSamplingMode downSampleRatioMode,
+				                                RatioMode downSampleRatioMode,
 				                                uint segmentIndex,
 				                                out short overflow);
 
@@ -516,7 +510,7 @@ namespace PS5000AImports
 			                                        uint fromSegmentIndex,
 			                                        uint toSegmentIndex,
                                                     uint downSampleRatio,
-                                                    DownSamplingMode downSampleRatioMode,
+                                                    RatioMode downSampleRatioMode,
 			                                        short[] overflow);
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps5000aChangePowerSource")]
