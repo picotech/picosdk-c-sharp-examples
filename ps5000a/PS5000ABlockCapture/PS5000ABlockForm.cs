@@ -237,8 +237,9 @@ namespace PS5000A
                 status = Imports.SetDataBuffers(_handle, Imports.Channel.ChannelA, maxBuffers, minBuffers, (int)sampleCount, 0, Imports.RatioMode.None);
                 textMessage.AppendText("BlockData\n");
 
-            /*  find the maximum number of samples, the time interval (in timeUnits),
-             *		 the most suitable time units, and the maximum _oversample at the current _timebase*/
+            /*Find the maximum number of samples and the time interval(in nanoseconds).
+            * If the function returns PICO_OK, the timebase will be used.
+            */
             int timeInterval;
             int maxSamples;
             while (Imports.GetTimebase(_handle, _timebase, (int)sampleCount, out timeInterval, out maxSamples, 0) != 0)
@@ -281,7 +282,8 @@ namespace PS5000A
             if (_ready)
             {
                 short overflow;
-                status = Imports.GetValues(_handle, 0, ref sampleCount, 1, Imports.DownSamplingMode.None, 0, out overflow);
+                status = Imports.GetValues(_handle, 0, ref sampleCount, 1, Imports.RatioMode.None, 0, out overflow);
+
                 if (status == (short)StatusCodes.PICO_OK)
                 {
                     textMessage.AppendText("Have Data\n");
