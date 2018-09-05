@@ -19,7 +19,7 @@
  *    Collect data in fast/compatible streaming mode without trigger
  *    Collect data in fast/compatible streaming mode with trigger
  *    
- * Copyright (C) 2014 - 2017 Pico Technology Ltd. See LICENSE file for terms.  
+ * Copyright © 2014-2018 Pico Technology Ltd. See LICENSE file for terms.  
  *
  *****************************************************************************/
 
@@ -341,6 +341,9 @@ namespace PS2000CSConsoleExample
          ****************************************************************************/
         unsafe void StreamDataHandler(bool faststreaming)
         {
+            short status = 0;
+            short previousBufferOverrun = 0;
+
             //Check if fast streaming has been selected and if device is compatible        
             if ((!_hasFastStreaming && faststreaming))
             {
@@ -397,6 +400,13 @@ namespace PS2000CSConsoleExample
                 {
                     Imports.ps2000_get_streaming_last_values(_handle, StreamingCallback);
 
+                    status = Imports.OverviewBufferStatus(_handle, out previousBufferOverrun);
+
+                    if (previousBufferOverrun > 0)
+                    {
+                        Console.WriteLine("Overview buffer overrun detected.");
+                    }
+
                     if (previousSamples != _totalSampleCount)
                     {
                         sampleCount = _totalSampleCount - previousSamples;
@@ -446,7 +456,6 @@ namespace PS2000CSConsoleExample
                 short overflow;
                 short sampleInterval_ms = 10;
                 short windowed = 0;
-                short status = 0;
                 int maxSamples = COMPATIBLE_STREAMING_MAX_SAMPLES; // Maximum for this mode of capture
                 uint totalSamples = 0;
                 uint previousTotal = 0;
