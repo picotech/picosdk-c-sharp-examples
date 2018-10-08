@@ -58,6 +58,8 @@ namespace PS4000AStreamingConsole
         public Imports.Range _firstRange;
         public Imports.Range _lastRange;
 
+        private string StreamFile = "stream.txt";
+
         /****************************************************************************
         * Callback
         * Used by PS4000a data streaming collection calls, on receipt of data.
@@ -190,22 +192,27 @@ namespace PS4000AStreamingConsole
 
             Console.WriteLine("Streaming data...Press a key to abort");
 
-            TextWriter writer = new StreamWriter("stream.txt", false);
+            // Build File Header
+            var sb = new StringBuilder();
+            string[] heading = { "Channel", "Max ADC", "Max mV", "Min ADC", "Min mV" };
 
+            sb.AppendLine("For each of the enabled Channels, results shown are....");
+            sb.AppendLine("Maximum Aggregated value ADC Count & mV, Minimum Aggregated value ADC Count & mV");
+            sb.AppendLine();
 
-            writer.Write("For each of the enabled Channels, results shown are....");
-            writer.WriteLine();
-            writer.WriteLine("Maximum Aggregated value ADC Count & mV, Minimum Aggregated value ADC Count & mV");
-            writer.WriteLine();
-
-            for (int ch = 0; ch < _channelCount; ch++)
+            for (int i = 0; i < _channelCount; i++)
             {
-                if (_channelSettings[ch].enabled)
+                if (_channelSettings[i].enabled)
                 {
-                    writer.Write("Ch  Max ADC    Max mV   Min ADC    Min mV   ");
+                    sb.AppendFormat("{0,10} {1,10} {2,10} {3,10} {4,10}",
+                                    heading[0],
+                                    heading[1],
+                                    heading[2],
+                                    heading[3],
+                                    heading[4]);
                 }
             }
-            writer.WriteLine();
+            sb.AppendLine();
 
             while (!_autoStop && !Console.KeyAvailable)
             {
@@ -231,22 +238,23 @@ namespace PS4000AStreamingConsole
                         Console.Write("\tTrig at Index {0}", triggeredAt);
                     }
 
+                    // Build File Body
                     for (uint i = _startIndex; i < (_startIndex + _sampleCount); i++)
                     {
                         for (int ch = 0; ch < _channelCount * 2; ch += 2)
                         {
                             if (_channelSettings[ch / 2].enabled)
                             {
-                                writer.Write("Ch{0} {1,7}   {2,7}   {3,7}   {4,7}   ",
-                                                            (char)('A' + (ch / 2)),
-                                                            appBuffersPinned[ch].Target[i],
-                                                            adc_to_mv(appBuffersPinned[ch].Target[i], (int)_channelSettings[(int)(Imports.Channel.CHANNEL_A + (ch / 2))].range),
-                                                            appBuffersPinned[ch + 1].Target[i],
-                                                            adc_to_mv(appBuffersPinned[ch + 1].Target[i], (int)_channelSettings[(int)(Imports.Channel.CHANNEL_A + (ch / 2))].range));
+                                sb.AppendFormat("{0,10} {1,10} {2,10} {3,10} {4,10}",
+                                                (char)('A' + (ch / 2)),
+                                                appBuffersPinned[ch].Target[i],
+                                                adc_to_mv(appBuffersPinned[ch].Target[i], (int)_channelSettings[(int)(Imports.Channel.CHANNEL_A + (ch / 2))].range),
+                                                appBuffersPinned[ch + 1].Target[i],
+                                                adc_to_mv(appBuffersPinned[ch + 1].Target[i], (int)_channelSettings[(int)(Imports.Channel.CHANNEL_A + (ch / 2))].range));
                             }
                         }
 
-                        writer.WriteLine();
+                        sb.AppendLine();
                     }
                 }
             }
@@ -257,8 +265,14 @@ namespace PS4000AStreamingConsole
             }
 
             Imports.Stop(_handle);
-            writer.Close();
 
+            // Print contents to file
+            using (TextWriter writer = new StreamWriter(StreamFile, false))
+            {
+                writer.Write(sb.ToString());
+                writer.Close();
+            }
+            
             if (!_autoStop)
             {
                 Console.WriteLine();

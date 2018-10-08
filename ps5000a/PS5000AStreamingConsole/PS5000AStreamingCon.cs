@@ -61,6 +61,8 @@ namespace PS5000AStreamingConsole
         public Imports.Range _firstRange = Imports.Range.Range_10mV;
         public Imports.Range _lastRange = Imports.Range.Range_20V;
 
+        private string StreamFile = "stream.txt";
+
         /****************************************************************************
         * Callback
         * Used by ps5000a data streaming collection calls, on receipt of data.
@@ -88,7 +90,7 @@ namespace PS5000AStreamingConsole
 
             if (_sampleCount != 0)
             {
-                for (uint ch = 0; ch < _channelCount * 2; ch += 2)
+                for (int ch = 0; ch < _channelCount * 2; ch += 2)
                 {
                     if (_channelSettings[(int)(Imports.Channel.ChannelA + (ch / 2))].enabled)
                     {
@@ -183,23 +185,23 @@ namespace PS5000AStreamingConsole
 
             Console.WriteLine("Streaming data...Press a key to abort");
 
-            TextWriter writer = new StreamWriter("stream.txt", false);
+            // Build File Header
+            var sb = new StringBuilder();
+            sb.AppendFormat("For each of the active channels, results shown are....");
+            sb.AppendLine();
+            sb.AppendLine("Maximum Aggregated value ADC Count & mV, Minimum Aggregated value ADC Count & mV");
+            sb.AppendLine();
 
-
-            writer.Write("For each of the enabled Channels, results shown are....");
-            writer.WriteLine();
-            writer.WriteLine("Maximum Aggregated value ADC Count & mV, Minimum Aggregated value ADC Count & mV");
-            writer.WriteLine();
+            string[] heading = { "Channel", "Max ADC", "Max mV", "Min ADC", "Min mV" };
 
             for (int ch = 0; ch < _channelCount; ch++)
             {
                 if (_channelSettings[ch].enabled)
                 {
-                    writer.Write("Ch  Max ADC    Max mV   Min ADC    Min mV   ");
+                    sb.AppendFormat("{0,10} {1,10} {2,10} {3,10} {4,10}", heading[0], heading[1], heading[2], heading[3], heading[4]);
                 }
             }
-
-            writer.WriteLine();
+            sb.AppendLine();
 
             while (!_autoStop && !Console.KeyAvailable)
             {
@@ -225,21 +227,22 @@ namespace PS5000AStreamingConsole
                         Console.Write("\tTrig at Index {0}", triggeredAt);
                     }
 
+                    // Build File Body
                     for (uint i = _startIndex; i < (_startIndex + _sampleCount); i++)
                     {
-                        for (uint ch = 0; ch < _channelCount * 2; ch += 2)
+                        for (int ch = 0; ch < _channelCount * 2; ch +=2)
                         {
                             if (_channelSettings[ch / 2].enabled)
                             {
-                                writer.Write("Ch{0} {1,7}   {2,7}   {3,7}   {4,7}   ",
-                                                            (char)('A' + (ch / 2)),
-                                                            appBuffersPinned[ch].Target[i],
-                                                            adc_to_mv(appBuffersPinned[ch].Target[i], (int)_channelSettings[(int)(Imports.Channel.ChannelA + (ch / 2))].range),
-                                                            appBuffersPinned[ch + 1].Target[i],
-                                                            adc_to_mv(appBuffersPinned[ch + 1].Target[i], (int)_channelSettings[(int)(Imports.Channel.ChannelA + (ch / 2))].range));
+                                sb.AppendFormat("{0,10} {1,10} {2,10} {3,10} {4,10}",
+                                                (char)('A' + (ch / 2)),
+                                                appBuffersPinned[ch].Target[i],
+                                                adc_to_mv(appBuffersPinned[ch].Target[i], (int)_channelSettings[(int)(Imports.Channel.ChannelA + (ch / 2))].range),
+                                                appBuffersPinned[ch + 1].Target[i],
+                                                adc_to_mv(appBuffersPinned[ch + 1].Target[i], (int)_channelSettings[(int)(Imports.Channel.ChannelA + (ch / 2))].range));
                             }
                         }
-                        writer.WriteLine();
+                        sb.AppendLine();
                     }
                 }
             }
@@ -250,7 +253,13 @@ namespace PS5000AStreamingConsole
             }
 
             Imports.Stop(_handle);
-            writer.Close();
+
+            // Print contents to file
+            using (TextWriter writer = new StreamWriter(StreamFile, false))
+            {
+                writer.Write(sb.ToString());
+                writer.Close();
+            }
 
             if (!_autoStop)
             {
@@ -305,7 +314,7 @@ namespace PS5000AStreamingConsole
 
             do
             {
-                for (uint ch = 0; ch < _channelCount; ch++)
+                for (int ch = 0; ch < _channelCount; ch++)
                 {
                     Console.WriteLine("");
                     uint range = 8;
@@ -407,7 +416,7 @@ namespace PS5000AStreamingConsole
 
                 Imports.Range voltageRange = Imports.Range.Range_5V;
 
-                for (uint ch = 0; ch < _channelCount; ch++)
+                for (int ch = 0; ch < _channelCount; ch++)
                 {
                     Imports.SetChannel(_handle, Imports.Channel.ChannelA + ch, 1, Imports.Coupling.PS5000A_DC, voltageRange, 0);
                     _channelSettings[ch].enabled = true;

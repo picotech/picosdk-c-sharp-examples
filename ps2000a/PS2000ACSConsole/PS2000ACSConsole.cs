@@ -20,17 +20,17 @@
  *    Collect a stream of data immediately
  *    Collect a stream of data when a trigger event occurs
  *    
- * Copyright © 2011-2017 Pico Technology Ltd. See LICENSE file for terms.    
+ * Copyright © 2011-2018 Pico Technology Ltd. See LICENSE file for terms.    
  *    
  *******************************************************************************/
 
-using System;
-using System.IO;
-using System.Threading;
-
-using PS2000AImports;
 using PicoPinnedArray;
 using PicoStatus;
+using PS2000AImports;
+using System;
+using System.IO;
+using System.Text;
+using System.Threading;
 
 namespace PS2000ACSConsole
 {
@@ -134,7 +134,7 @@ namespace PS2000ACSConsole
 
             if (_sampleCount != 0)
             {
-                switch ((Imports.Mode) pVoid)
+                switch ((Imports.Mode)pVoid)
                 {
                     case Imports.Mode.ANALOGUE:
 
@@ -187,7 +187,7 @@ namespace PS2000ACSConsole
         {
             for (int i = 0; i < _channelCount; i++) // reset channels to most recent settings
             {
-                uint status = Imports.SetChannel(_handle, 
+                uint status = Imports.SetChannel(_handle,
                                    Imports.Channel.ChannelA + i,
                                    (short)(_channelSettings[(int)(Imports.Channel.ChannelA + i)].enabled ? 1 : 0),
                                    _channelSettings[(int)(Imports.Channel.ChannelA + i)].couplingType,
@@ -209,7 +209,7 @@ namespace PS2000ACSConsole
             short enabled = 1;
 
             // Set logic threshold
-            logicLevel = (short) ((logicVoltage / maxLogicVoltage) * Imports.MaxLogicLevel);
+            logicLevel = (short)((logicVoltage / maxLogicVoltage) * Imports.MaxLogicLevel);
 
             // Enable Digital ports
             for (port = Imports.Channel.PS2000A_DIGITAL_PORT0; port < Imports.Channel.PS2000A_DIGITAL_PORT2; port++)
@@ -244,10 +244,10 @@ namespace PS2000ACSConsole
             uint status;
 
             // Disable analogue ports
-            for (int i = 0; i < _channelCount; i++) 
+            for (int i = 0; i < _channelCount; i++)
             {
                 status = Imports.SetChannel(_handle, Imports.Channel.ChannelA + i, 0, 0, 0, 0);
-                                  
+
             }
         }
 
@@ -324,7 +324,7 @@ namespace PS2000ACSConsole
 
             int timeIndisposed;
             uint status = 0; // PICO_OK
-           
+
 
             if (mode == Imports.Mode.ANALOGUE || mode == Imports.Mode.MIXED)
             {
@@ -389,7 +389,7 @@ namespace PS2000ACSConsole
                 Thread.Sleep(100);
             }
 
-            if (Console.KeyAvailable) 
+            if (Console.KeyAvailable)
             {
                 Console.ReadKey(true); // clear the key
             }
@@ -405,24 +405,24 @@ namespace PS2000ACSConsole
                 Console.WriteLine(text);
                 Console.WriteLine();
 
-                 if (mode == Imports.Mode.ANALOGUE || mode == Imports.Mode.MIXED)
-                 {
-                     Console.WriteLine("Values are in {0}\n", (_scaleVoltages) ? ("mV") : ("ADC Counts"));
+                if (mode == Imports.Mode.ANALOGUE || mode == Imports.Mode.MIXED)
+                {
+                    Console.WriteLine("Values are in {0}\n", (_scaleVoltages) ? ("mV") : ("ADC Counts"));
 
-                     for (int ch = 0; ch < _channelCount; ch++)
-                     {
-                         Console.Write("Channel{0}                 ", (char)('A' + ch));
-                     }
+                    for (int ch = 0; ch < _channelCount; ch++)
+                    {
+                        Console.Write("Channel{0}                 ", (char)('A' + ch));
+                    }
 
-                     Console.WriteLine();
-                 }
+                    Console.WriteLine();
+                }
 
-                 if (mode == Imports.Mode.DIGITAL || mode == Imports.Mode.MIXED)
-                 {
-                     Console.Write("DIGITAL VALUE");
-                 }
+                if (mode == Imports.Mode.DIGITAL || mode == Imports.Mode.MIXED)
+                {
+                    Console.Write("DIGITAL VALUE");
+                }
 
-                 Console.WriteLine();
+                Console.WriteLine();
 
 
                 for (int i = offset; i < offset + 10; i++)
@@ -452,40 +452,7 @@ namespace PS2000ACSConsole
 
                 if (mode == Imports.Mode.ANALOGUE || mode == Imports.Mode.MIXED)
                 {
-                    sampleCount = Math.Min(sampleCount, BUFFER_SIZE);
-                    TextWriter writer = new StreamWriter(BlockFile, false);
-                    writer.Write("For each of the {0} Channels, results shown are....", _channelCount);
-                    writer.WriteLine();
-                    writer.WriteLine("Time interval Maximum Aggregated value ADC Count & mV, Minimum Aggregated value ADC Count & mV");
-                    writer.WriteLine();
-
-                    for (int i = 0; i < _channelCount; i++)
-                    {
-                        writer.Write("Time  Ch  Max ADC    Max mV   Min ADC    Min mV   ");
-                    }
-                    writer.WriteLine();
-
-                    for (int i = 0; i < sampleCount; i++)
-                    {
-                        for (int ch = 0; ch < _channelCount; ch++)
-                        {
-                            writer.Write("{0,5}  ", (i * timeInterval));
-
-                            if (_channelSettings[ch].enabled)
-                            {
-                                writer.Write("Ch{0} {1,7}   {2,7}   {3,7}   {4,7}   ",
-                                               (char)('A' + ch),
-                                               maxPinned[ch].Target[i],
-                                               adc_to_mv(maxPinned[ch].Target[i],
-                                                         (int)_channelSettings[(int)(Imports.Channel.ChannelA + ch)].range),
-                                               minPinned[ch].Target[i],
-                                               adc_to_mv(minPinned[ch].Target[i],
-                                                         (int)_channelSettings[(int)(Imports.Channel.ChannelA + ch)].range));
-                            }
-                        }
-                        writer.WriteLine();
-                    }
-                    writer.Close();
+                    PrintBlockFile(Math.Min(sampleCount, BUFFER_SIZE), timeInterval, minPinned, maxPinned);
                 }
             }
             else
@@ -523,6 +490,61 @@ namespace PS2000ACSConsole
                         p.Dispose();
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Print the block data capture to file 
+        /// </summary>
+        private void PrintBlockFile(uint sampleCount, int timeInterval, PinnedArray<short>[] minPinned, PinnedArray<short>[] maxPinned)
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendFormat("For each of the {0} Channels, results shown are....", _channelCount);
+            sb.AppendLine();
+            sb.AppendLine("Time interval Maximum Aggregated value ADC Count & mV, Minimum Aggregated value ADC Count & mV");
+            sb.AppendLine();
+
+            // Build Header
+            string[] heading = { "Time", "Channel", "Max ADC", "Max mV", "Min ADC", "Min mV" };
+            sb.AppendFormat("{0,10}", heading[0]);
+
+            for (int i = 0; i < _channelCount; i++)
+            {
+                if (_channelSettings[i].enabled)
+                {
+                    sb.AppendFormat("{0,10} {1,10} {2,10} {3,10} {4,10}", heading[1], heading[2], heading[3], heading[4], heading[5]);
+                }
+            }
+
+            sb.AppendLine();
+
+            // Build Body
+            for (int i = 0; i < sampleCount; i++)
+            {
+                sb.AppendFormat("{0,10}", (i * timeInterval));
+
+                for (int ch = 0; ch < _channelCount; ch++)
+                {
+                    if (_channelSettings[ch].enabled)
+                    {
+                        sb.AppendFormat("{0,10} {1,10} {2,10} {3,10} {4,10}",
+                                        (char)('A' + ch),
+                                        maxPinned[ch].Target[i],
+                                        adc_to_mv(maxPinned[ch].Target[i], (int)_channelSettings[(int)(Imports.Channel.ChannelA + ch)].range),
+                                        minPinned[ch].Target[i],
+                                        adc_to_mv(minPinned[ch].Target[i], (int)_channelSettings[(int)(Imports.Channel.ChannelA + ch)].range));
+                    }
+                }
+
+                sb.AppendLine();
+            }
+
+            // Print contents to file
+            using (TextWriter writer = new StreamWriter(BlockFile, false))
+            {
+                writer.Write(sb.ToString());
+                writer.Close();
             }
         }
 
@@ -573,7 +595,7 @@ namespace PS2000ACSConsole
                 Thread.Sleep(100);
             }
 
-            if (Console.KeyAvailable) 
+            if (Console.KeyAvailable)
             {
                 Console.ReadKey(true); // clear the key
             }
@@ -626,7 +648,7 @@ namespace PS2000ACSConsole
                 Console.WriteLine("GetValuesRapid status error 0x{0:X}", status);
                 return;
             }
-           
+
 
             /* Print out the first 10 readings, converting the readings to mV if required */
             Console.WriteLine("\nValues in {0}\n", (_scaleVoltages) ? ("mV") : ("ADC Counts"));
@@ -639,7 +661,7 @@ namespace PS2000ACSConsole
                 {
                     for (int chan = 0; chan < _channelCount; chan++)
                     {
-                        Console.Write("{0}\t", _scaleVoltages ? 
+                        Console.Write("{0}\t", _scaleVoltages ?
                                                 adc_to_mv(pinned[seg, chan].Target[i], (int)_channelSettings[(int)(Imports.Channel.ChannelA + chan)].range) // If _scaleVoltages, show mV values
                                                 : pinned[seg, chan].Target[i]);                                                                             // else show ADC counts
                     }
@@ -669,7 +691,7 @@ namespace PS2000ACSConsole
         {
             while (!Console.KeyAvailable) Thread.Sleep(100);
 
-            if (Console.KeyAvailable) 
+            if (Console.KeyAvailable)
             {
                 Console.ReadKey(true); // clear the key
             }
@@ -680,21 +702,21 @@ namespace PS2000ACSConsole
         *  this function sets all the required trigger parameters, and calls the 
         *  triggering functions
         ****************************************************************************/
-        uint SetTrigger(Imports.TriggerChannelProperties[] channelProperties, 
-                        short nChannelProperties, 
-                        Imports.TriggerConditions[] triggerConditions, 
-                        short nTriggerConditions, 
-                        Imports.ThresholdDirection[] directions, 
-                        Pwq pwq, 
-                        uint delay, 
-                        short auxOutputEnabled, 
+        uint SetTrigger(Imports.TriggerChannelProperties[] channelProperties,
+                        short nChannelProperties,
+                        Imports.TriggerConditions[] triggerConditions,
+                        short nTriggerConditions,
+                        Imports.ThresholdDirection[] directions,
+                        Pwq pwq,
+                        uint delay,
+                        short auxOutputEnabled,
                         int autoTriggerMs,
                         Imports.DigitalChannelDirections[] digitalDirections,
                         short nDigitalDirections)
         {
             uint status;
 
-            if ((status = Imports.SetTriggerChannelProperties(_handle, channelProperties, nChannelProperties, auxOutputEnabled,autoTriggerMs)) != 0)
+            if ((status = Imports.SetTriggerChannelProperties(_handle, channelProperties, nChannelProperties, auxOutputEnabled, autoTriggerMs)) != 0)
             {
                 return status;
             }
@@ -704,8 +726,8 @@ namespace PS2000ACSConsole
                 return status;
             }
 
-            if (directions == null) directions = new Imports.ThresholdDirection[] { Imports.ThresholdDirection.None, 
-                Imports.ThresholdDirection.None, Imports.ThresholdDirection.None, Imports.ThresholdDirection.None, 
+            if (directions == null) directions = new Imports.ThresholdDirection[] { Imports.ThresholdDirection.None,
+                Imports.ThresholdDirection.None, Imports.ThresholdDirection.None, Imports.ThresholdDirection.None,
                 Imports.ThresholdDirection.None, Imports.ThresholdDirection.None};
 
             if ((status = Imports.SetTriggerChannelDirections(_handle,
@@ -732,7 +754,7 @@ namespace PS2000ACSConsole
 
             if (_digitalPorts > 0)
             {
-                if ((status = Imports.SetTriggerDigitalPort(_handle, digitalDirections, nDigitalDirections)) !=0 )
+                if ((status = Imports.SetTriggerDigitalPort(_handle, digitalDirections, nDigitalDirections)) != 0)
                 {
                     return status;
                 }
@@ -820,7 +842,7 @@ namespace PS2000ACSConsole
                                              Imports.Channel.ChannelA,
                                              Imports.ThresholdMode.Level)};
 
-          
+
             Imports.TriggerConditions[] conditions = new Imports.TriggerConditions[] {
               new Imports.TriggerConditions(Imports.TriggerState.True,                      // Channel A
                                             Imports.TriggerState.DontCare,                  // Channel B
@@ -833,7 +855,7 @@ namespace PS2000ACSConsole
                                             )};
 
             Imports.ThresholdDirection[] directions = new Imports.ThresholdDirection[]
-	                                        { Imports.ThresholdDirection.Rising,            // Channel A
+                                            { Imports.ThresholdDirection.Rising,            // Channel A
                                             Imports.ThresholdDirection.None,                // Channel B
                                             Imports.ThresholdDirection.None,                // Channel C
                                             Imports.ThresholdDirection.None,                // Channel D
@@ -842,11 +864,11 @@ namespace PS2000ACSConsole
 
             Console.WriteLine("Collect Block Triggered");
             Console.WriteLine("Data is written to disk file ({0})", BlockFile);
-           
+
             Console.Write("Collects when value rises past {0}", (_scaleVoltages) ?
                           adc_to_mv(sourceDetails[0].ThresholdMajor,
                                     (int)_channelSettings[(int)Imports.Channel.ChannelA].range)
-                                    : sourceDetails[0].ThresholdMajor); 
+                                    : sourceDetails[0].ThresholdMajor);
             Console.WriteLine("{0}", (_scaleVoltages) ? ("mV") : ("ADC Counts"));
 
             Console.WriteLine("Press a key to start...");
@@ -885,9 +907,9 @@ namespace PS2000ACSConsole
 
             // Default settings
 
-            _firstRange     = Imports.Range.Range_20MV; // This is for new 220X B, B MSO, 2405A and 2205A MSO models, older devices will have a first range of 50 mV
-            _lastRange      = Imports.Range.Range_20V;
-            _digitalPorts   = 0;
+            _firstRange = Imports.Range.Range_20MV; // This is for new 220X B, B MSO, 2405A and 2205A MSO models, older devices will have a first range of 50 mV
+            _lastRange = Imports.Range.Range_20V;
+            _digitalPorts = 0;
 
 
             if (_handle >= 0)
@@ -896,7 +918,7 @@ namespace PS2000ACSConsole
                 {
                     short requiredSize;
                     Imports.GetUnitInfo(_handle, line, 80, out requiredSize, i);
-                    
+
                     // Set properties according to the variant
                     if (i == 3)
                     {
@@ -905,7 +927,7 @@ namespace PS2000ACSConsole
                         // Set first range for voltage if device is a 2206/7/8, 2206/7/8A or 2205 MSO
                         if (_channelCount == DUAL_SCOPE)
                         {
-                            if(line.Length == 4 || (line.Length == 5 && line[4].Equals('A')) || line.ToString().Equals("2205MSO"))
+                            if (line.Length == 4 || (line.Length == 5 && line[4].Equals('A')) || line.ToString().Equals("2205MSO"))
                             {
                                 _firstRange = Imports.Range.Range_50MV;
                             }
@@ -935,7 +957,7 @@ namespace PS2000ACSConsole
             bool valid = false;
 
             /* See what ranges are available... */
-            for (int i = (int) _firstRange; i <= (int)_lastRange; i++)
+            for (int i = (int)_firstRange; i <= (int)_lastRange; i++)
             {
                 Console.WriteLine("{0} . {1} mV", i, inputRanges[i]);
             }
@@ -944,7 +966,7 @@ namespace PS2000ACSConsole
             Console.WriteLine();
             Console.WriteLine("Specify voltage range ({0}..{1})", _firstRange, _lastRange);
             Console.WriteLine("99 - switches channel off.");
-            
+
             for (int ch = 0; ch < _channelCount; ch++)
             {
                 Console.WriteLine("");
@@ -1032,11 +1054,11 @@ namespace PS2000ACSConsole
         void StreamDataHandler(uint preTrigger, Imports.Mode mode)
         {
             uint tempBufferSize = 50000; /*  Ensure buffer is large enough */
-             
+
             uint totalSamples = 0;
             uint triggeredAt = 0;
             uint status;
-           
+
             uint downsampleRatio;
             Imports.ReportedTimeUnits timeUnits;
             uint sampleInterval;
@@ -1055,7 +1077,7 @@ namespace PS2000ACSConsole
                     appBuffers = new short[_channelCount * 2][];
                     buffers = new short[_channelCount * 2][];
 
-                    for (int channel = 0; channel < _channelCount*2; channel+=2) // create data buffers
+                    for (int channel = 0; channel < _channelCount * 2; channel += 2) // create data buffers
                     {
                         appBuffers[channel] = new short[tempBufferSize];
                         appBuffers[channel + 1] = new short[tempBufferSize];
@@ -1066,7 +1088,7 @@ namespace PS2000ACSConsole
                         buffers[channel] = new short[tempBufferSize];
                         buffers[channel + 1] = new short[tempBufferSize];
 
-                        status = Imports.SetDataBuffers(_handle, (Imports.Channel)(channel / 2), buffers[channel], buffers[channel+1], (int)tempBufferSize, 0, Imports.RatioMode.Aggregate);
+                        status = Imports.SetDataBuffers(_handle, (Imports.Channel)(channel / 2), buffers[channel], buffers[channel + 1], (int)tempBufferSize, 0, Imports.RatioMode.Aggregate);
                     }
 
                     downsampleRatio = 1000;
@@ -1129,7 +1151,7 @@ namespace PS2000ACSConsole
 
 
                 default:
-                    
+
                     downsampleRatio = 1;
                     timeUnits = Imports.ReportedTimeUnits.MilliSeconds;
                     sampleInterval = 10;
@@ -1161,7 +1183,7 @@ namespace PS2000ACSConsole
             }
 
             _autoStop = false;
-            
+
             // Start the device collecting data
             status = Imports.RunStreaming(_handle, ref sampleInterval, timeUnits, preTrigger, postTrigger - preTrigger, autoStop, downsampleRatio, ratioMode, tempBufferSize);
 
@@ -1175,22 +1197,27 @@ namespace PS2000ACSConsole
 
             Console.WriteLine("Streaming data...Press a key to abort");
 
-            TextWriter writer = null;
+            var sb = new StringBuilder();
 
             if (mode == Imports.Mode.ANALOGUE)
             {
-                writer = new StreamWriter(StreamFile, false);
+                sb.AppendFormat("For each of the {0} Channels, results shown are....", _channelCount);
+                sb.AppendLine();
+                sb.AppendLine("Maximum Aggregated value ADC Count & mV, Minimum Aggregated value ADC Count & mV");
+                sb.AppendLine();
 
-                writer.Write("For each of the {0} Channels, results shown are....", _channelCount);
-                writer.WriteLine();
-                writer.WriteLine("Maximum Aggregated value ADC Count & mV, Minimum Aggregated value ADC Count & mV");
-                writer.WriteLine();
+                // Build File Header
+                string[] heading = { "Channel", "Max ADC", "Max mV", "Min ADC", "Min mV" };
 
                 for (int i = 0; i < _channelCount; i++)
                 {
-                    writer.Write("Ch  Max ADC    Max mV   Min ADC    Min mV   ");
+                    if (_channelSettings[i].enabled)
+                    {
+                        sb.AppendFormat("{0,10} {1,10} {2,10} {3,10} {4,10}", heading[0], heading[1], heading[2], heading[3], heading[4]);
+                    }
                 }
-                writer.WriteLine();
+
+                sb.AppendLine();
             }
 
             while (!_autoStop && !Console.KeyAvailable)
@@ -1200,7 +1227,7 @@ namespace PS2000ACSConsole
                 _ready = false;
 
                 status = Imports.GetStreamingLatestValues(_handle, StreamingCallback, (System.IntPtr)mode);
-               
+
 
                 if (_ready && _sampleCount > 0) /* can be ready and have no data, if autoStop has fired */
                 {
@@ -1208,7 +1235,7 @@ namespace PS2000ACSConsole
                     {
                         triggeredAt = totalSamples + _trigAt;
                     }
-                    
+
                     totalSamples += (uint)_sampleCount;
 
                     Console.Write("Collected {0,4} samples, index = {1,5} Total = {2,5}", _sampleCount, _startIndex, totalSamples);
@@ -1219,24 +1246,26 @@ namespace PS2000ACSConsole
                     }
 
                     Console.WriteLine();
-                    
+
                     for (uint i = _startIndex; i < (_startIndex + _sampleCount); i++)
                     {
                         if (mode == Imports.Mode.ANALOGUE)
                         {
+                            // Build File Body
                             for (int ch = 0; ch < _channelCount * 2; ch += 2)
                             {
                                 if (_channelSettings[ch / 2].enabled)
                                 {
-                                    writer.Write("Ch{0} {1,7}   {2,7}   {3,7}   {4,7}   ",
-                                                            (char)('A' + (ch / 2)),
-                                                            appBuffersPinned[ch].Target[i],
-                                                            adc_to_mv(appBuffersPinned[ch].Target[i], (int)_channelSettings[(int)(Imports.Channel.ChannelA + (ch / 2))].range),
-                                                            appBuffersPinned[ch + 1].Target[i],
-                                                            adc_to_mv(appBuffersPinned[ch + 1].Target[i], (int)_channelSettings[(int)(Imports.Channel.ChannelA + (ch / 2))].range));
+                                    sb.AppendFormat("{0,10} {1,10} {2,10} {3,10} {4,10}",
+                                                    (char)('A' + (ch / 2)),
+                                                    appBuffersPinned[ch].Target[i],
+                                                    adc_to_mv(appBuffersPinned[ch].Target[i], (int)_channelSettings[(int)(Imports.Channel.ChannelA + (ch / 2))].range),
+                                                    appBuffersPinned[ch + 1].Target[i],
+                                                    adc_to_mv(appBuffersPinned[ch + 1].Target[i], (int)_channelSettings[(int)(Imports.Channel.ChannelA + (ch / 2))].range));
+
                                 }
                             }
-                            writer.WriteLine();
+                            sb.AppendLine();
                         }
 
                         if (mode == Imports.Mode.DIGITAL)
@@ -1248,9 +1277,9 @@ namespace PS2000ACSConsole
 
                             for (short bit = 0; bit < 16; bit++)
                             {
-                                Console.Write(((0x8000 >> bit) & digiValue) != 0? "1 " : "0 ");
+                                Console.Write(((0x8000 >> bit) & digiValue) != 0 ? "1 " : "0 ");
                             }
-                            
+
                             Console.WriteLine();
                         }
 
@@ -1277,15 +1306,17 @@ namespace PS2000ACSConsole
 
             Imports.Stop(_handle);
 
-            if (writer != null)
-            { 
+            // Print contents to file
+            using (TextWriter writer = new StreamWriter(StreamFile, false))
+            {
+                writer.Write(sb.ToString());
                 writer.Close();
             }
 
             if (!_autoStop)
             {
                 Console.WriteLine("\ndata collection aborted");
-            } 
+            }
         }
 
 
@@ -1320,11 +1351,11 @@ namespace PS2000ACSConsole
             short triggerVoltage = mv_to_adc(1000, (short)_channelSettings[(int)Imports.Channel.ChannelA].range); // ChannelInfo stores ADC counts
 
             Imports.TriggerChannelProperties[] sourceDetails = new Imports.TriggerChannelProperties[] {
-                new Imports.TriggerChannelProperties( triggerVoltage, 
-                                                        256 * 10, 
-                                                        triggerVoltage, 
-                                                        256 * 10, 
-                                                        Imports.Channel.ChannelA, 
+                new Imports.TriggerChannelProperties( triggerVoltage,
+                                                        256 * 10,
+                                                        triggerVoltage,
+                                                        256 * 10,
+                                                        Imports.Channel.ChannelA,
                                                         Imports.ThresholdMode.Level )};
 
             Imports.TriggerConditions[] conditions = new Imports.TriggerConditions[] {
@@ -1338,10 +1369,10 @@ namespace PS2000ACSConsole
                                             Imports.TriggerState.DontCare)};
 
             Imports.ThresholdDirection[] directions = new Imports.ThresholdDirection[]
-	                                        { Imports.ThresholdDirection.Rising,
-                                            Imports.ThresholdDirection.None, 
-                                            Imports.ThresholdDirection.None, 
-                                            Imports.ThresholdDirection.None, 
+                                            { Imports.ThresholdDirection.Rising,
+                                            Imports.ThresholdDirection.None,
+                                            Imports.ThresholdDirection.None,
+                                            Imports.ThresholdDirection.None,
                                             Imports.ThresholdDirection.None,
                                             Imports.ThresholdDirection.None };
 
@@ -1354,7 +1385,7 @@ namespace PS2000ACSConsole
                                    : sourceDetails[0].ThresholdMajor);
 
             Console.WriteLine("{0}", (_scaleVoltages) ? ("mV") : ("ADC Counts"));
-          
+
             Console.WriteLine("Press a key to start...");
             WaitForKey();
             SetDefaults();
@@ -1422,7 +1453,7 @@ namespace PS2000ACSConsole
             BlockDataHandler("First 10 readings\n", 0, Imports.Mode.DIGITAL);
         }
 
-      
+
         /****************************************************************************
         * DigitalBlockTriggered
         * Collect a block of data from the digital ports with triggering disabled
@@ -1473,10 +1504,10 @@ namespace PS2000ACSConsole
         void ANDAnalogueDigitalTriggered()
         {
             Console.WriteLine("Analogue AND Digital Triggered Block");
-        
+
 
             short triggerVoltage = mv_to_adc(1000, (short)_channelSettings[(int)Imports.Channel.ChannelA].range); // ChannelInfo stores ADC counts
-            
+
             Imports.TriggerChannelProperties[] sourceDetails = new Imports.TriggerChannelProperties[] {
                 new Imports.TriggerChannelProperties(triggerVoltage,
                                              256*10,
@@ -1498,7 +1529,7 @@ namespace PS2000ACSConsole
                                             )};
 
             Imports.ThresholdDirection[] directions = new Imports.ThresholdDirection[]
-	                                        { Imports.ThresholdDirection.Rising,            // Channel A
+                                            { Imports.ThresholdDirection.Rising,            // Channel A
                                             Imports.ThresholdDirection.None,                // Channel B
                                             Imports.ThresholdDirection.None,                // Channel C
                                             Imports.ThresholdDirection.None,                // Channel D
@@ -1516,8 +1547,8 @@ namespace PS2000ACSConsole
 
 
             Console.Write("Collect a block of data when value rises past {0}", (_scaleVoltages) ?
-                          adc_to_mv(sourceDetails[0].ThresholdMajor, (int)_channelSettings[(int)Imports.Channel.ChannelA].range): sourceDetails[0].ThresholdMajor);
-            
+                          adc_to_mv(sourceDetails[0].ThresholdMajor, (int)_channelSettings[(int)Imports.Channel.ChannelA].range) : sourceDetails[0].ThresholdMajor);
+
             Console.WriteLine("{0}", (_scaleVoltages) ? ("mV ") : ("ADC Counts "));
             Console.WriteLine("AND ");
             Console.WriteLine("Digital Channel  1   --- Rising Or Falling");
@@ -1567,28 +1598,28 @@ namespace PS2000ACSConsole
 
 
             Imports.TriggerConditions[] conditions = new Imports.TriggerConditions[2];
-            
-            conditions[0].ChannelA          =       Imports.TriggerState.True;
-            conditions[0].ChannelB          =       Imports.TriggerState.DontCare;
-            conditions[0].ChannelC          =       Imports.TriggerState.DontCare;
-            conditions[0].ChannelD          =       Imports.TriggerState.DontCare;
-            conditions[0].External          =       Imports.TriggerState.DontCare;
-            conditions[0].Aux               =       Imports.TriggerState.DontCare;
-            conditions[0].Pwq               =       Imports.TriggerState.DontCare;
-            conditions[0].Digital           =       Imports.TriggerState.DontCare;
 
-            conditions[1].ChannelA          =       Imports.TriggerState.DontCare;
-            conditions[1].ChannelB          =       Imports.TriggerState.DontCare;
-            conditions[1].ChannelC          =       Imports.TriggerState.DontCare;
-            conditions[1].ChannelD          =       Imports.TriggerState.DontCare;
-            conditions[1].External          =       Imports.TriggerState.DontCare;
-            conditions[1].Aux               =       Imports.TriggerState.DontCare;
-            conditions[1].Pwq               =       Imports.TriggerState.DontCare;
-            conditions[1].Digital           =       Imports.TriggerState.True;
+            conditions[0].ChannelA = Imports.TriggerState.True;
+            conditions[0].ChannelB = Imports.TriggerState.DontCare;
+            conditions[0].ChannelC = Imports.TriggerState.DontCare;
+            conditions[0].ChannelD = Imports.TriggerState.DontCare;
+            conditions[0].External = Imports.TriggerState.DontCare;
+            conditions[0].Aux = Imports.TriggerState.DontCare;
+            conditions[0].Pwq = Imports.TriggerState.DontCare;
+            conditions[0].Digital = Imports.TriggerState.DontCare;
+
+            conditions[1].ChannelA = Imports.TriggerState.DontCare;
+            conditions[1].ChannelB = Imports.TriggerState.DontCare;
+            conditions[1].ChannelC = Imports.TriggerState.DontCare;
+            conditions[1].ChannelD = Imports.TriggerState.DontCare;
+            conditions[1].External = Imports.TriggerState.DontCare;
+            conditions[1].Aux = Imports.TriggerState.DontCare;
+            conditions[1].Pwq = Imports.TriggerState.DontCare;
+            conditions[1].Digital = Imports.TriggerState.True;
 
 
             Imports.ThresholdDirection[] directions = new Imports.ThresholdDirection[]
-	                                        { Imports.ThresholdDirection.Rising,            // Channel A
+                                            { Imports.ThresholdDirection.Rising,            // Channel A
                                             Imports.ThresholdDirection.None,                // Channel B
                                             Imports.ThresholdDirection.None,                // Channel C
                                             Imports.ThresholdDirection.None,                // Channel D
@@ -1607,7 +1638,7 @@ namespace PS2000ACSConsole
 
             Console.Write("Collect a block of data when value rises past {0}", (_scaleVoltages) ?
                         adc_to_mv(sourceDetails[0].ThresholdMajor, (int)_channelSettings[(int)Imports.Channel.ChannelA].range) : sourceDetails[0].ThresholdMajor);
-            
+
             Console.WriteLine("{0}", (_scaleVoltages) ? ("mV ") : ("ADC Counts "));
             Console.WriteLine("OR");
             Console.WriteLine("Digital Channel  1   --- Rising Or Falling");
@@ -1707,7 +1738,7 @@ namespace PS2000ACSConsole
                 Console.WriteLine("3:\tRAMP UP   \t9:\tWHITE NOISE");
                 Console.WriteLine("4:\tRAMP DOWN");
                 Console.WriteLine("5:\tSINC");
-                Console.WriteLine( "A:\tAWG WAVEFORM");
+                Console.WriteLine("A:\tAWG WAVEFORM");
                 Console.WriteLine("X:\tSigGen Off");
                 Console.WriteLine("");
 
@@ -1810,7 +1841,7 @@ namespace PS2000ACSConsole
                 }
             }
 
-            if ((short) (waveform) < 8 || (ch == 'A'))  // Find out frequency if required
+            if ((short)(waveform) < 8 || (ch == 'A'))  // Find out frequency if required
             {
                 do
                 {
@@ -1836,12 +1867,12 @@ namespace PS2000ACSConsole
                 status = Imports.SetSigGenArbitrary(_handle,
                                                     0,
                                                     pkToPk,
-                                                    (uint) phase,
-                                                    (uint) phase,
+                                                    (uint)phase,
+                                                    (uint)phase,
                                                     0,
                                                     0,
                                                     arbitraryWaveform,
-                                                    (int) waveformSize,
+                                                    (int)waveformSize,
                                                     0,
                                                     0,
                                                     0,
@@ -1855,7 +1886,7 @@ namespace PS2000ACSConsole
             }
             else
             {
-                status = Imports.SetSigGenBuiltIn(_handle, offset, pkToPk, (short) waveform, (float) frequency, (float) frequency, 0, 0, 0, operation, 0, 0, 0, 0, 0);
+                status = Imports.SetSigGenBuiltIn(_handle, offset, pkToPk, (short)waveform, (float)frequency, (float)frequency, 0, 0, 0, operation, 0, 0, 0, 0, 0);
                 Console.WriteLine(status != StatusCodes.PICO_OK ? "SetSigGenBuiltIn: Status Error 0x%x " : "", status);		// If status != PICO_OK, show the error
             }
         }
@@ -1958,7 +1989,7 @@ namespace PS2000ACSConsole
                 Console.WriteLine("R - Rapid Block                  A - ADC counts/mV");
                 Console.WriteLine("S - Immediate Streaming          G - Signal generator");
                 Console.WriteLine("W - Triggered Streaming");
-                Console.WriteLine(_digitalPorts > 0? "D - Digital Ports Menu" : "");
+                Console.WriteLine(_digitalPorts > 0 ? "D - Digital Ports Menu" : "");
                 Console.WriteLine("                                 X - Exit");
                 Console.WriteLine("Operation:");
 
