@@ -429,6 +429,9 @@ namespace PS2000Imports
                                                       uint arbitraryWaveformSize,
                                                       SweepType sweepType,
                                                       uint sweeps);
+
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps2000_overview_buffer_status")]
+        public static extern short OverviewBufferStatus(short handle, out short previousBufferOverrun);
         #endregion
     }
 }
