@@ -299,7 +299,7 @@ namespace PS2000CSConsoleExample
 
             sb.AppendLine("This file contains the following data from a block mode capture:");
             sb.AppendLine("Time interval");
-            sb.AppendLine("ADC Count & millivolt (mV) for each enabled channel.");
+            sb.AppendLine("ADC Count & millivolt (mV) values for each enabled channel.");
             sb.AppendLine();
 
             // Build Header
@@ -430,7 +430,7 @@ namespace PS2000CSConsoleExample
 
                         if (_trig > 0)
                         {
-                            Console.WriteLine("Scope triggered at {0}  index", _totalSampleCount - _nValues + _trigAt);
+                            Console.WriteLine("Scope triggered at index {0}", _totalSampleCount - _nValues + _trigAt);
                         }
 
                     }
