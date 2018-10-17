@@ -25,6 +25,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 using System.Threading;
 
 using PicoPinnedArray;
@@ -277,51 +278,8 @@ namespace PS2000CSConsoleExample
                     }
                     Console.WriteLine();
                 }
-
-
-                sampleCount = Math.Min(sampleCount, BUFFER_SIZE);
-                TextWriter writer = new StreamWriter(BlockFile, false);
-
-                writer.Write("This file contains the following data from a block mode capture:");
-                writer.WriteLine();
-                writer.WriteLine("Time interval");
-                writer.WriteLine("ADC Count & millivolt (mV) for each enabled channel.");
-                writer.WriteLine();
-
-                writer.Write("Time\t\t");
-
-                for (int i = 0; i < _channelCount; i++)
-                {
-                    if (_channelSettings[i].enabled == 1)
-                    {
-                        writer.Write("Ch\t\tADC Count\t\tmV\t\t");
-                    }
-                }
-
-                writer.WriteLine();
-
-                for (int i = 0; i < sampleCount; i++)
-                {
-                    writer.Write("{0}\t\t", pinnedTimes.Target[i]);
-
-                    for (int ch = 0; ch < _channelCount; ch++)
-                    {
-                       
-                        if (_channelSettings[ch].enabled == 1)
-                        {
-                            writer.Write("Ch{0}\t\t{1,7}\t\t{2,7}\t\t",
-                                           (char)('A' + ch),
-                                           pinned[ch].Target[i],
-                                           adc_to_mv(pinned[ch].Target[i],
-                                                     (int)_channelSettings[ch].range));
-                        }
-                    }
-
-                    writer.WriteLine();
-                }
-
-                writer.Close();
-
+                
+                PrintBlockFile(Math.Min(sampleCount, BUFFER_SIZE), pinnedTimes);                
             }
             else
             {
@@ -330,6 +288,59 @@ namespace PS2000CSConsoleExample
 
             Imports.Stop(_handle);
 
+        }
+
+        /// <summary>
+        /// Print the block data capture to file
+        /// </summary>
+        private void PrintBlockFile(int sampleCount, PinnedArray<int> pinnedTimes)
+        {
+            var sb = new StringBuilder();            
+
+            sb.AppendLine("This file contains the following data from a block mode capture:");
+            sb.AppendLine("Time interval");
+            sb.AppendLine("ADC Count & millivolt (mV) for each enabled channel.");
+            sb.AppendLine();
+
+            // Build Header
+            string[] heading = { "Time", "Ch", "ADC Count", "mV" };
+            sb.AppendFormat("{0,-10}", heading[0]);
+
+            for (int i = 0; i < _channelCount; i++)
+            {
+                if (_channelSettings[i].enabled == 1)
+                {                    
+                    sb.AppendFormat("{0,-10} {1,-10} {2,-10}", heading[1], heading[2], heading[3]);
+                }
+            }
+            
+            sb.AppendLine();
+
+            // Build Body
+            for (int i = 0; i < sampleCount; i++)
+            {
+                sb.AppendFormat("{0,-10}", pinnedTimes.Target[i]);
+
+                for (int ch = 0; ch < _channelCount; ch++)
+                {
+                    if (_channelSettings[ch].enabled == 1)
+                    {
+                        sb.AppendFormat("{0,-10} {1,-10} {2,-10}",
+                                        "Ch" + (char)('A' + ch),
+                                        pinned[ch].Target[i],
+                                        adc_to_mv(pinned[ch].Target[i], (int)_channelSettings[ch].range));
+                    }
+                }
+
+                sb.AppendLine();
+            }
+
+            // Print contents to file
+            using (TextWriter writer = new StreamWriter(BlockFile, false))
+            {
+                writer.Write(sb.ToString());
+                writer.Close();
+            }
         }
 
         /****************************************************************************
@@ -351,21 +362,23 @@ namespace PS2000CSConsoleExample
                 return;
             }
 
-            TextWriter writer = new StreamWriter(StreamFile, false);
+            var sb = new StringBuilder();
 
-            writer.Write("For each of the {0} Channels, results shown are....", _channelCount);
-            writer.WriteLine();
-            writer.WriteLine("Time interval Maximum Aggregated value ADC Count & mV, Minimum Aggregated value ADC Count & mV");
-            writer.WriteLine();
+            sb.AppendFormat("For each of the {0} Channels, results shown are....", _channelCount);
+            sb.AppendLine();
+            sb.AppendLine("Time interval Maximum Aggregated value ADC Count & mV, Minimum Aggregated value ADC Count & mV");
+            sb.AppendLine();
 
-            writer.Write("Time  ");
+            // Build Header
+            string[] heading = { "Time", "Ch", "Max ADC", "Max mV", "Min ADC", "Min mV" };
+            sb.AppendFormat("{0,-10}", heading[0]);
 
             for (int i = 0; i < _channelCount; i++)
             {
-                writer.Write("Ch  Max ADC    Max mV   Min ADC    Min mV   ");
+                sb.AppendFormat("{0,-10} {1,-10} {2,-10} {3, -10} {3, -10}", heading[1], heading[2], heading[3], heading[4], heading[5]);
             }
 
-            writer.WriteLine();
+            sb.AppendLine();
 
             Console.WriteLine("Data is being collected press any key to cancel");
             Console.WriteLine();
@@ -430,26 +443,25 @@ namespace PS2000CSConsoleExample
                     _totalSampleCount = appBufferSize;
                 }
 
+                // Build Body
                 for (int i = 0; i < _totalSampleCount; i++)
                 {
-                    writer.Write("{0,5}  ", (i * sampleInterval));
+                    sb.AppendFormat("{0,-10}", (i * sampleInterval));
 
                     for (int channel = 0; channel < _channelCount; channel++)
                     {
                         if (Convert.ToBoolean(_channelSettings[channel].enabled))
-                        {
-                            writer.Write("Ch{0} {1,7}   {2,7}   ",
-                                           (char) ('A' + channel),
-                                           _appBuffer[channel][i],
-                                           adc_to_mv(_appBuffer[channel][i],
-                                                     (int) _channelSettings[channel].range));
+                        {                            
+                            sb.AppendFormat("{0,-10} {1,-10} {2,-10}",
+                                            "Ch" + (char)('A' + channel),
+                                            _appBuffer[channel][i],
+                                            adc_to_mv(_appBuffer[channel][i], (int)_channelSettings[channel].range));
                         }
                     }
 
-                    writer.WriteLine();
+                    sb.AppendLine();
                 }
             }
-
             else
             {
                 int no_of_samples = 0;
@@ -485,24 +497,24 @@ namespace PS2000CSConsoleExample
 
                         Console.WriteLine("Collected {0} samples, total: {1}", no_of_samples, totalSamples);
 
+                        // Build Body
                         for (int i = 0; i < no_of_samples; i++)
                         {
-                            writer.Write("{0,5}  ", ((previousTotal + i) * sampleInterval_ms));
+                            sb.AppendFormat("{0,-10}", ((previousTotal + i) * sampleInterval_ms));
 
                             for (int ch = 0; ch < _channelCount; ch++)
                             {
                                 
                                 if (Convert.ToBoolean(_channelSettings[ch].enabled))
                                 {
-                                    writer.Write("Ch{0} {1,7}   {2,7}   ",
-                                                   (char) ('A' + ch),
-                                                   pinned[ch].Target[i],
-                                                   adc_to_mv(pinned[ch].Target[i],
-                                                             (int) _channelSettings[ch].range));
+                                    sb.AppendFormat("{0,-10} {1,-10} {2,-10}",
+                                                    "Ch" + (char)('A' + ch),
+                                                    pinned[ch].Target[i],
+                                                    adc_to_mv(pinned[ch].Target[i], (int)_channelSettings[ch].range));
                                 }
                             }
 
-                            writer.WriteLine();
+                            sb.AppendLine();
                         }
 
                         // Wait for 100 milliseconds
@@ -526,7 +538,12 @@ namespace PS2000CSConsoleExample
                 Console.ReadKey(true); // Clear the key  
             }
 
-            writer.Close(); // Close writer
+            // Print contents to file
+            using (TextWriter writer = new StreamWriter(StreamFile, false))
+            {
+                writer.Write(sb.ToString());
+                writer.Close();
+            }
         }
 
         /****************************************************************************
