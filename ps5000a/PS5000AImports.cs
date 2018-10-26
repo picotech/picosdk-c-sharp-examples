@@ -479,7 +479,7 @@ namespace PS5000AImports
 													ref uint sampleInterval,
 													ReportedTimeUnits sampleIntervalTimeUnits,
 													uint maxPreTriggerSamples,
-													uint maxPostPreTriggerSamples,
+													uint maxPostTriggerSamples,
 													short autoStop,
 													uint downSamplingRatio,
 													RatioMode downSampleRatioMode,
