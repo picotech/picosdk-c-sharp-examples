@@ -1185,12 +1185,12 @@ namespace PS2000ACSConsole
             _autoStop = false;
 
             // Start the device collecting data
-            status = Imports.RunStreaming(_handle, ref sampleInterval, timeUnits, preTrigger, postTrigger - preTrigger, autoStop, downsampleRatio, ratioMode, tempBufferSize);
+            status = Imports.RunStreaming(_handle, ref sampleInterval, timeUnits, preTrigger, postTrigger, autoStop, downsampleRatio, ratioMode, tempBufferSize);
 
             if (status != StatusCodes.PICO_OK)
             {
                 Console.WriteLine("StreamDataHandler:ps2000aRunStreaming Status = 0x{0:X6}", status);
-                _autoStop = true;           // if there's a problem, set _autoStop = true to drop out clean up memory, and close the text writer.
+                _autoStop = true;           // if there's a problem, set _autoStop = true to drop out, clean up memory, and close the text writer.
             }
 
             Console.WriteLine("Run Streaming : {0} ", status);
