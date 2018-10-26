@@ -156,6 +156,7 @@ namespace PS5000AStreamingConsole
             appBuffers = new short[_channelCount * 2][];
             buffers = new short[_channelCount * 2][];
 
+            uint postTriggerSamples = 1000000; // Number of raw data samples
             int totalSamples = 0;
             uint triggeredAt = 0;
             uint sampleInterval = 1;
@@ -180,7 +181,7 @@ namespace PS5000AStreamingConsole
 
             Console.WriteLine("Waiting for trigger...Press a key to abort");
             _autoStop = false;
-            status = Imports.RunStreaming(_handle, ref sampleInterval, Imports.ReportedTimeUnits.MicroSeconds, preTrigger, 1000000 - preTrigger, 1, 1, Imports.RatioMode.None, (uint)sampleCount);
+            status = Imports.RunStreaming(_handle, ref sampleInterval, Imports.ReportedTimeUnits.MicroSeconds, preTrigger, postTriggerSamples, 1, 1, Imports.RatioMode.None, (uint)sampleCount);
             Console.WriteLine("Run Streaming : {0} ", status);
 
             Console.WriteLine("Streaming data...Press a key to abort");
@@ -210,7 +211,7 @@ namespace PS5000AStreamingConsole
                 _ready = false;
                 status = Imports.GetStreamingLatestValues(_handle, StreamingCallback, IntPtr.Zero);
 
-                Console.Write((status > 0 && status != 39 /*PICO_BUSY*/) ? "Status =  {0}\n" : "", status);
+                Console.Write((status > StatusCodes.PICO_OK && status != StatusCodes.PICO_BUSY /*PICO_BUSY*/) ? "Status =  {0}\n" : "", status);
 
                 if (_ready && _sampleCount > 0) /* can be ready and have no data, if autoStop has fired */
                 {
