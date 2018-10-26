@@ -514,7 +514,7 @@ namespace PS2000AImports
             ref uint sampleInterval,
             ReportedTimeUnits sampleIntervalTimeUnits,
             uint maxPreTriggerSamples,
-            uint maxPostPreTriggerSamples,
+            uint maxPostTriggerSamples,
             bool autoStop,
             uint downSamplingRatio,
             RatioMode downSampleRatioMode,
