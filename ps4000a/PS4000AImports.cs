@@ -513,7 +513,7 @@ namespace PS4000AImports
                                                     ref uint sampleInterval,
                                                     ReportedTimeUnits sampleIntervalTimeUnits,
                                                     uint maxPreTriggerSamples,
-                                                    uint maxPostPreTriggerSamples,
+                                                    uint maxPostTriggerSamples,
                                                     short autoStop,
                                                     uint downSampleRatio,
                                                     DownSamplingMode downSamplingRatioMode,
