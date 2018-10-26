@@ -683,7 +683,7 @@ namespace PS5000AStreamingConsole
         static void Main()
         {
             Console.WriteLine("PicoScope 5000 Series (ps5000a) Driver Streaming Data Collection Example Program.");
-            Console.WriteLine("Version 1.3\n");
+            Console.WriteLine("Version 1.4\n");
 
             Console.WriteLine("Enumerating devices...\n");
 
@@ -716,14 +716,18 @@ namespace PS5000AStreamingConsole
 
             }
 
-            //open unit and show splash screen
+            // Open unit and show splash screen
             Console.WriteLine("\nOpening device...");
+
             short handle;
+
             status = Imports.OpenUnit(out handle, null, Imports.DeviceResolution.PS5000A_DR_8BIT);
+
             bool powerSupplyConnected = true;
+
             Console.WriteLine("Handle: {0}", handle);
 
-            if (status == StatusCodes.PICO_POWER_SUPPLY_NOT_CONNECTED)
+            if (status == StatusCodes.PICO_POWER_SUPPLY_NOT_CONNECTED || status == StatusCodes.PICO_USB3_0_DEVICE_NON_USB3_0_PORT)
             {
                 status = Imports.ChangePowerSource(handle, status);
                 powerSupplyConnected = false;
