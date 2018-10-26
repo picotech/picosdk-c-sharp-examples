@@ -159,7 +159,7 @@ namespace PS4000AStreamingConsole
             uint triggeredAt = 0;
             uint sampleInterval = 1;
             uint downSampleRatio = 1;
-            uint status;
+            uint status = StatusCodes.PICO_OK;
             uint maxPostTriggerSamples = 1000000 - preTrigger;
 
             // Use Pinned Arrays for the application buffers
@@ -221,7 +221,7 @@ namespace PS4000AStreamingConsole
                 _ready = false;
                 status = Imports.GetStreamingLatestValues(_handle, StreamingCallback, IntPtr.Zero);
 
-                Console.Write((status > 0 && status != StatusCodes.PICO_BUSY /*PICO_BUSY*/) ? "Status =  {0}\n" : "", status);
+                Console.Write((status > StatusCodes.PICO_OK && status != StatusCodes.PICO_BUSY /*PICO_BUSY*/) ? "Status =  {0}\n" : "", status);
 
                 if (_ready && _sampleCount > 0) /* can be ready and have no data, if autoStop has fired */
                 {
