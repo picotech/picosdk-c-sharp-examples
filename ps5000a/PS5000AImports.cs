@@ -7,7 +7,7 @@
 *  defined in the ps5000aApi.h C header file. 
 *  It also has the enums and structs required by the (wrapped) function calls.
 *   
-* Copyright © 2013-2018 Pico Technology Ltd. See LICENSE file for terms.
+* Copyright Â© 2013-2018 Pico Technology Ltd. See LICENSE file for terms.
 *
 ******************************************************************************/
 
@@ -590,6 +590,11 @@ namespace PS5000AImports
 														SigGenTrigSource triggerSource,
 														short extInThreshold);
 
+		[DllImport(_DRIVER_FILENAME, EntryPoint = "ps5000aSigGenSoftwareControl")]
+		public static extern uint SetSigGenSoftwareControl(
+								short handle,
+								short state);		
+		
 		[DllImport(_DRIVER_FILENAME, EntryPoint = "ps5000aSigGenFrequencyToPhase")]
 		public static extern uint SigGenFrequencyToPhase(
 																short handle,
