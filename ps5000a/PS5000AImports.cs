@@ -71,25 +71,28 @@ namespace PS5000AImports
 
 		public enum ThresholdDirection : uint
 		{
-			// Values for level threshold mode
-			//
-			Above,
-			Below,
-			Rising,
-			Falling,
-			RisingOrFalling,
+            // Values for level threshold mode
+            //
+            Above,              //using upper threshold
+            Below,
+            Rising,             // using upper threshold
+            Falling,            // using upper threshold
+            RisingOrFalling,    // using both thresholds
+            AboveLower,         // using lower threshold
+            BelowLower,         // using lower threshold
+            RisingLower,        // using upper threshold
+            FallingLower,       // using upper threshold
 
-			// Values for window threshold mode
-			//
-			Inside = Above,
-			Outside = Below,
-			Enter = Rising,
-			Exit = Falling,
-			EnterOrExit = RisingOrFalling,
-			PositiveRunt = 9,
-			NegativeRunt,
-
-			None = Rising,
+            // Values for window threshold mode
+            //
+            Inside = Above,
+            Outside = Below,
+            Enter = Rising,
+            Exit = Falling,
+            EnterOrExit = RisingOrFalling,
+            PositiveRunt = 9,
+            NegativeRunt,
+            None = Rising
 		}
 
 		public enum PulseWidthType : uint
