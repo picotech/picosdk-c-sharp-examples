@@ -79,11 +79,15 @@ namespace PS2000AImports
         {
             // Values for level threshold mode
             //
-            Above,
+            Above,              //using upper threshold
             Below,
-            Rising,
-            Falling,
-            RisingOrFalling,
+            Rising,             // using upper threshold
+            Falling,            // using upper threshold
+            RisingOrFalling,    // using both thresholds
+            AboveLower,         // using lower threshold
+            BelowLower,         // using lower threshold
+            RisingLower,        // using lower threshold
+            FallingLower,       // using lower threshold
 
             // Values for window threshold mode
             //
@@ -95,7 +99,7 @@ namespace PS2000AImports
             PositiveRunt = 9,
             NegativeRunt,
 
-            None = Rising,
+            None = Rising
         }
 
         public enum DownSamplingMode : int
@@ -327,6 +331,7 @@ namespace PS2000AImports
             public TriggerState ChannelD;
             public TriggerState External;
             public TriggerState Aux;
+            public TriggerState Digital;
 
             public PwqConditions(
                 TriggerState channelA,
@@ -334,7 +339,8 @@ namespace PS2000AImports
                 TriggerState channelC,
                 TriggerState channelD,
                 TriggerState external,
-                TriggerState aux)
+                TriggerState aux,
+                TriggerState digital)
             {
                 this.ChannelA = channelA;
                 this.ChannelB = channelB;
@@ -342,6 +348,7 @@ namespace PS2000AImports
                 this.ChannelD = channelD;
                 this.External = external;
                 this.Aux = aux;
+                this.Digital = digital;
             }
         }
 
