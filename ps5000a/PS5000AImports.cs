@@ -401,6 +401,10 @@ namespace PS5000AImports
 													uint segmentIndex,
 													RatioMode ratioMode);
 
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps5000aSetAutoTriggerMicroSeconds")]   
+        public static extern uint SetAutoTriggerMicroSeconds( short handle,
+                                                              uint autoTriggerMicroseconds);
+
 		[DllImport(_DRIVER_FILENAME, EntryPoint = "ps5000aSetTriggerChannelDirections")]
 		public static extern uint SetTriggerChannelDirections(
 																short handle,
