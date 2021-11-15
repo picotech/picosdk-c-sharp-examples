@@ -60,7 +60,7 @@ namespace PS5000ARapidBlockMode
         public Imports.Range _firstRange = Imports.Range.Range_10mV;
         public Imports.Range _lastRange = Imports.Range.Range_20V;
 
-        private string StreamFile = "stream.txt";
+        private string RapidBlockFile = "RapidBlock.txt";
 
         /****************************************************************************
          * BlockCallback
@@ -108,6 +108,8 @@ namespace PS5000ARapidBlockMode
          ****************************************************************************/
         short mv_to_adc(short mv, short ch)
         {
+
+            Console.WriteLine("Max Value : {0}\n" , _maxValue);
             return (short)((mv * _maxValue) / inputRanges[ch]);
         }
 
@@ -134,8 +136,8 @@ namespace PS5000ARapidBlockMode
 
             _callbackDelegate = RapidBlockCallback;
             status = Imports.RunBlock(_handle,
-                        0,
-                        (int)numSamples,
+                        preTrigger,
+                        (int)numSamples - preTrigger - 1,
                         _timebase,
                         out timeIndisposed,
                         0,
@@ -487,18 +489,16 @@ namespace PS5000ARapidBlockMode
         }
 
         /****************************************************************************
-         * CollectStreamingTriggered
-         *  this function demonstrates how to collect a stream of data
+         * CollectRapidBlockTriggered
+         *  this function demonstrates how to collect a rapid block of data
          *  from the unit (start collecting on trigger)
          ***************************************************************************/
         void CollectRapidBlockTriggered()
         {
-            ushort numRapidCaptures = 10;
+            ushort numRapidCaptures = 20;
             uint status;
 
             Console.WriteLine("Collect Rapid Block");
-
-            numRapidCaptures = 10;
 
             status = Imports.SetNoOfRapidCaptures(_handle, numRapidCaptures);
 
@@ -537,10 +537,11 @@ namespace PS5000ARapidBlockMode
             /* Trigger enabled
              * Rising edge
              * Threshold = 1000mV */
-            short triggerVoltage = mv_to_adc(100, (short)Imports.Range.Range_2V);
+            short triggerVoltage = mv_to_adc(1000, (short)Imports.Range.Range_2V);
             Imports.SetSimpleTrigger(_handle, 1, Imports.Channel.ChannelA, triggerVoltage, Imports.ThresholdDirection.Rising, 0, 0);
 
-            RapidBlockDataHandler(10, 100000); // Collect 100000 pre-trigger samples
+            RapidBlockDataHandler(numRapidCaptures, 1); // Collect 100000 pre-trigger samples
+
         }
 
         /****************************************************************************
@@ -705,7 +706,7 @@ namespace PS5000ARapidBlockMode
 
             short handle;
 
-            status = Imports.OpenUnit(out handle, null, Imports.DeviceResolution.PS5000A_DR_8BIT);
+            status = Imports.OpenUnit(out handle, null, Imports.DeviceResolution.PS5000A_DR_15BIT);
 
             bool powerSupplyConnected = true;
 
