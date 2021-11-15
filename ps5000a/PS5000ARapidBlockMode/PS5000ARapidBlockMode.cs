@@ -520,7 +520,7 @@ namespace PS5000ARapidBlockMode
 
             Imports.SetSigGenBuiltInV2(_handle,
                                         0,
-                                        1000000,
+                                        4000000,
                                         Imports.WaveType.PS5000A_SINE,
                                         100,
                                         100,
@@ -537,7 +537,7 @@ namespace PS5000ARapidBlockMode
             /* Trigger enabled
              * Rising edge
              * Threshold = 1000mV */
-            short triggerVoltage = mv_to_adc(1000, (short)Imports.Range.Range_2V);
+            short triggerVoltage = mv_to_adc(1000, (short)Imports.Range.Range_1V);
             Imports.SetSimpleTrigger(_handle, 1, Imports.Channel.ChannelA, triggerVoltage, Imports.ThresholdDirection.Rising, 0, 0);
 
             RapidBlockDataHandler(numRapidCaptures, 1); // Collect 100000 pre-trigger samples
