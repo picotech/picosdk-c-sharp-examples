@@ -224,8 +224,7 @@ namespace PS3000AExample
         /****************************************************************************
          * RapidBlockDataHandler
          * - Used by the CollectRapidBlock routine
-         * - acquires data (user sets trigger mode before calling), displays 10 items
-         *   and saves all to data.txt
+         * - acquires data
          * Input :
          * - nRapidCaptures : the user specified number of blocks to capture
          ****************************************************************************/

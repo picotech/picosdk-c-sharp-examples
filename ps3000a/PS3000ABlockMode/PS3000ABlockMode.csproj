@@ -5,4 +5,10 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Include="..\..\shared\PicoPinnedArray.cs" Link="PicoPinnedArray.cs" />
+    <Compile Include="..\..\shared\PicoStatus.cs" Link="PicoStatus.cs" />
+    <Compile Include="..\PS3000AImports.cs" Link="PS3000AImports.cs" />
+  </ItemGroup>
+
 </Project>
