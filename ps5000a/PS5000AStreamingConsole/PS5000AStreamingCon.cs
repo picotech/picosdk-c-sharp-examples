@@ -533,29 +533,6 @@ namespace PS5000AStreamingConsole
         }
 
         /****************************************************************************
-         * CollectStreamingTriggered
-         *  this function demonstrates how to collect a stream of data
-         *  from the unit (start collecting on trigger)
-         ***************************************************************************/
-        void CollectStreamingTriggered()
-        {
-            short triggerVoltage = mv_to_adc(1000, (short)_channelSettings[(int)Imports.Channel.ChannelA].range); // ChannelInfo stores ADC counts            
-
-            Console.WriteLine("Collect streaming triggered...");
-            Console.WriteLine("Data is written to disk file (stream.txt)");
-            Console.WriteLine("Press a key to start");
-            WaitForKey();
-
-            /* Trigger enabled
-             * Rising edge
-             * Threshold = 1000mV */
-
-            Imports.SetSimpleTrigger(_handle, 1, Imports.Channel.ChannelA, triggerVoltage, Imports.ThresholdDirection.Rising, 0, 0);
-
-            StreamDataHandler(100000); // Collect 100000 pre-trigger samples
-        }
-
-        /****************************************************************************
         * Select resolution of device
         ****************************************************************************/
         void SetResolution()
@@ -634,8 +611,7 @@ namespace PS5000AStreamingConsole
                 Imports.MaximumValue(_handle, out _maxValue); // Set max. ADC Counts
 
                 Console.WriteLine("\n");
-                Console.WriteLine("S - Immediate streaming         V - Set voltages");
-                Console.WriteLine("W - Triggered streaming");
+                Console.WriteLine("S - Run Streaming         V - Set voltages");
                 Console.WriteLine("R - Change Resolution");
                 Console.WriteLine("X - Exit");
                 Console.WriteLine();
@@ -649,10 +625,6 @@ namespace PS5000AStreamingConsole
                 {
                     case 'S':
                         CollectStreamingImmediate();
-                        break;
-
-                    case 'W':
-                        CollectStreamingTriggered();
                         break;
 
                     case 'V':
