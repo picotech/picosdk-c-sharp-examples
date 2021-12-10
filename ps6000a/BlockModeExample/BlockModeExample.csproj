@@ -83,6 +83,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\shared\PicoPinnedArray.cs">
+      <Link>PicoPinnedArray.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\ps6000a.Callbacks.cs">
       <Link>ps6000a.Callbacks.cs</Link>
     </Compile>
