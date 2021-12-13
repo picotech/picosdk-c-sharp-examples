@@ -325,20 +325,13 @@ namespace PS3000AEtsBlockModeExample
 				}
 
 				short status2=0;
-				/*while(0 == status2)
-                {
-					BlockCallback(handle, status2, IntPtr.Zero);
-					Console.WriteLine("CallBack Value : {0}", status2);
 
-				}*/
 				Thread.Sleep(1000);
-				// EtsBlockDataHandler("Ten readings after trigger:", 0, Imports.Mode.ANALOGUE);
 
 				// 7) wait until unit is ready using the callback
 				// Performed in the Callback Function
 
-
-
+				// 8) Extract the values from the device.
 				short overflow;
 				uint finalSampleCount = sampleCount;
 				status = Imports.GetValues(handle, 0, ref finalSampleCount, 0, Imports.RatioMode.None, 0, out overflow);
@@ -349,18 +342,18 @@ namespace PS3000AEtsBlockModeExample
 
 				// 9) Collect data
 				Console.WriteLine("Count : {0}", myDr1.Count);
-				/*for (int i = 0; i < sampleCount; i++)
-				{
-					Console.WriteLine("Values : {0} {1}", etsTime[i], minBuffers[0][i]);
-					myDr1[etsTime[i]] = minBuffers[0][i];
-					myDr2[etsTime[i]] = minBuffers[1][i];
-					myDr3[etsTime[i]] = minBuffers[2][i];
-					myDr4[etsTime[i]] = minBuffers[3][i];
-				}*/
+                for (int i = 0; i < sampleCount; i++)
+                {
+                    Console.WriteLine("Values : {0} {1}", etsTime[i], minBuffers[0][i]);
+                    myDr1[etsTime[i]] = minBuffers[0][i];
+                    myDr2[etsTime[i]] = minBuffers[1][i];
+                    myDr3[etsTime[i]] = minBuffers[2][i];
+                    myDr4[etsTime[i]] = minBuffers[3][i];
+                }
 
-				// 10) Display the data.
-				// Display the key/value pairs
-				Console.WriteLine("Count : {0}", myDr1.Count);
+                // 10) Display the data.
+                // Display the key/value pairs
+                Console.WriteLine("Count : {0}", myDr1.Count);
 				foreach (KeyValuePair<long, short> pair in myDr1)
 				{
 					Console.WriteLine("Key: {0} and Value: {1}",
