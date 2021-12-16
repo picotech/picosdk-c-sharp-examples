@@ -20,7 +20,7 @@ namespace PS3000AImports
 	class Imports
 	{
 		#region Constants
-		private const string _DRIVER_FILENAME = "ps3000a.dll";
+		private const string _DRIVER_FILENAME = "C:\\Program Files (x86)\\Pico Technology\\SDK\\lib\\ps3000a.dll";
 
 		public const int MaxValue = 32512;
         public const int MaxLogicLevel = 32767;
@@ -187,11 +187,10 @@ namespace PS3000AImports
 
         public enum EtsMode : int
         {
-            PS3000A_NONE,
-            PS3000A_DOWN,
-            PS3000A_UPDOWN,
-            PS3000A_DOWNUP,
-            PS3000A_MAX_SWEEP_TYPES
+            PS3000A_OFF,
+            PS3000A_FAST,
+            PS3000A_SLOW,
+            PS3000A_MODES_MAX
         }
 
         public enum SweepType : int
