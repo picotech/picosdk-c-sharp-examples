@@ -10,33 +10,21 @@ using PicoPinnedArray;
 using PicoStatus;
 
 /*
-Open unit
-
-Setup channels
-
-Set Timebase
-
-Set up ETS using
-
-Setup a simple Trigger.
-
-Run Block
-
-wait until unit is ready using the callback
-
-Setup data buffers (Use ps3000aSetDataBuffer to tell the driver where your memory buffer is and use ps3000aSetEtsTimeBuffer or ps3000aSetEtsTimeBuffers to tell the driver where to store the sample times.)
-
-Collect data
-
-Display the data.
-
-While you want to collect updated captures, repeat steps 7-10.
-
-Repeat steps 6-11.
-
-Stop unit
-
-Close unit
+	Steps :
+	1) Open unit
+	2) Setup channels
+	3) Set Timebase
+	4) Set up ETS using
+	5) Setup a simple Trigger.
+	6) Run Block
+	7) wait until unit is ready using the callback
+	8) Setup data buffers (Use ps3000aSetDataBuffer to tell the driver where your memory buffer is and use ps3000aSetEtsTimeBuffer or ps3000aSetEtsTimeBuffers to tell the driver where to store the sample times.)
+	9) Collect data
+	10) Display the data.
+	11) While you want to collect updated captures, repeat steps 7-10.
+	12) Repeat steps 6-11.
+	13) Stop unit
+	14) Close unit
 */
 
 namespace PS3000AEtsBlockModeExample
@@ -45,10 +33,10 @@ namespace PS3000AEtsBlockModeExample
 	class Program
 	{
 
-		SortedDictionary<long, short> myDr1;
-		SortedDictionary<long, short> myDr2;
-		SortedDictionary<long, short> myDr3;
-		SortedDictionary<long, short> myDr4;
+		SortedDictionary<long, short> EtsSortedDictionaryChannelA;
+		SortedDictionary<long, short> EtsSortedDictionaryChannelB;
+		SortedDictionary<long, short> EtsSortedDictionaryChannelC;
+		SortedDictionary<long, short> EtsSortedDictionaryChannelD;
 
 		public bool _ready = false;
 		public void BlockCallback(short handle, short status, IntPtr pVoid)
@@ -163,28 +151,28 @@ namespace PS3000AEtsBlockModeExample
 		}
 
 		public void Run()
-        {
-
-			myDr1 = new SortedDictionary<long, short>();
-			myDr2 = new SortedDictionary<long, short>();
-			myDr3 = new SortedDictionary<long, short>();
-			myDr4 = new SortedDictionary<long, short>();
+		{
+			// [ 1 , 6 , 11 , 16 ] => [ 1 , 6 , 11 , 16 ]
+			// [ 2 , 7 , 12 , 17 ] => [ 1 , 2 , 6 , 7 , 11 , 12 , 16 , 17 ]
+			EtsSortedDictionaryChannelA = new SortedDictionary<long, short>();
+			EtsSortedDictionaryChannelB = new SortedDictionary<long, short>();
+			EtsSortedDictionaryChannelC = new SortedDictionary<long, short>();
+			EtsSortedDictionaryChannelD = new SortedDictionary<long, short>();
 
 			Int16 handle;
 			uint status = StatusCodes.PICO_OK;
 
 			// 1) Open unit
 			status = Imports.OpenUnit(out handle, null);
-
-			if (status != StatusCodes.PICO_OK)
+			if (StatusCodes.PICO_OK != status)
 			{
 				status = PowerSourceSwitch(handle, status);
 
-				if (status == StatusCodes.PICO_POWER_SUPPLY_UNDERVOLTAGE)
+				if (StatusCodes.PICO_POWER_SUPPLY_UNDERVOLTAGE == status)
 				{
 					status = PowerSourceSwitch(handle, status);
 				}
-				else if (status == StatusCodes.PICO_USB3_0_DEVICE_NON_USB3_0_PORT)
+				else if (StatusCodes.PICO_USB3_0_DEVICE_NON_USB3_0_PORT == status)
 				{
 					status = PowerSourceSwitch(handle, StatusCodes.PICO_POWER_SUPPLY_NOT_CONNECTED);
 				}
@@ -201,37 +189,62 @@ namespace PS3000AEtsBlockModeExample
 			for (int i = 0; i < _channelCount; i++) // reset channels to most recent settings
 			{
 				_channelSettings[i].enabled = true;
-				_channelSettings[i].DCcoupled = Imports.Coupling.DC;
-				_channelSettings[i].range = Imports.Range.Range_20V;
+				_channelSettings[i].coupled = Imports.Coupling.AC;
+				_channelSettings[i].range = Imports.Range.Range_1V;
 
 				Imports.SetChannel(handle, Imports.Channel.ChannelA + i,
 								   (short)(_channelSettings[(int)(Imports.Channel.ChannelA + i)].enabled ? 1 : 0),
-								   _channelSettings[(int)(Imports.Channel.ChannelA + i)].DCcoupled,
+								   _channelSettings[(int)(Imports.Channel.ChannelA + i)].coupled,
 								   _channelSettings[(int)(Imports.Channel.ChannelA + i)].range,
 								   (float)0.0);
-				if (0 != status)
+				if (StatusCodes.PICO_OK != status)
+				{
+					Console.WriteLine("Set Channel {0} - Error = 0x{0:X6}", (char)('A' + i), status);
 					return;
+				}
 			}
 
 			// 3) Set Timebase
-			uint _timebase = 100;
-			const uint sampleCount = 50;
+			uint _timebase = 1;
+			const uint sampleCount = 200000;
 			int timeInterval;
 			short _oversample = 0;
 			int maxSamples = 0;
 			status = 1;
-			while (status != StatusCodes.PICO_OK)
+			do
 			{
 				status = Imports.GetTimebase(handle, _timebase, (int)sampleCount, out timeInterval, _oversample, out maxSamples, 0);
-				Console.WriteLine("Selected timebase {0} could not be used. {1}\n", _timebase , status);
-				_timebase++;
-			}
+				if (StatusCodes.PICO_OK != status)
+				{
+					Console.WriteLine("Selected timebase {0} could not be used. Error : 0x{1:X6}\n", _timebase, status);
+					_timebase++;
+				}
+			} while (StatusCodes.PICO_OK != status);
+
+			uint pkToPk = 2000000;
+			double frequency = 100000;
+			Imports.SetSigGenBuiltInV2(
+				handle, 
+				0, pkToPk, 
+				Imports.WaveType.PS3000A_SINE, 
+				frequency, frequency, 0, 0, 
+				Imports.SweepType.PS3000A_DOWN, 
+				Imports.ExtraOperations.PS3000A_ES_OFF, 
+				0, 0, 
+				Imports.SigGenTrigType.PS3000A_SIGGEN_RISING, 
+				Imports.SigGenTrigSource.PS3000A_SIGGEN_NONE, 0);
 
 			// 4) Set up ETS
 			int sampleTimePicoseconds;
-			Imports.SetEts(handle, Imports.EtsMode.PS3000A_MAX_SWEEP_TYPES, 20, 4, out sampleTimePicoseconds);
-			if (0 != status)
+			short etsCycles = 20;
+			short etsInterleave = 4;
+			Imports.SetEts(handle, Imports.EtsMode.PS3000A_SLOW, etsCycles, etsInterleave, out sampleTimePicoseconds);
+			Console.WriteLine(" SampleTime SetTime : {0}", sampleTimePicoseconds);
+			if (StatusCodes.PICO_OK != status)
+			{
+				Console.WriteLine("Set ETS - Error : 0x{0:X6}", status);
 				return;
+			}
 
 			// 5) Setup a simple Trigger.
 			/* Trigger enabled
@@ -262,7 +275,14 @@ namespace PS3000AEtsBlockModeExample
 											Imports.ThresholdDirection.None,
 											Imports.ThresholdDirection.None,
 											Imports.ThresholdDirection.None };
-			SetTrigger(handle, sourceDetails, 1, conditions, 1, directions, null, 0, 0, 100);
+
+			int autoTrigger = 100;
+			status = SetTrigger(handle, sourceDetails, 1, conditions, 1, directions, null, 0, 0, autoTrigger);
+			if (StatusCodes.PICO_OK != status)
+			{
+				Console.WriteLine("Set Trigger - Error : 0x{0:X6}", status);
+				return;
+			}
 
 			// 8) Setup data buffers(Use ps3000aSetDataBuffer to tell the driver where your memory buffer is and use ps3000aSetEtsTimeBuffer or ps3000aSetEtsTimeBuffers to tell the driver where to store the sample times.)
 			PinnedArray<short>[] minPinned = new PinnedArray<short>[_channelCount];
@@ -280,20 +300,18 @@ namespace PS3000AEtsBlockModeExample
 				{
 					if (_channelSettings[i].enabled)
 					{
-						Console.WriteLine("IN");
 						minBuffers[i] = new short[sampleCount];
 						maxBuffers[i] = new short[sampleCount];
 						minPinned[i] = new PinnedArray<short>(minBuffers[i]);
 						maxPinned[i] = new PinnedArray<short>(maxBuffers[i]);
+
 						uint segmentIndex = 0;
+						status = Imports.SetDataBuffers(handle, (Imports.Channel)i, minBuffers[i], maxBuffers[i], (int)sampleCount, segmentIndex, Imports.RatioMode.Aggregate);
 
-						status = Imports.SetDataBuffer(handle, (Imports.Channel)i, minBuffers[i], (int)sampleCount, segmentIndex, Imports.RatioMode.None);
-						if (0 != status)
-							return;
-
-						if (status != StatusCodes.PICO_OK)
+						if (StatusCodes.PICO_OK != status)
 						{
-							Console.WriteLine("BlockDataHandler:Imports.SetDataBuffers Channel {0} Status = 0x{1:X6}", (char)('A' + i), status);
+							Console.WriteLine("SetDataBuffers Channel {0} - Error = 0x{1:X6}", (char)('A' + i), status);
+							return;
 						}
 					}
 				}
@@ -302,9 +320,10 @@ namespace PS3000AEtsBlockModeExample
 			long[] etsTime = new long[sampleCount];
 			PinnedArray<long> etsPinned = new PinnedArray<long>(etsTime);
 			status = Imports.SetEtsTimeBuffer(handle, etsTime, sampleCount);
-			if (0 != status)
+			if (StatusCodes.PICO_OK != status)
 			{
-				Console.WriteLine("ETS Time Buffer - Status : {0}", status);
+				Console.WriteLine("ETS Time Buffer - Error : 0x{0:X6}", status);
+				return;
 			}
 
 			// 6) Run Block
@@ -312,96 +331,97 @@ namespace PS3000AEtsBlockModeExample
 			_callbackDelegate = BlockCallback;
 
 			int loopCount = 0;
-			int maxLoop = 10;
+			int maxLoop = 3;
 			while (loopCount < maxLoop) {
+				_ready = false;
 				Console.WriteLine("loopCount: {0} and maxLoop: {1}",
-										  loopCount, maxLoop);
+										  loopCount, 
+										  maxLoop);
 				loopCount++;
 				
 				status = Imports.RunBlock(handle, 0, (int)sampleCount, _timebase, _oversample, out timeIndisposed, 0, _callbackDelegate, IntPtr.Zero);
-				if (0 != status)
+				if (StatusCodes.PICO_OK != status)
 				{
-					Console.WriteLine("Run Block - Status : {0}", status);
+					Console.WriteLine("Run Block - Error : 0x{0:X6}", status);
+					return;
 				}
 
 				short status2=0;
 
-				Thread.Sleep(1000);
-
 				// 7) wait until unit is ready using the callback
-				// Performed in the Callback Function
+				while ( !_ready ) ;
 
 				// 8) Extract the values from the device.
 				short overflow;
 				uint finalSampleCount = sampleCount;
-				status = Imports.GetValues(handle, 0, ref finalSampleCount, 0, Imports.RatioMode.None, 0, out overflow);
-				if (0 != status)
+				status = Imports.GetValues(handle, 0, ref finalSampleCount, 0, Imports.RatioMode.Aggregate, 0, out overflow);
+				if (StatusCodes.PICO_OK != status)
 				{
-					Console.WriteLine("Get Values - Status : {0}", status);
+					Console.WriteLine("Get Values - Error : 0x{0:X6}", status);
+					return;
 				}
 
 				// 9) Collect data
-				Console.WriteLine("Count : {0}", myDr1.Count);
+				Console.WriteLine("Count : {0}", EtsSortedDictionaryChannelA.Count);
                 for (int i = 0; i < sampleCount; i++)
                 {
-                    Console.WriteLine("Values : {0} {1}", etsTime[i], minBuffers[0][i]);
-                    myDr1[etsTime[i]] = minBuffers[0][i];
-                    myDr2[etsTime[i]] = minBuffers[1][i];
-                    myDr3[etsTime[i]] = minBuffers[2][i];
-                    myDr4[etsTime[i]] = minBuffers[3][i];
+                    EtsSortedDictionaryChannelA[etsTime[i]] = minBuffers[0][i];
+                    EtsSortedDictionaryChannelB[etsTime[i]] = minBuffers[1][i];
+                    EtsSortedDictionaryChannelC[etsTime[i]] = minBuffers[2][i];
+                    EtsSortedDictionaryChannelD[etsTime[i]] = minBuffers[3][i];
                 }
 
                 // 10) Display the data.
-                // Display the key/value pairs
-                Console.WriteLine("Count : {0}", myDr1.Count);
-				foreach (KeyValuePair<long, short> pair in myDr1)
-				{
-					Console.WriteLine("Key: {0} and Value: {1}",
-										  pair.Key, pair.Value);
-				}
-				foreach (KeyValuePair<long, short> pair in myDr2)
-				{
-					Console.WriteLine("Key: {0} and Value: {1}",
-										  pair.Key, pair.Value);
-				}
-				foreach (KeyValuePair<long, short> pair in myDr3)
-				{
-					Console.WriteLine("Key: {0} and Value: {1}",
-										  pair.Key, pair.Value);
-				}
-				foreach (KeyValuePair<long, short> pair in myDr4)
-				{
-					Console.WriteLine("Key: {0} and Value: {1}",
-										  pair.Key, pair.Value);
-				}
+                // Display the results at the end
 
 				// 11) While you want to collect updated captures, repeat steps 7 - 10.
-
 				Thread.Sleep(1000);
 
 				// 12) Repeat steps 6 - 11.
 			}
 			// 13) Stop unit
 			status = Imports.Stop(handle);
-			Thread.Sleep(10000);
+			if (StatusCodes.PICO_OK != status)
+			{
+				Console.WriteLine("Unit Stop - Error : 0x{0:X6}", status);
+				return;
+			}
+			Thread.Sleep(1000);
+
+			// Display the key/value pairs
+			foreach (KeyValuePair<long, short> pair in EtsSortedDictionaryChannelA)
+			{
+				Console.WriteLine("Key: {0} and Value: {1} {2} {3} {4}",
+									  pair.Key, 
+									  EtsSortedDictionaryChannelA[pair.Key], 
+									  EtsSortedDictionaryChannelB[pair.Key], 
+									  EtsSortedDictionaryChannelC[pair.Key], 
+									  EtsSortedDictionaryChannelD[pair.Key]);
+			}
+			Console.WriteLine("Count : {0}", EtsSortedDictionaryChannelA.Count);
+			Console.WriteLine("Count : {0}", EtsSortedDictionaryChannelB.Count);
+			Console.WriteLine("Count : {0}", EtsSortedDictionaryChannelC.Count);
+			Console.WriteLine("Count : {0}", EtsSortedDictionaryChannelD.Count);
 
 			// 14) Close unit
 			status = Imports.CloseUnit(handle);
+			{
+				Console.WriteLine("Close Unit - Error : 0x{0:X6}", status);
+				return;
+			}
 
-			Console.WriteLine("Hello World!");
 		}
 
 		static void Main(string[] args)
 		{
 			Program consoleExample = new Program();
 			consoleExample.Run();
-
         }
     }
 
 	struct ChannelSettings
 	{
-		public Imports.Coupling DCcoupled;
+		public Imports.Coupling coupled;
 		public Imports.Range range;
 		public bool enabled;
 	}
