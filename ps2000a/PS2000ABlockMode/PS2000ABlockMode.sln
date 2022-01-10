@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31729.503
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS2000ABlockMode", "PS2000ABlockMode\PS2000ABlockMode.csproj", "{0E66E097-6D4E-4C75-A5E0-0072C30BE17E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0E66E097-6D4E-4C75-A5E0-0072C30BE17E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E66E097-6D4E-4C75-A5E0-0072C30BE17E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E66E097-6D4E-4C75-A5E0-0072C30BE17E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E66E097-6D4E-4C75-A5E0-0072C30BE17E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {34734443-5CE2-4781-9CD2-BB0092D45E74}
+	EndGlobalSection
+EndGlobal
