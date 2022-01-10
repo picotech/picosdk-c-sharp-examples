@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using DriverImports;
+using PicoPinnedArray;
 
 namespace MSOTriggerExample
 {
@@ -40,20 +41,16 @@ namespace MSOTriggerExample
       if (status != StandardDriverStatusCode.Ok) return status;
 
       var data = new short[numSamples];
-      GCHandle gch = GCHandle.Alloc(data);
+      var pinned = new PinnedArray<short>(data);
 
-      try
-      {
+            
+      
         status = ps6000aDevice.ReadDataFromDevice(handle, channel, numSamples, ref data);
         if (status != StandardDriverStatusCode.Ok)
           return status;
 
         ps6000aDevice.WriteDigitalDataToFile(data);
-      }
-      finally
-      {
-        gch.Free();
-      }
+     
       return status;
     }
 
