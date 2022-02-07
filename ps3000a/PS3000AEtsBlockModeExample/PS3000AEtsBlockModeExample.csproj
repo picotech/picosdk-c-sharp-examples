@@ -5,6 +5,14 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\..\shared\PicoPinnedArray.cs" Link="PicoPinnedArray.cs" />
     <Compile Include="..\..\shared\PicoStatus.cs" Link="PicoStatus.cs" />

@@ -20,7 +20,7 @@ namespace PS3000AImports
 	class Imports
 	{
 		#region Constants
-		private const string _DRIVER_FILENAME = "ps3000a.dll";
+		private const string _DRIVER_FILENAME = "C:\\Program Files (x86)\\Pico Technology\\SDK\\lib\\ps3000a.dll";
 
 		public const int MaxValue = 32512;
         public const int MaxLogicLevel = 32767;
@@ -183,6 +183,14 @@ namespace PS3000AImports
             PS3000A_DIGITAL_CHANNEL_29,
             PS3000A_DIGITAL_CHANNEL_30,
             PS3000A_DIGITAL_CHANNEL_31
+        }
+
+        public enum EtsMode : int
+        {
+            PS3000A_OFF,
+            PS3000A_FAST,
+            PS3000A_SLOW,
+            PS3000A_MODES_MAX
         }
 
         public enum SweepType : int
@@ -414,12 +422,12 @@ namespace PS3000AImports
         }
 
         #endregion
-        
+
         #region Driver Imports
         #region Callback delegates
         public delegate void ps3000aBlockReady(short handle, short status, IntPtr pVoid);
 
-		public delegate void ps3000aStreamingReady(
+        public delegate void ps3000aStreamingReady(
 												short handle,
 												int noOfSamples,
 												uint startIndex,
@@ -435,9 +443,11 @@ namespace PS3000AImports
 												int noOfSamples,
 												short overflow,
 												IntPtr pVoid);
-		#endregion
+        #endregion
+   /*     [DllImport(_DRIVER_FILENAME, EntryPoint = "ps3000aBlockReady")]
+        public static extern uint BlockReady(short handle, short status, IntPtr pVoid);*/
 
-		[DllImport(_DRIVER_FILENAME, EntryPoint = "ps3000aOpenUnit")]
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps3000aOpenUnit")]
 		public static extern uint OpenUnit(out short handle, StringBuilder serial);
 
 		[DllImport(_DRIVER_FILENAME, EntryPoint = "ps3000aCloseUnit")]
@@ -700,7 +710,22 @@ namespace PS3000AImports
                                                         SigGenTrigSource triggerSource,
                                                         short extInThreshold);
 
-        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps3000aSetSigGenPropertiesBuiltIn")]
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps3000aSetEtsTimeBuffer")]
+        public static extern uint SetEtsTimeBuffer(
+                                                        short handle,
+                                                        long[] etsTime,
+                                                        uint sampleCount);
+
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps3000aSetEts")]
+        public static extern uint SetEts(
+             short handle,
+             EtsMode mode,
+             short etsCycles,
+             short etsInterleave,
+             out int sampleTimePicoseconds
+             );
+
+         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps3000aSetSigGenPropertiesBuiltIn")]
         public static extern uint SetSigGenPropertiesBuiltIn(
                                                         short handle,
                                                         double startFrequency,
