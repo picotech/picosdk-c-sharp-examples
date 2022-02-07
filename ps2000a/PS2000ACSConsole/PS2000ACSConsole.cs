@@ -2060,13 +2060,42 @@ namespace PS2000ACSConsole
         static void Main()
         {
             Console.WriteLine("PicoScope 2000 Series (ps2000a) Driver Example Program");
+            Console.WriteLine("Enumerating devices...\n");
 
+            short count = 0;
+            short serialsLength = 40;
+            StringBuilder serials = new StringBuilder(serialsLength);
+
+            uint status = Imports.EnumerateUnits(out count, serials, ref serialsLength);
+
+            if (status != StatusCodes.PICO_OK)
+            {
+                Console.WriteLine("No devices found.\n");
+                Console.WriteLine("Error code : {0}", status);
+                Console.WriteLine("Press any key to exit.\n");
+                WaitForKey();
+                Environment.Exit(0);
+            }
+            else
+            {
+                if (count == 1)
+                {
+                    Console.WriteLine("Found {0} device:", count);
+                }
+                else
+                {
+                    Console.WriteLine("Found {0} devices", count);
+                }
+
+                Console.WriteLine("Serial(s) {0}", serials);
+
+            }
 
             // Open unit and show splash screen
             Console.WriteLine("\n\nOpening the device...");
             short handle;
 
-            uint status = Imports.OpenUnit(out handle, null);
+            status = Imports.OpenUnit(out handle, null);
             Console.WriteLine("Handle: {0}", handle);
 
             if (status != StatusCodes.PICO_OK)

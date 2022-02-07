@@ -460,6 +460,13 @@ namespace PS2000AImports
                                              out int maxSamples,
                                              uint segmentIndex);
 
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps2000aEnumerateUnits")]
+        public static extern uint EnumerateUnits(
+                                                    out short count,
+                                                    StringBuilder serials,
+                                                    ref short serialLength
+                                                  );
+
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps2000aGetValues")]
         public static extern uint GetValues(
                 short handle,
