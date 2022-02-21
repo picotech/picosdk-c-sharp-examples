@@ -545,6 +545,11 @@ namespace PS2000AImports
             short handle,
             uint nCaptures);
 
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps2000aGetNoOfCaptures")]
+        public static extern uint GetNoOfRapidCaptures(
+            short handle,
+            out uint nCaptures);
+
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps2000aMemorySegments")]
         public static extern uint MemorySegments(
             short handle,
