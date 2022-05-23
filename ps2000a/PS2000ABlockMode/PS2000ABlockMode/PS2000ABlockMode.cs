@@ -103,7 +103,7 @@ namespace PS2000AExample
 
         static void Main(string[] args)
         {
-            Console.WriteLine("PicoScope 3000 Series (ps2000a) Driver C# Block mode example");
+            Console.WriteLine("PicoScope 2000 Series (ps2000a) Driver C# Block mode example");
             Console.WriteLine("\nOpening the device...");
 
             short handle;

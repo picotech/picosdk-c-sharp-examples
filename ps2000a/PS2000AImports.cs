@@ -252,6 +252,14 @@ namespace PS2000AImports
             PS2000A_SIGGEN_SOFT_TRIG
         }
 
+        public enum EtsMode : int
+        {
+            PS2000A_OFF,
+            PS2000A_FAST,
+            PS2000A_SLOW,
+            PS2000A_MODES_MAX
+        }
+
         public enum CouplingType : int
         {
             PS2000A_AC,
@@ -420,6 +428,21 @@ namespace PS2000AImports
                                                 CouplingType couplingType,
                                                 Range range,
                                                 float analogueOffset);
+
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps2000aSetEts")]
+        public static extern uint SetEts(
+            short handle,
+            EtsMode mode,
+            short etsCycles,
+            short etsInterleave,
+            out int sampleTimePicoseconds
+            );
+
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps2000aSetEtsTimeBuffer")]
+        public static extern uint SetEtsTimeBuffer(
+                                                        short handle,
+                                                        long[] etsTime,
+                                                        uint sampleCount);
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps2000aSetDataBuffer")]
         public static extern uint SetDataBuffer(
@@ -629,21 +652,21 @@ namespace PS2000AImports
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps2000aSetSigGenBuiltInV2")]
         public static extern uint SetSigGenBuiltInV2(
-            short handle,
-            int offsetVoltage,
-            uint pkToPk,
-            short waveType,
-            double startFrequency,
-            double stopFrequency,
-            double increment,
-            double dwellTime, 
-            SweepType sweepType,
-            ExtraOperations operation,
-            uint shots,
-            uint sweeps,
-            SigGenTrigType triggerType,
-            SigGenTrigSource triggerSource,
-            short extInThreshold);
+                                                         short handle,
+                                                         int offsetVoltage,
+                                                         uint pkTopk,
+                                                         WaveType waveType,
+                                                         double startFrequency,
+                                                         double stopFrequency,
+                                                         double increment,
+                                                         double dwellTime,
+                                                         SweepType sweepType,
+                                                         ExtraOperations operation,
+                                                         uint shots,
+                                                         uint sweeps,
+                                                         SigGenTrigType triggerType,
+                                                         SigGenTrigSource triggerSource,
+                                                         short extInThreshold);
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps2000aSigGenFrequencyToPhase")]
         public static extern uint SigGenFrequencyToPhase(
