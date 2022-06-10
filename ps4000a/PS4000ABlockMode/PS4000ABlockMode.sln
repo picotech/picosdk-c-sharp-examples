@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32526.322
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS4000ABlockMode", "\picotech.co.uk\users$\Homes\shakeel.montoute\Home\Documents\clone repository\picosdk-c-sharp-examples\ps4000a\PS4000ABlockMode\PS4000ABlockMode\PS4000ABlockMode.csproj", "{9A9FC398-10B1-4208-8CA2-9A96927E3491}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9A9FC398-10B1-4208-8CA2-9A96927E3491}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A9FC398-10B1-4208-8CA2-9A96927E3491}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A9FC398-10B1-4208-8CA2-9A96927E3491}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A9FC398-10B1-4208-8CA2-9A96927E3491}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7250CDE8-175C-43E9-A436-E07A81583A6D}
+	EndGlobalSection
+EndGlobal
