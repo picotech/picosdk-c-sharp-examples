@@ -530,11 +530,21 @@ namespace PS4000AImports
                                                             short handle,
                                                             uint nWaveforms);
 
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aGetNoOfCaptures")]
+        public static extern UInt32 GetNoOfRapidCaptures(
+                                                            short handle,
+                                                            out uint nCaptures);
+
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aMemorySegments")]
         public static extern UInt32 MemorySegments(
                                                     short handle,
                                                     uint nSegments,
                                                     out int nMaxSamples);
+
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aGetMaxSegments")]
+        public static extern uint GetMaxSegments(
+                                                    short handle,
+                                                    out uint maxSegments);
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aGetValuesBulk")]
         public static extern UInt32 GetValuesRapid(
