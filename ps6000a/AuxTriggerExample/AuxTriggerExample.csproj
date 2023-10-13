@@ -68,20 +68,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\shared\PicoDeviceEnums.cs">
+      <Link>PicoDeviceEnums.cs</Link>
+    </Compile>
+    <Compile Include="..\..\shared\PicoDeviceStructs.cs">
+      <Link>PicoDeviceStructs.cs</Link>
+    </Compile>
+    <Compile Include="..\..\shared\PicoStatus.cs">
+      <Link>PicoStatus.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\ps6000a.Callbacks.cs">
       <Link>ps6000a.Callbacks.cs</Link>
     </Compile>
-    <Compile Include="..\Shared\ps6000a.DeviceEnums.cs">
-      <Link>ps6000a.DeviceEnums.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared\ps6000a.DeviceStructs.cs">
-      <Link>ps6000a.DeviceStructs.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared\ps6000a.DriverImports.cs">
-      <Link>ps6000a.DriverImports.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared\ps6000a.StatusCodes.cs">
-      <Link>ps6000a.StatusCodes.cs</Link>
+    <Compile Include="..\Shared\ps6000a.Imports.cs">
+      <Link>ps6000a.Imports.cs</Link>
     </Compile>
     <Compile Include="..\Shared\ps6000aDevice.cs">
       <Link>ps6000aDevice.cs</Link>
@@ -91,9 +91,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ps6000a.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -8,10 +8,11 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>TriggerWithinPreTriggerExample</RootNamespace>
     <AssemblyName>TriggerWithinPreTriggerExample</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -64,23 +65,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\shared\PicoConnectProbes.cs">
+      <Link>PicoConnectProbes.cs</Link>
+    </Compile>
+    <Compile Include="..\..\shared\PicoDeviceEnums.cs">
+      <Link>PicoDeviceEnums.cs</Link>
+    </Compile>
+    <Compile Include="..\..\shared\PicoDeviceStructs.cs">
+      <Link>PicoDeviceStructs.cs</Link>
+    </Compile>
     <Compile Include="..\..\shared\PicoPinnedArray.cs">
       <Link>PicoPinnedArray.cs</Link>
+    </Compile>
+    <Compile Include="..\..\shared\PicoStatus.cs">
+      <Link>PicoStatus.cs</Link>
     </Compile>
     <Compile Include="..\Shared\ps6000a.Callbacks.cs">
       <Link>ps6000a.Callbacks.cs</Link>
     </Compile>
-    <Compile Include="..\Shared\ps6000a.DeviceEnums.cs">
-      <Link>ps6000a.DeviceEnums.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared\ps6000a.DeviceStructs.cs">
-      <Link>ps6000a.DeviceStructs.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared\ps6000a.DriverImports.cs">
-      <Link>ps6000a.DriverImports.cs</Link>
-    </Compile>
-    <Compile Include="..\Shared\ps6000a.StatusCodes.cs">
-      <Link>ps6000a.StatusCodes.cs</Link>
+    <Compile Include="..\Shared\ps6000a.Imports.cs">
+      <Link>ps6000a.Imports.cs</Link>
     </Compile>
     <Compile Include="..\Shared\ps6000aDevice.cs">
       <Link>ps6000aDevice.cs</Link>

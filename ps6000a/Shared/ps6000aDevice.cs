@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading;
@@ -11,83 +12,113 @@ using DriverImports;
 
 class ps6000aDevice
 {
-  /// <summary>
-  /// Opens a ps6000a unit
-  /// </summary>
-  public static StandardDriverStatusCode OpenUnit(out short handle, DeviceResolution resolution, out int numChannels)
-  {
-    numChannels = 0;
-
-    var status = DriverImports.PS6000a.OpenUnit(out handle, null, resolution);
-    if (handle <= 0 || status != StandardDriverStatusCode.Ok) return status;
-
-    Console.WriteLine("The ps6000a Device has successfully opened with handle: " + handle);
-
-    short requiredSize = 80;
-    StringBuilder info = new StringBuilder(requiredSize);
-    status = DriverImports.PS6000a.GetUnitInfo(handle, info, requiredSize, out requiredSize, InfoType.VariantInfo);
-    if (status != StandardDriverStatusCode.Ok) return status;
-
-    numChannels = (int)Char.GetNumericValue(info[1]); //2nd Char contains the number of channels of the device variant
-    Console.WriteLine("This device has " + numChannels + " Channels");
-
-    return status;
-  }
-
-  /// <summary>
-  /// Closes a ps6000a unit
-  /// </summary>
-  public static void CloseUnit(short handle)
-  {
-    DriverImports.PS6000a.CloseUnit(handle);
-  }
-
-  /// <summary>
-  /// Set up the ps6000a device during capture to wait until it has captured n waveforms, and to store them in the applying n memory segments.
-  /// </summary>
-  public static StandardDriverStatusCode SetUpWithNoOfWaveformsToCapture(short handle, ref ulong nSamples, ulong nWaveforms)
-  {
-    var status = DriverImports.PS6000a.MemorySegments(handle, nWaveforms, out var nMaxSamples);
-    if (status != StandardDriverStatusCode.Ok) return status;
-
-    status = DriverImports.PS6000a.SetNoOfCaptures(handle, nWaveforms);
-
-    if (status == StandardDriverStatusCode.Ok)
-      nSamples = Math.Min(nSamples, nMaxSamples);
-
-    return status;
-  }
-
-  /// <summary>
-  /// Enables a desired channel and disables all other channels.
-  /// </summary>
-  public static StandardDriverStatusCode InitializeChannels(short handle, List<Channel> channels, int numChannels)
-  {
-    var status = StandardDriverStatusCode.Ok;
-
-    //Disable all channels by default.
-    for (var channelToDisable = Channel.ChannelA; channelToDisable < (Channel)numChannels; channelToDisable++)
+    public struct ChannelSettings
     {
-      status = DriverImports.PS6000a.SetChannelOff(handle, channelToDisable);
-      if (status != StandardDriverStatusCode.Ok) return status;
+        public ChannelRange range;
+        public bool enabled;
+    }
+    /// <summary>
+    /// Opens a ps6000a unit
+    /// </summary>
+    /// 
+    public static StandardDriverStatusCode OpenUnit(out short handle, DeviceResolution resolution, out int numChannels)
+    {
+        numChannels = 0;
+
+        var status = DriverImports.PS6000a.OpenUnit(out handle, null, resolution);
+        if (handle <= 0 || status != StandardDriverStatusCode.Ok) return status;
+
+        Console.WriteLine("The ps6000a Device has successfully opened with handle: " + handle);
+
+        short requiredSize = 80;
+        StringBuilder info = new StringBuilder(requiredSize);
+        status = DriverImports.PS6000a.GetUnitInfo(handle, info, requiredSize, out requiredSize, InfoType.VariantInfo);
+        if (status != StandardDriverStatusCode.Ok) return status;
+
+        numChannels = (int)Char.GetNumericValue(info[1]); //2nd Char contains the number of channels of the device variant
+        Console.WriteLine("This device has " + numChannels + " Channels");
+
+        return status;
+    }
+    /// <summary>
+    /// Closes a ps6000a unit
+    /// </summary>
+    public static void CloseUnit(short handle)
+    {
+        DriverImports.PS6000a.CloseUnit(handle);
+    }
+    /// <summary>
+    /// Set up the ps6000a device during capture to wait until it has captured n waveforms, and to store them in the applying n memory segments.
+    /// </summary>
+    public static StandardDriverStatusCode SetUpWithNoOfWaveformsToCapture(short handle, ref ulong nSamples, ulong nWaveforms)
+    {
+        var status = DriverImports.PS6000a.MemorySegments(handle, nWaveforms, out var nMaxSamples);
+        if (status != StandardDriverStatusCode.Ok) return status;
+
+        status = DriverImports.PS6000a.SetNoOfCaptures(handle, nWaveforms);
+
+        if (status == StandardDriverStatusCode.Ok)
+            nSamples = Math.Min(nSamples, nMaxSamples);
+
+        return status;
+    }
+    /// <summary>
+    /// Enables a desired channel and disables all other channels.
+    /// </summary>
+    public static StandardDriverStatusCode InitializeChannels(short handle, List<Channel> channels, int numChannels)
+    {
+        var status = StandardDriverStatusCode.Ok;
+
+        //Disable all channels by default.
+        for (var channelToDisable = Channel.ChannelA; channelToDisable < (Channel)numChannels; channelToDisable++)
+        {
+            status = DriverImports.PS6000a.SetChannelOff(handle, channelToDisable);
+            if (status != StandardDriverStatusCode.Ok) return status;
+        }
+
+        foreach (var channel in channels)
+        {
+            //Note: 50 Ohm coupling limits the max voltage range to 5V
+            status = DriverImports.PS6000a.SetChannelOn(handle, channel, Coupling.DC, ChannelRange.Range_2V,
+                                                        0, BandwidthLimiter.BW_FULL);
+            if (status == StandardDriverStatusCode.Ok)
+                Console.WriteLine(channel + " enabled successfully.");
+        }
+
+        return status;
     }
 
-    foreach (var channel in channels)
+    /// <summary>
+    /// Enables a desired channel and disables all other channels.
+    /// </summary>
+    public static StandardDriverStatusCode InitializeChannelsAndRanges(short handle, in ChannelSettings[] channelSetup, int numChannels)
     {
-      //Note: 50 Ohm coupling limits the max voltage range to 5V
-      status = DriverImports.PS6000a.SetChannelOn(handle, channel, Coupling.DC, ChannelRange.Range_2V,
-                                                  0, BandwidthLimiter.BW_FULL);
-      if (status == StandardDriverStatusCode.Ok)
-        Console.WriteLine(channel + " enabled successfully.");
-    }
+        var status = StandardDriverStatusCode.Ok;
 
+        //Setup or Disable all channels
+        for (var channelcount = Channel.ChannelA; channelcount < (Channel)numChannels; channelcount++)
+        {
+            if (channelSetup[(int)channelcount].enabled)
+            {
+                //Note: 50 Ohm coupling limits the max voltage range to 5V
+                status = DriverImports.PS6000a.SetChannelOn(handle, (Channel)channelcount, Coupling.DC, ChannelRange.Range_2V,
+                                                             0, BandwidthLimiter.BW_FULL);
+                Console.WriteLine(channelcount + " Setup");
+            }
+            else
+            {
+                status = DriverImports.PS6000a.SetChannelOff(handle, channelcount);
+                Console.WriteLine(channelcount + " Disabled");
+            }
+            if (status != StandardDriverStatusCode.Ok)
+                Console.WriteLine("Error! setting up channel " + channelcount + " %s", status);
+        }
     return status;
-  }
-
-  /// <summary>
-  /// Enables a specified digital port.
-  /// </summary>
-  public static StandardDriverStatusCode InitializeDigitalChannels(short handle, Channel port)
+    }
+    /// <summary>
+    /// Enables a specified digital port.
+    /// </summary>
+    public static StandardDriverStatusCode InitializeDigitalChannels(short handle, Channel port)
   {
     var thresholdLevels = Array.ConvertAll(Enumerable.Repeat(255, 8).ToArray(), thresholdArray => (short)thresholdArray);
     var status = DriverImports.PS6000a.SetDigitalPortOn(handle, GetChannelDigitalPort(port), thresholdLevels,
@@ -407,10 +438,62 @@ class ps6000aDevice
     return status;
   }
 
-  /// <summary>
-  /// Writes data to Output.csv
-  /// </summary>
-  public static void WriteDataToFile(short[] data, string filename = "Output.csv")
+    /// <summary>
+    /// Writes 3D array to OutputN.txt files
+    /// </summary>
+    public static void WriteArrayToFiles(short[][][] ArrayData, 
+                                        ChannelSettings[] _channelSettings,
+                                        double actualTimeInterval = 1,
+                                        string startOfFileName = "Output",
+                                        short Triggersample = 0)
+    {
+        string filename;
+        short numChannels = (short)ArrayData[0].Length;//Equal to Number of Channels
+        short memorysegments = (short)ArrayData.GetLength(0);
+        short numSamples = (short)ArrayData[0][0].Length;
+
+        for (short segments = 0; segments < memorysegments; segments++)
+        {
+            filename = startOfFileName + segments + ".txt";//next file name
+            try
+            {
+                using (var writer = new StreamWriter(filename))
+                {
+                    //Write 2 header lines (one for Info, one for Channels)
+                    writer.WriteLine("Segment " + segments + " SampleRate " + actualTimeInterval + " SamplesPerBlock " + numSamples + " Trigger@Sample " + Triggersample);
+                    short channel;
+                    for (channel = 0; channel < numChannels; channel++)
+                    {
+                        if (_channelSettings[channel].enabled)
+                            writer.Write((Channel)channel + " ");
+                    }
+                    writer.Write("\n");
+                    //Write array data to file
+                    for (short sample = 0; sample < (short)numSamples; sample++)
+                    {
+                        for (channel = 0; channel < numChannels; channel++)
+                        {
+                            if (_channelSettings[channel].enabled)
+                                writer.Write(ArrayData[segments][channel][sample] + " ");
+                        }
+                        writer.Write("\n");
+                    }
+                    writer.Close();
+                }
+                Console.WriteLine("The captured data has been written to '" + filename + "'");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Failed to write data to " + filename + ". Please check that there are no other instances of " + filename + " being used.");
+                Console.WriteLine(e);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Writes data to Output.csv
+    /// </summary>
+    public static void WriteDataToFile(short[] data, string filename = "Output.csv")
   {
     try
     {
