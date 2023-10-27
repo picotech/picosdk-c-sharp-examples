@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlockModeExample", "BlockMo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWGExample", "AWGExample\AWGExample.csproj", "{5BFABF37-3278-438E-B019-68B0BF9F362D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamingModeExample", "StreamingModeExample\StreamingModeExample.csproj", "{D14C2D05-803D-496E-B82A-E000D50C52A8}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RapidBlockModeExample", "RapidBlockModeExample\RapidBlockModeExample.csproj", "{5808503B-4E5D-4EA4-966C-C2D8D1098A4E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlockModeExampleCallback", "BlockModeExampleCallback\BlockModeExampleCallback.csproj", "{B446FF4B-BF55-4936-8541-5CAA3F1C4807}"
@@ -53,6 +55,14 @@ Global
 		{5BFABF37-3278-438E-B019-68B0BF9F362D}.Release|x64.Build.0 = Release|x64
 		{5BFABF37-3278-438E-B019-68B0BF9F362D}.Release|x86.ActiveCfg = Release|x86
 		{5BFABF37-3278-438E-B019-68B0BF9F362D}.Release|x86.Build.0 = Release|x86
+		{D14C2D05-803D-496E-B82A-E000D50C52A8}.Debug|x64.ActiveCfg = Debug|x64
+		{D14C2D05-803D-496E-B82A-E000D50C52A8}.Debug|x64.Build.0 = Debug|x64
+		{D14C2D05-803D-496E-B82A-E000D50C52A8}.Debug|x86.ActiveCfg = Debug|x86
+		{D14C2D05-803D-496E-B82A-E000D50C52A8}.Debug|x86.Build.0 = Debug|x86
+		{D14C2D05-803D-496E-B82A-E000D50C52A8}.Release|x64.ActiveCfg = Release|x64
+		{D14C2D05-803D-496E-B82A-E000D50C52A8}.Release|x64.Build.0 = Release|x64
+		{D14C2D05-803D-496E-B82A-E000D50C52A8}.Release|x86.ActiveCfg = Release|x86
+		{D14C2D05-803D-496E-B82A-E000D50C52A8}.Release|x86.Build.0 = Release|x86
 		{5808503B-4E5D-4EA4-966C-C2D8D1098A4E}.Debug|x64.ActiveCfg = Debug|x64
 		{5808503B-4E5D-4EA4-966C-C2D8D1098A4E}.Debug|x64.Build.0 = Debug|x64
 		{5808503B-4E5D-4EA4-966C-C2D8D1098A4E}.Debug|x86.ActiveCfg = Debug|x86
