@@ -62,7 +62,7 @@ namespace PulseWidthTriggerExample
       if (status != StandardDriverStatusCode.Ok)
         return status;
 
-      int timeIntervalNanoseconds = 0;
+      double timeIntervalNanoseconds = 0;
       ulong maxSamples = 0;
       status = DriverImports.PS6000a.GetTimebase(handle, timebase, 1, out timeIntervalNanoseconds, out maxSamples, 0);
 
