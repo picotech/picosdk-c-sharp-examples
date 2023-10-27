@@ -142,7 +142,6 @@ namespace DriverImports
       short handle,
       Channel channel,
       short[] bufferMax,
-      //short[] bufferMin,
       int nSamples,
       DataType dataType,
       ulong waveform,
@@ -178,7 +177,7 @@ namespace DriverImports
         short threshold,
         TriggerDirection direction,
         ulong delay,
-        int autoTriggerMicroseconds);
+        uint autoTriggerMicroseconds);
 
     [DllImport(DriverName, EntryPoint = "ps6000aSetTriggerChannelProperties")]
     public static extern StandardDriverStatusCode SetTriggerChannelProperties(
@@ -237,7 +236,7 @@ namespace DriverImports
       short handle,
       uint timebase,
       ulong noSamples,
-      out int timeIntervalNanoseconds,
+      out double timeIntervalNanoseconds,
       out ulong maxSamples,
       ulong segmentIndex);
 
