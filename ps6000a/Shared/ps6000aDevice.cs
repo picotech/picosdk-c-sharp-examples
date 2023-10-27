@@ -91,9 +91,10 @@ class ps6000aDevice
     /// <summary>
     /// Enables a desired channel and disables all other channels.
     /// </summary>
-    public static StandardDriverStatusCode InitializeChannelsAndRanges(short handle, in ChannelSettings[] channelSetup, int numChannels)
+    public static StandardDriverStatusCode InitializeChannelsAndRanges(short handle, in ChannelSettings[] channelSetup, int numChannels, out int NoEnabledchannels)
     {
         var status = StandardDriverStatusCode.Ok;
+        NoEnabledchannels = 0;
 
         //Setup or Disable all channels
         for (var channelcount = Channel.ChannelA; channelcount < (Channel)numChannels; channelcount++)
@@ -104,6 +105,7 @@ class ps6000aDevice
                 status = DriverImports.PS6000a.SetChannelOn(handle, (Channel)channelcount, Coupling.DC, ChannelRange.Range_2V,
                                                              0, BandwidthLimiter.BW_FULL);
                 Console.WriteLine(channelcount + " Setup");
+                NoEnabledchannels++;
             }
             else
             {
@@ -450,10 +452,12 @@ class ps6000aDevice
         string filename;
         short numChannels = (short)ArrayData[0].Length;//Equal to Number of Channels
         short memorysegments = (short)ArrayData.GetLength(0);
-        short numSamples = (short)ArrayData[0][0].Length;
+        ulong numSamples = (ulong)ArrayData[0][0].Length;
 
         for (short segments = 0; segments < memorysegments; segments++)
         {
+            numSamples = (ulong)ArrayData[segments][0].Length;
+
             filename = startOfFileName + segments + ".txt";//next file name
             try
             {
@@ -469,7 +473,7 @@ class ps6000aDevice
                     }
                     writer.Write("\n");
                     //Write array data to file
-                    for (short sample = 0; sample < (short)numSamples; sample++)
+                    for (ulong sample = 0; sample < numSamples; sample++)
                     {
                         for (channel = 0; channel < numChannels; channel++)
                         {
@@ -480,7 +484,7 @@ class ps6000aDevice
                     }
                     writer.Close();
                 }
-                Console.WriteLine("The captured data has been written to '" + filename + "'");
+                Console.WriteLine("The captured data has been written to " + filename + ".");
             }
             catch (Exception e)
             {
