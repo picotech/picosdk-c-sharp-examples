@@ -57,7 +57,8 @@ namespace RapidBlockModeExample
             ulong numSamples = 1000;
             double idealTimeInterval = 0.000001; //1us (therefore 1us x 1000 samples = 1ms per Segment)
             Console.WriteLine("\nCHANGE ENABLED CHANNELS IN Main() as required!");
-            var status = ps6000aDevice.InitializeChannelsAndRanges(handle, in _channelSettings, numChannels);
+            int NoEnablechannels;
+            var status = ps6000aDevice.InitializeChannelsAndRanges(handle, in _channelSettings, numChannels, out NoEnablechannels);
             if (status != StandardDriverStatusCode.Ok) return status;
 
             //ps6000aMemorySegments
