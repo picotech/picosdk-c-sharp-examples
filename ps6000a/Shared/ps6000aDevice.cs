@@ -79,7 +79,7 @@ class ps6000aDevice
         foreach (var channel in channels)
         {
             //Note: 50 Ohm coupling limits the max voltage range to 5V
-            status = DriverImports.PS6000a.SetChannelOn(handle, channel, Coupling.DC, ChannelRange.Range_2V,
+            status = DriverImports.PS6000a.SetChannelOn(handle, channel, Coupling.DC50Ohm, ChannelRange.Range_500MV,
                                                         0, BandwidthLimiter.BW_FULL);
             if (status == StandardDriverStatusCode.Ok)
                 Console.WriteLine(channel + " enabled successfully.");
@@ -102,7 +102,7 @@ class ps6000aDevice
             if (channelSetup[(int)channelcount].enabled)
             {
                 //Note: 50 Ohm coupling limits the max voltage range to 5V
-                status = DriverImports.PS6000a.SetChannelOn(handle, (Channel)channelcount, Coupling.DC, ChannelRange.Range_2V,
+                status = DriverImports.PS6000a.SetChannelOn(handle, (Channel)channelcount, Coupling.DC50Ohm, ChannelRange.Range_500MV,
                                                              0, BandwidthLimiter.BW_FULL);
                 Console.WriteLine(channelcount + " Setup");
                 NoEnabledchannels++;
@@ -217,13 +217,13 @@ class ps6000aDevice
     status = DriverImports.PS6000a.SetTriggerChannelDirections(handle, thresholdDirections.ToArray(), (short)thresholdDirections.Count);
 
     if (status == StandardDriverStatusCode.Ok)
-      Console.WriteLine("Trigger has been setup successfully. Please input a 2Vpp signal onto channel: " + channel);
+      Console.WriteLine("Trigger has been setup successfully. Please input a 800mVpp signal onto channel: " + channel);
 
     return status;
   }
 
   /// <summary>
-  /// This function sets up a pulse width trigger on a specified channel. Expecting 2Vpp signal.
+  /// This function sets up a pulse width trigger on a specified channel. Expecting 800mVpp signal.
   /// </summary>
   public static StandardDriverStatusCode SetTriggerAndPulseWidth(short handle, Channel channel, uint pulseWidthSampleCount, PulseWidthType pulseWidthType, int autoTriggerDelay = 0)
   {
@@ -276,7 +276,7 @@ class ps6000aDevice
       return status;
 
     if (status == StandardDriverStatusCode.Ok)
-      Console.WriteLine("Trigger has been setup successfully with pulse width. Please input a 2Vpp signal onto channel: " + channel);
+      Console.WriteLine("Trigger has been setup successfully with pulse width. Please input a 800mVpp signal onto channel: " + channel);
 
     return status;
   }
@@ -324,7 +324,7 @@ class ps6000aDevice
     double stopFrequency;
     double frequencyIncrement;
     double dwellTime;
-    double peakToPeakVolts = 2.0; //2Vpp
+    double peakToPeakVolts = 0.8; //800mVpp
 
     if (buffer == null)
       buffer = new List<short>();
