@@ -225,7 +225,12 @@ namespace DriverImports
       short handle,
       ulong nCaptures);
 
-    [DllImport(DriverName, EntryPoint = "ps6000aTriggerWithinPreTriggerSamples")]
+    [DllImport(DriverName, EntryPoint = "ps6000aGetNoOfCaptures")]
+    public static extern StandardDriverStatusCode GetNoOfCaptures(
+      short handle,
+      out ulong nCaptures);
+
+        [DllImport(DriverName, EntryPoint = "ps6000aTriggerWithinPreTriggerSamples")]
     public static extern StandardDriverStatusCode TriggerWithinPreTriggerSamples(
       short handle,
       TriggerWithinPreTrigger state
