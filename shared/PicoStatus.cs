@@ -2,7 +2,6 @@
 // Copyright(C) 2009-2018 Pico Technology Ltd. See LICENSE file for terms.
 // </copyright>
 
-
 using System.Reflection;
 
 namespace PicoStatus
