@@ -72,8 +72,9 @@
     <Compile Include="..\PL1000Imports.cs">
       <Link>PL1000Imports.cs</Link>
     </Compile>
-    <Compile Include="PicoErrorCodeException.cs" />
+    <Compile Include="StandardDriverStatusCodeException.cs" />
     <Compile Include="PL1000CSConsole.cs" />
+    <Compile Include="PL1000Device.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
