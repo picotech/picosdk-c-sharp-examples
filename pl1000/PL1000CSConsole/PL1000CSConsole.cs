@@ -11,8 +11,8 @@
  *		PicoLog 1012 & 1216
  *		
  * Examples:
- *    Open a connection and display unit information before closing the 
- *    connection to the device.
+ *    Open a connection, display unit information, disable triggering and capture 
+ *    some streamed data from the pl1000 device. 
  *    
  * Copyright (C) 2012 - 2024 Pico Technology Ltd. See LICENSE file for terms.    
  *    
