@@ -21,12 +21,14 @@ namespace PL1000CSConsole
 {
   public class PL1000Device
   {
-    private short _handle;
+    private readonly short _handle;
     private readonly Action<string, StandardDriverStatusCode> _checkDriverStatusCodeFunc;
     private readonly Action<string> _logFunc;
     private ushort _maxADCValue;
 
-    public PL1000Device(short handle, Action<string, StandardDriverStatusCode> checkDriverStatusCodeFunc, Action<string> logFunc)
+    public PL1000Device(short handle,
+                        Action<string, StandardDriverStatusCode> checkDriverStatusCodeFunc,
+                        Action<string> logFunc)
     {
       _handle = handle;
       _checkDriverStatusCodeFunc = checkDriverStatusCodeFunc;
@@ -55,8 +57,7 @@ namespace PL1000CSConsole
       {
         for (int i = 0; i < 7; i++)
         {
-          short requiredSize;
-          Imports.GetUnitInfo(_handle, line, 80, out requiredSize, i);
+          Imports.GetUnitInfo(_handle, line, 80, out short requiredSize, i);
           _logFunc($"{description[i]}: {line}");
         }
       }

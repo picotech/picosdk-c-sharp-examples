@@ -34,7 +34,7 @@ namespace PL1000CSConsole
       StandardDriverStatusCode statusCode = StandardDriverStatusCode.Ok;
 
       Log("PicoLog 1000 Series (pl1000) Driver Example Program");
-      Log("Version 1.1\n");
+      Log("Version 1.2\n");
       try
       {
         // Open unit 
@@ -95,7 +95,7 @@ namespace PL1000CSConsole
     /// Log the given action
     /// </summary>
     /// <param name="action"></param>
-    public static void Log(string action)
+    private static void Log(string action)
     {
       Console.WriteLine(action);
     }
@@ -106,7 +106,7 @@ namespace PL1000CSConsole
     /// <param name="action">The performed driver interaction</param>
     /// <param name="returnedStatusCode">The driver return code</param>
     /// <exception cref="StandardDriverStatusCodeException"></exception>
-    public static void CheckDriverStatus(string action, StandardDriverStatusCode returnedStatusCode)
+    private static void CheckDriverStatus(string action, StandardDriverStatusCode returnedStatusCode)
     {
       Log(action);
 
