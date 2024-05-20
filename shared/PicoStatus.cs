@@ -3,18 +3,8 @@
 // </copyright>
 
 
-/******************************************************************************
-*
-* Filename: PL1000Imports.cs
-*  
-* Description:
-*  This file contains .NET wrapper calls corresponding to function calls 
-*  defined in the pl1000Api.h C header file. 
-*  It also has the enums required by the (wrapped) function calls.
-*   
-* Copyright © 2012-2024 Pico Technology Ltd. See LICENSE file for terms.
-*
-******************************************************************************/
+using System.Reflection;
+
 namespace PicoStatus
 {
   /// <summary>
