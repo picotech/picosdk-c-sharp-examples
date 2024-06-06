@@ -11,128 +11,109 @@
  *		PicoLog 1012 & 1216
  *		
  * Examples:
- *    Open a connection and display unit information before closing the 
- *    connection to the device.
+ *    Open a connection, display unit information, disable triggering and capture 
+ *    some streamed data from the pl1000 device. 
  *    
- * Copyright (C) 2012 - 2017 Pico Technology Ltd. See LICENSE file for terms.    
+ * Copyright (C) 2012 - 2024 Pico Technology Ltd. See LICENSE file for terms.    
  *    
  *******************************************************************************/
 
 using System;
 using System.Threading;
-
+using DriverImports;
 using PL1000Imports;
 
 namespace PL1000CSConsole
 {
-    class PL1000CSConsole
+  class PL1000CSConsole
+  {
+    static void Main(string[] args)
     {
-        private short _handle;
+      const short noOfChannels = 4;
+      short handle = -1;
+      StandardDriverStatusCode statusCode = StandardDriverStatusCode.Ok;
 
-        /* ********************************************************************************************************************************
-        *  WaitForKey() 
-        * 
-        *  Wait for user keypress
-        *  ********************************************************************************************************************************/
+      Log("PicoLog 1000 Series (pl1000) Driver Example Program");
+      Log("Version 1.2\n");
+      try
+      {
+        // Open unit 
+        statusCode = Imports.OpenUnit(out handle);
+        CheckDriverStatus("\nAttempting to open a device...", statusCode);
 
-        private static void WaitForKey()
-        {
-            while (!Console.KeyAvailable) Thread.Sleep(100);
-            if (Console.KeyAvailable) Console.ReadKey(true); // clear the key
-        }
+        // we only get here if the device opened successfully
+        Log($"Handle: {handle}");
+        Log("Device opened successfully:\n");
 
-        /***********************************************************************************************
-         * GetDeviceInfo()
-         * Show information about device
-         * 
-        **********************************************************************************************/
-        void GetDeviceInfo()
-        {
-            string[] description = {
-                                       "Driver Version    ",
-                                       "USB Version       ",
-                                       "Hardware Version  ",
-                                       "Variant Info      ",
-                                       "Batch and Serial  ", 
-						               "Calibration Date  ", 
-						               "Kernel Driver Ver "
-                                    };
-            
-            System.Text.StringBuilder line = new System.Text.StringBuilder(80);
+        PL1000Device device = new PL1000Device(handle, CheckDriverStatus, Log);
 
-            if (_handle >= 0)
-            {
+        // Display unit information
+        device.GetDeviceInfo();
 
-                for (int i = 0; i < 7; i++)
-                {
-                    short requiredSize;
-                    Imports.GetUnitInfo(_handle, line, 80, out requiredSize, i);
+        // disable the trigger on the pl1000 device
+        device.SetTrigger();
 
-                    Console.WriteLine("{0}: {1}", description[i], line);
-                }
-            }
-        }
+        // get the max adc value
+        device.GetMaxAdcValue();
 
+        // capture the data from the device
+        device.Run(noOfChannels);
+      }
+      catch (Exception ex)
+      {
+        Log($"Error found: {ex.Message}");
+      }
+      finally
+      {
+        WaitForUserToContinue();
 
-        /***********************************************************************************************
-        * Run()
-        * Show information about device
-        * 
-        **********************************************************************************************/
-        public void Run()
-        {
-            // Display unit information
-            GetDeviceInfo();
-        }
-
-        /***********************************************************************************************
-        * PL1000ConsoleExample()
-        * Show information about device
-        * 
-        **********************************************************************************************/
-        PL1000CSConsole(short handle)
-        {
-            _handle = handle;
-        }
-
-        static void Main(string[] args)
-        {
-            short handle;
-
-            System.Text.StringBuilder str = new System.Text.StringBuilder(80);
-            str = null;
-
-            Console.WriteLine("PicoLog 1000 Series (pl1000) Driver Example Program");
-            Console.WriteLine("Version 1.1\n");
-
-            // Open unit 
-            Console.WriteLine("\nAttempting to open a device...");
-
-            Imports.OpenUnit(out handle);
-
-            Console.WriteLine("Handle: {0}", handle);
-
-            if (handle == 0)
-            {
-                Console.WriteLine("Unable to open device");
-                Console.WriteLine("Error code : {0}", handle);
-            }
-            else
-            {
-                Console.WriteLine("Device opened successfully:\n");
-
-                PL1000CSConsole consoleExample = new PL1000CSConsole(handle);
-                consoleExample.Run();
-
-                Console.WriteLine();
-                Console.WriteLine("Press any key to exit the application.");
-                WaitForKey();
-
-                Imports.CloseUnit(handle);
-            }
-
-            
-
-        }
+        if (handle > 0)
+          Imports.CloseUnit(handle);
+      }
     }
+
+    private static void WaitForUserToContinue()
+    {
+      Log("");
+      Log("Press any key to exit the application.");
+      WaitForKey();
+    }
+
+    /// <summary>
+    /// Wait for user keypress
+    /// </summary>
+    private static void WaitForKey()
+    {
+      while (!Console.KeyAvailable) 
+        Thread.Sleep(100);
+      
+      if (Console.KeyAvailable) 
+        Console.ReadKey(true);
+    }
+
+    /// <summary>
+    /// Log the given action
+    /// </summary>
+    /// <param name="action"></param>
+    private static void Log(string action)
+    {
+      Console.WriteLine(action);
+    }
+
+    /// <summary>
+    /// Logs a device interaction and checks the returned status code
+    /// </summary>
+    /// <param name="action">The performed driver interaction</param>
+    /// <param name="returnedStatusCode">The driver return code</param>
+    /// <exception cref="StandardDriverStatusCodeException"></exception>
+    private static void CheckDriverStatus(string action, StandardDriverStatusCode returnedStatusCode)
+    {
+      Log(action);
+
+      if (returnedStatusCode != StandardDriverStatusCode.Ok)
+        throw new StandardDriverStatusCodeException(returnedStatusCode);
+
+      Log("Success");
+    }
+  }
 }
