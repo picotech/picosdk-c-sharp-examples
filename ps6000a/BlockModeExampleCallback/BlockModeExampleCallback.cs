@@ -71,7 +71,7 @@ namespace BlockModeExampleCallback
         if (status != StandardDriverStatusCode.Ok)
           return status;
 
-        ps6000aDevice.WriteDataToFile(data);
+            PicoFileFunctions.WriteDataToFile(data);
      
 
       return status;

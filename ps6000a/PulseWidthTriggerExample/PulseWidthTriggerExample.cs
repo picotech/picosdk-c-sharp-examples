@@ -96,7 +96,7 @@ namespace PulseWidthTriggerExample
         if (status != StandardDriverStatusCode.Ok)
           return status;
 
-        ps6000aDevice.WriteDataToFile(data, filename);
+        PicoFileFunctions.WriteDataToFile(data, filename);
       
 
       return status;

@@ -49,7 +49,7 @@ namespace MSOTriggerExample
         if (status != StandardDriverStatusCode.Ok)
           return status;
 
-        ps6000aDevice.WriteDigitalDataToFile(data);
+        PicoFileFunctions.WriteDigitalDataToFile(data);
      
       return status;
     }

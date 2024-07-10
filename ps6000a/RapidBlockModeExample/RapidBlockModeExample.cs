@@ -15,7 +15,6 @@ using PicoPinnedArray;
 
 namespace RapidBlockModeExample
 {
-
     class RapidBlockModeExampleCallback : IDisposable
     {
 
@@ -48,6 +47,8 @@ namespace RapidBlockModeExample
 
         public static int numChannels;
         private static ps6000aDevice.ChannelSettings[] _channelSettings = new ps6000aDevice.ChannelSettings[10];
+        private static short MinValues, MaxValues = 0;
+
         /// <summary>
         /// Captures 1000 samples on Channel A and the data is written to Output.csv
         /// </summary>
@@ -62,14 +63,14 @@ namespace RapidBlockModeExample
             if (status != StandardDriverStatusCode.Ok) return status;
 
             //ps6000aMemorySegments
-            int memorysegments = 3;
+            ulong memorysegments = 3;
             ulong nMaxSamples = 0;
-            status = DriverImports.PS6000a.MemorySegments(handle, (ulong)memorysegments, out nMaxSamples);
+            status = DriverImports.PS6000a.MemorySegments(handle, memorysegments, out nMaxSamples);
             if (status != StandardDriverStatusCode.Ok)
                 return status;
 
             //ps6000aSetNoOfCaptures
-            status = DriverImports.PS6000a.SetNoOfCaptures(handle, (ulong)memorysegments);
+            status = DriverImports.PS6000a.SetNoOfCaptures(handle, memorysegments);
             if (status != StandardDriverStatusCode.Ok)
                 return status;
             else
@@ -125,6 +126,9 @@ namespace RapidBlockModeExample
                 return status;
             }
 
+            //Print reported capture time
+            Console.WriteLine("\nReported scope capture time is " + timeIndisposedMS + "ms");
+
             //Waiting for Callback
             Console.WriteLine("\nWaiting for Data...");
             status = WaitForDataToBeCaptured(handle);
@@ -134,6 +138,15 @@ namespace RapidBlockModeExample
                 return status;
             }
 
+            //Get and print the number of segments captures
+            status = DriverImports.PS6000a.GetNoOfCaptures(handle, out ulong NumofCaptures);
+            if (status != StandardDriverStatusCode.Ok)
+            {
+                Console.WriteLine("GetNoOfCaptures status: " + status);
+                return status;
+            }
+            Console.WriteLine("Number of segments captured: " + NumofCaptures);
+
             //Create all buffers for each memory segment and channel
             DriverImports.Action Action_temp = DriverImports.Action.PICO_CLEAR_ALL | DriverImports.Action.PICO_ADD;//SetBuffer() action mask
             
@@ -141,7 +154,7 @@ namespace RapidBlockModeExample
             short[][][] values = new short[memorysegments][][];
             PinnedArray<short>[,] pinned = new PinnedArray<short>[memorysegments, numChannels];
 
-            for (ushort segment = 0; segment < memorysegments; segment++)
+            for (ulong segment = 0; segment < memorysegments; segment++)
             {
                 values[segment] = new short[numChannels][];
                 Console.WriteLine("\nCreating pinned Arrays for Set " + segment + " of Data Buffers...");
@@ -159,7 +172,7 @@ namespace RapidBlockModeExample
                             null,
                             (int)numSamples,
                             DataType.PICO_INT16_T,
-                            (ulong)segment,
+                            segment,
                             RatioMode.PICO_RATIO_MODE_RAW,
                             Action_temp);
                         Action_temp = DriverImports.Action.PICO_ADD;//set to "ADD" for all other calls
@@ -178,16 +191,17 @@ namespace RapidBlockModeExample
             }
 
             //GetValues from scope
+            Console.WriteLine("\nDownloading Data to the PC...");
             var downSampleRatioMode = RatioMode.PICO_RATIO_MODE_RAW;
             short [] overrangeflags = new short[memorysegments];//Channel Voltage overrange flags
             status = DriverImports.PS6000a.GetValuesBulk(handle, 0, ref numSamples,//segment sample indexs - All (from -> to)
-                                                        0, (ulong)(memorysegments-1),//Set to request All segments (from -> to)
+                                                        0, (memorysegments-1),//Set to request All segments (from -> to)
                                                         1, downSampleRatioMode,//Downsample ratio and mode
                                                         out overrangeflags[0]); 
             if (status == StandardDriverStatusCode.Ok)
             {
                 Console.WriteLine("\nData has been copied safely to all memory buffers.");
-                Console.WriteLine("Channel Overrange flags: (LSB is ChA) - " + overrangeflags[0]);
+                Console.WriteLine("Channel Overrange flag[0]: (LSB is ChA) - " + overrangeflags[0]);
             }
             else
             {
@@ -196,26 +210,33 @@ namespace RapidBlockModeExample
             }
 
             //Write each segment to a file
-            ps6000aDevice.WriteArrayToFiles(values, _channelSettings, actualTimeInterval, "RapidBlock Segment", (short)noOfPreTriggerSamples);
-            
+            Console.WriteLine("\nWriting each segment of Channel buffers to file...");
+            PicoFileFunctions.WriteArrayToFiles(values, _channelSettings, actualTimeInterval, "RapidBlock_Segment", (short)noOfPreTriggerSamples, MaxValues);
+
             return status;
         }
         static void Main(string[] args)
         {
             short handle = 0;
             var resolution = DeviceResolution.PICO_DR_8BIT;
-            short MinValues, MaxValues = 0;
+            //short MinValues, MaxValues = 0;
             DriverImports.StandardDriverStatusCode status = 0;
-            ////////////////////////////////////////////////  Enabled/Disable channels as required!
-            _channelSettings[0].enabled = true;//ChA
-            _channelSettings[1].enabled = true;//ChB
-            _channelSettings[2].enabled = true;//ChC
-            _channelSettings[3].enabled = true;//ChD
-            _channelSettings[4].enabled = false;//ChE
-            _channelSettings[5].enabled = false;//ChF
-            _channelSettings[6].enabled = false;//ChG
-            _channelSettings[7].enabled = false;//ChH
-            ///////////////////////////////////////////
+            //Turn all channels off
+            for (int i = 0; i < _channelSettings.Length; i++)
+            {
+                _channelSettings[i].enabled = false;
+            }
+            //////////////  Enabled/Disable channels as required!  ///////////////////
+            
+            for (int i = 0; i < 4; i++)//Setup first 4 channels the same
+            {
+                _channelSettings[i].enabled = true;
+                _channelSettings[i].coupling = Coupling.DC50Ohm;
+                _channelSettings[i].range = ChannelRange.Range_500MV;
+                _channelSettings[i].AnalogueOffset = 0;
+                _channelSettings[i].bandwidthLimiter = BandwidthLimiter.BW_FULL;
+            }
+            //////////////////////////////////////////////////////////////////////////
             status = ps6000aDevice.OpenUnit(out handle, resolution, out numChannels);
 
             status = PS6000a.GetAdcLimits(handle, resolution, out MinValues, out MaxValues);

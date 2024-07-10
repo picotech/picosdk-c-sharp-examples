@@ -17,19 +17,15 @@ using PicoPinnedArray;
 
 namespace StreamingModeExample
 {
-    public struct ChannelSettings
-    {
-        public ChannelRange range;
-        public bool enabled;
-    }
     class StreamingModeExample
   {
         /// <summary>
-        /// Streaming code N BufferSets can be defined
+        /// Streaming code - N channel BufferSets can be defined
         /// </summary>
         ///
         public static int numChannels;
         private static ps6000aDevice.ChannelSettings[] _channelSettings = new ps6000aDevice.ChannelSettings[10];
+        private static short MinValues, MaxValues = 0;
         static StandardDriverStatusCode RunStreamingModeExample(short handle, DeviceResolution resolution)
         {
             //Define sampling Settings ( Currently - 0.1 Second per BufferSet (1us x 100k ) )
@@ -42,6 +38,7 @@ namespace StreamingModeExample
             int NoEnabledchannels;
             var status = ps6000aDevice.InitializeChannelsAndRanges(handle, in _channelSettings, numChannels, out NoEnabledchannels);
             if (status != StandardDriverStatusCode.Ok) return status;
+            
             Console.WriteLine("\n");
             DriverImports.Action Action_temp = DriverImports.Action.PICO_CLEAR_ALL | DriverImports.Action.PICO_ADD;
 
@@ -120,14 +117,13 @@ namespace StreamingModeExample
             StreamingDataInfo[,] streamingDataInfoArray = new StreamingDataInfo[memorysegments, NoEnabledchannels];
             StreamingDataInfo[] streamingDataInfoTempArray = new StreamingDataInfo[NoEnabledchannels];
 
-            StreamingDataTriggerInfo StreamingDataTriggerInfo0 = new StreamingDataTriggerInfo //(ulong triggerAt, short triggered, short autoStop)
-            (0, 0, 0);
+            StreamingDataTriggerInfo StreamingDataTriggerInfo0 = new StreamingDataTriggerInfo 
+            (0, 0, 0); //( triggerAt, triggered, autoStop )
             streamingDataTriggerInfoTemp = StreamingDataTriggerInfo0;
 
             //Fill both Arrays with default struct vaules
             for (int j = 0; j < memorysegments; j++)
             {
-                //streamingDataInfoArray[j] = StreamingDataInfo0;
                 streamingDataTriggerInfoArray[j] = StreamingDataTriggerInfo0;
             }
 
@@ -162,7 +158,6 @@ namespace StreamingModeExample
 
                 while (i < memorysegments) //loop for each buffer Set created
                 {
-                    //SetDataBufferFlag = true;
                     //Allocate all array elements to driver (with SetDataBuffers() )
                     if (SetDataBufferFlag)
                     { 
@@ -193,13 +188,12 @@ namespace StreamingModeExample
                     //delay millseconds for driver to fill channel buffer(s)
                     //(timeInternal x SI units x samples x 1000) x 0.3 delay in ms to fill buffer 30% (Recommend delay is 30-50%)
                     double timedelay = (double)( (idealTimeInterval * (Math.Pow(10, 3 * sampleIntervalTimeUnits) / 1E+15)) * numSamples * 0.3 * 1000);
-                    Thread.Sleep((int)timedelay); 
+                    Thread.Sleep((int)timedelay);
 
                     //Call GetStreamingLatestValues() - passing buffer status data in and out
                     //marshal Array of active channels strutures into pointer
                     var size = Marshal.SizeOf(typeof(StreamingDataInfo));
                     IntPtr pDataInfoValues = Marshal.AllocHGlobal(size * dataStreamInfo.Length);
-                    //
                     try
                     { 
                         IntPtr pnt = new IntPtr(pDataInfoValues.ToInt64());
@@ -238,13 +232,26 @@ namespace StreamingModeExample
 
                     Console.WriteLine("\nPolling Delay is: " + timedelay + "ms");
                     Console.WriteLine("Polling GetStreamingLatestValues status = " + status + " noOfSamples: " + streamingDataInfoArray[i, 0].NoOfSamples + " \t-StartIndex: " + streamingDataInfoArray[i, 0].StartIndex);
+                    
                     // If buffers full move to next bufferSet
-                    if (status == StandardDriverStatusCode.PICO_WAITING_FOR_DATA_BUFFERS)//driver waiting for more buffers
+                    if (status == StandardDriverStatusCode.PICO_WAITING_FOR_DATA_BUFFERS)
                     {
+                        //OFFLOAD DATA HERE FOR PROCESSING - "values[i]"
+                        //WRITING TO TEXT FOR DEMO ONLY!, FOR HIGH SPEED SAMPLING WRITE TO BINARY FILE OR COPY TO ANOTHER BUFFER
+
+                        //Write one segment to a file as captured
+                        Console.WriteLine("\nWriting Buffer Set: " + i + " to file");
+                        string one_segment_filename = string.Format("Streaming BufferSet {0:d}", i);
+                        PicoFileFunctions.WriteArrayToFile(values[i], _channelSettings,
+                                                        (double)idealTimeInterval * (Math.Pow(10, 3 * sampleIntervalTimeUnits) / 1E+15),//sample interval
+                                                        one_segment_filename,
+                                                        (short)noOfPreTriggerSamples,//Trigger point if set in first BufferSet
+                                                        MaxValues);
+
                         Console.WriteLine(" ");
                         if (streamingDataTriggerInfoArray[i].AutoStop == 1)//exit loop and stop
                             break;
-                        i++;//index next bufferSet
+                        i++;//index next bufferSet and flag to set buffers
                         SetDataBufferFlag = true;
                     }
                     else
@@ -256,12 +263,9 @@ namespace StreamingModeExample
                         }
                     }
                 }
-                //Write each segment to a file
-                ps6000aDevice.WriteArrayToFiles(values, _channelSettings,
-                                                (double) idealTimeInterval * (Math.Pow(10, 3 * sampleIntervalTimeUnits) / 1E+15),//sample interval
-                                                "Streaming BufferSet",
-                                                (short)noOfPreTriggerSamples);//Trigger point if set in first BufferSet
+
                 Console.WriteLine("\n");
+                //OR WAIT UNTIL ALL BUFFER SEGMENTS ARE CAPTURED AND PROCESS DATA IN - "values"
             }
             return status;
     }
@@ -270,18 +274,25 @@ namespace StreamingModeExample
     {
         short handle = 0;
         var resolution = DeviceResolution.PICO_DR_8BIT;
-        short MinValues, MaxValues = 0;
+        
         DriverImports.StandardDriverStatusCode status = 0;
-        ////////////////////////////////////////////////  Enabled/Disable channels as required!
-        _channelSettings[0].enabled = true;//ChA
-        _channelSettings[1].enabled = true;//ChB
-        _channelSettings[2].enabled = true;//ChC
-        _channelSettings[3].enabled = true;//ChD
-        _channelSettings[4].enabled = false;//ChE
-        _channelSettings[5].enabled = false;//ChF
-        _channelSettings[6].enabled = false;//ChG
-        _channelSettings[7].enabled = false;//ChH
-        ///////////////////////////////////////////
+
+            //Turn all channels off
+            for (int i = 0; i < _channelSettings.Length; i++)
+            {
+                _channelSettings[i].enabled = false;
+            }
+            //////////////  Enabled/Disable channels as required!  ///////////////////
+
+            for (int i = 0; i < 4; i++)//Setup first 4 channels
+            {
+                _channelSettings[i].enabled = true;
+                _channelSettings[i].coupling = Coupling.DC50Ohm;
+                _channelSettings[i].range = ChannelRange.Range_500MV;
+                _channelSettings[i].AnalogueOffset = 0;
+                _channelSettings[i].bandwidthLimiter = BandwidthLimiter.BW_FULL;
+            }
+            //////////////////////////////////////////////////////////////////////////
 
             status = ps6000aDevice.OpenUnit(out handle, resolution, out numChannels);
 

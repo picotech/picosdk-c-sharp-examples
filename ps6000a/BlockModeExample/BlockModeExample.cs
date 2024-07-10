@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using DriverImports;
 using PicoPinnedArray;
 
-
 namespace BlockModeExample
 {
   class BlockModeExample
@@ -42,7 +41,7 @@ namespace BlockModeExample
         if (status != StandardDriverStatusCode.Ok)
           return status;
 
-        ps6000aDevice.WriteDataToFile(data);
+            PicoFileFunctions.WriteDataToFile(data);
       
       return status;
     }
