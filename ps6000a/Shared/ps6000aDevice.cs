@@ -14,9 +14,14 @@ class ps6000aDevice
 {
     public struct ChannelSettings
     {
-        public ChannelRange range;
         public bool enabled;
+        public Coupling coupling;
+        public ChannelRange range;
+        public double AnalogueOffset;
+        public BandwidthLimiter bandwidthLimiter;
     }
+
+
     /// <summary>
     /// Opens a ps6000a unit
     /// </summary>
@@ -102,15 +107,25 @@ class ps6000aDevice
             if (channelSetup[(int)channelcount].enabled)
             {
                 //Note: 50 Ohm coupling limits the max voltage range to 5V
-                status = DriverImports.PS6000a.SetChannelOn(handle, (Channel)channelcount, Coupling.DC50Ohm, ChannelRange.Range_500MV,
-                                                             0, BandwidthLimiter.BW_FULL);
-                Console.WriteLine(channelcount + " Setup");
+                status = DriverImports.PS6000a.SetChannelOn(handle,
+                    (Channel)channelcount,
+                    channelSetup[(int)channelcount].coupling,
+                    channelSetup[(int)channelcount].range,
+                    channelSetup[(int)channelcount].AnalogueOffset,
+                    channelSetup[(int)channelcount].bandwidthLimiter);
+
+                Console.WriteLine(channelcount + ": Coupling = " +
+                    channelSetup[(int)channelcount].coupling + ", " +
+                    channelSetup[(int)channelcount].range + ", AnalogueOffset = " +
+                    channelSetup[(int)channelcount].AnalogueOffset + ", Bandwidth Limiter = " +
+                    channelSetup[(int)channelcount].bandwidthLimiter
+                    );
                 NoEnabledchannels++;
             }
             else
             {
                 status = DriverImports.PS6000a.SetChannelOff(handle, channelcount);
-                Console.WriteLine(channelcount + " Disabled");
+                Console.WriteLine(channelcount + ": Disabled");
             }
             if (status != StandardDriverStatusCode.Ok)
                 Console.WriteLine("Error! setting up channel " + channelcount + " %s", status);
@@ -443,6 +458,8 @@ class ps6000aDevice
     /// <summary>
     /// Writes 3D array to OutputN.txt files
     /// </summary>
+    /// 
+    /*
     public static void WriteArrayToFiles(short[][][] ArrayData, 
                                         ChannelSettings[] _channelSettings,
                                         double actualTimeInterval = 1,
@@ -478,7 +495,13 @@ class ps6000aDevice
                         for (channel = 0; channel < numChannels; channel++)
                         {
                             if (_channelSettings[channel].enabled)
+                            {
                                 writer.Write(ArrayData[segments][channel][sample] + " ");
+
+                                //Write scaled data here
+                                //GetScalingValues(int handle, out ScalingFactors scalingValues, int nChannels);
+                                /////////////////writer.Write(ArrayData[segments][channel][sample] + " ");
+                            }
                         }
                         writer.Write("\n");
                     }
@@ -493,73 +516,12 @@ class ps6000aDevice
             }
         }
     }
+    */
 
     /// <summary>
     /// Writes data to Output.csv
     /// </summary>
-    public static void WriteDataToFile(short[] data, string filename = "Output.csv")
-  {
-    try
-    {
-      //Record data in a .csv document.
-      using (var writer = new StreamWriter(filename))
-      {
-        foreach (var reading in data)
-        {
-          writer.WriteLine(reading);
-        }
-
-        writer.Close();
-      }
-
-      Console.WriteLine("The captured data has been written to " + filename + ".");
-    }
-    catch (Exception e)
-    {
-      Console.WriteLine("Failed to write data to " + filename + ". Please check that there are no other instances of " + filename + " being used.");
-      Console.WriteLine(e);
-    }
-  }
-
-  /// <summary>
-  /// Writes digital data to Output.csv
-  /// </summary>
-  public static void WriteDigitalDataToFile(short[] data)
-  {
-    var DigitalData = new List<string>();
-
-    //Order the data into a dictionary
-    for (int index = 0; index < data.Length; index++)
-    {
-      string samples = string.Empty;
-      for (int digitalChannel = (int)DigitalChannel.DIGITAL_CHANNEL0; digitalChannel < (int)DigitalChannel.DIGITAL_CHANNEL_COUNT; digitalChannel++)
-      {
-        samples += ((data[index] >> digitalChannel) & 0x0001) + ",";
-      }
-      DigitalData.Add(samples);
-    }
-
-    try
-    {
-      //Record data in a .csv document.
-      using (var writer = new StreamWriter("Output.csv"))
-      {
-        foreach (var reading in DigitalData)
-        {
-          writer.WriteLine(reading);
-        }
-
-        writer.Close();
-      }
-
-      Console.WriteLine("The captured data has been written to Output.csv.");
-    }
-    catch (Exception e)
-    {
-      Console.WriteLine("Failed to write data to Output.csv. Please check that there are no other instances of Output.csv being used.");
-      Console.WriteLine(e);
-    }
-  }
+ 
 
   public static StandardDriverStatusCode GetTimeToTriggerForWaveformIndex(short handle, double actualTimeInterval,
     ulong waveformIndex, out double timeToTriggerInMilliseconds)
