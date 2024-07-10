@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Channels;
 
 namespace DriverImports
 {
@@ -109,7 +110,6 @@ namespace DriverImports
         public char[] calibrationDate;
     }
 
-
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct StreamingDataInfo
     {
@@ -135,8 +135,6 @@ namespace DriverImports
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct StreamingDataTriggerInfo
-
-
     {
         public ulong TriggerAt;
         public short Triggered;
@@ -147,6 +145,36 @@ namespace DriverImports
             TriggerAt = triggerAt;
             Triggered = triggered;
             AutoStop = autoStop;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct ScalingFactors
+    {
+        public Channel Channel;
+        public PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange Range;
+        public short Offset;
+        public double ScalingFactor;
+
+        public ScalingFactors(Channel channel, PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange range, short offset, double scalingFactor)
+        {
+            Channel = channel;
+            Range = range;
+            Offset = offset;
+            ScalingFactor = scalingFactor;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct ChannelOvervoltageTripped
+    {
+        public Channel Channel_;
+        public byte Tripped_;
+
+        public ChannelOvervoltageTripped(Channel channel_, byte tripped_)
+        {
+            Channel_ = channel_;
+            Tripped_ = tripped_;
         }
     }
 

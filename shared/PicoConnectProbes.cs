@@ -9,7 +9,7 @@
 * probes, along with the input ranges for current clamps and a high
 * voltage probe.
 * 
-* Copyright (C) 2017 Pico Technology Ltd. See LICENSE file for terms.
+* Copyright (C) 2017-2024 Pico Technology Ltd. See LICENSE file for terms.
 *
 *************************************************************************/
 
@@ -70,6 +70,20 @@ namespace PicoConnectProbes
             PICO_X1_PROBE_200V,
             PICO_X1_PROBE_RANGES = (PICO_X1_PROBE_200V + 1) - PICO_X1_PROBE_10MV,
 
+            PICO_X10_PROBE_100MV = 0x00000020,
+            PICO_X10_PROBE_200MV,
+            PICO_X10_PROBE_500MV,
+            PICO_X10_PROBE_1V,
+            PICO_X10_PROBE_2V,
+            PICO_X10_PROBE_5V,
+            PICO_X10_PROBE_10V,
+            PICO_X10_PROBE_20V,
+            PICO_X10_PROBE_50V,
+            PICO_X10_PROBE_100V,
+            PICO_X10_PROBE_200V,
+            PICO_X10_PROBE_500V,
+            PICO_X10_PROBE_RANGES = PICO_X10_PROBE_500V - PICO_X10_PROBE_100MV + 1,
+
             PICO_PS4000A_RESISTANCE_315K = 0x00000200,
             PICO_PS4000A_RESISTANCE_1100K,
             PICO_PS4000A_RESISTANCE_10M,
@@ -94,7 +108,6 @@ namespace PicoConnectProbes
             PICO_D9_BNC_200V,
             PICO_MAX_D9_BNC_RANGES = (PICO_D9_BNC_200V + 1) - PICO_D9_BNC_10MV,
 
-
             PICO_D9_2X_BNC_10MV = PICO_D9_BNC_10MV,
             PICO_D9_2X_BNC_20MV = PICO_D9_BNC_20MV,
             PICO_D9_2X_BNC_50MV = PICO_D9_BNC_50MV,
@@ -110,7 +123,6 @@ namespace PicoConnectProbes
             PICO_D9_2X_BNC_100V = PICO_D9_BNC_100V,
             PICO_D9_2X_BNC_200V = PICO_D9_BNC_200V,
             PICO_MAX_D9_2X_BNC_RANGES = (PICO_D9_2X_BNC_200V + 1) - PICO_D9_2X_BNC_10MV,
-
 
             PICO_DIFFERENTIAL_10MV = PICO_D9_BNC_10MV,
             PICO_DIFFERENTIAL_20MV = PICO_D9_BNC_20MV,
@@ -128,7 +140,6 @@ namespace PicoConnectProbes
             PICO_DIFFERENTIAL_200V = PICO_D9_BNC_200V,
             PICO_MAX_DIFFERENTIAL_RANGES = (PICO_DIFFERENTIAL_200V + 1) - PICO_DIFFERENTIAL_10MV,
 
-
             PICO_CURRENT_CLAMP_200A_2kA_1A = 4000,
             PICO_CURRENT_CLAMP_200A_2kA_2A,
             PICO_CURRENT_CLAMP_200A_2kA_5A,
@@ -141,7 +152,6 @@ namespace PicoConnectProbes
             PICO_CURRENT_CLAMP_200A_2kA_1000A,
             PICO_CURRENT_CLAMP_200A_2kA_2000A,
             PICO_MAX_CURRENT_CLAMP_200A_2kA_RANGES = (PICO_CURRENT_CLAMP_200A_2kA_2000A + 1) - PICO_CURRENT_CLAMP_200A_2kA_1A,
-
 
             PICO_CURRENT_CLAMP_40A_100mA = 5000,
             PICO_CURRENT_CLAMP_40A_200mA,
@@ -163,8 +173,50 @@ namespace PicoConnectProbes
             PICO_1KV_250V,
             PICO_1KV_500V,
             PICO_1KV_1000V,
-            PICO_MAX_1KV_RANGES = (PICO_1KV_1000V + 1) - PICO_1KV_2_5V
+            PICO_MAX_1KV_RANGES = (PICO_1KV_1000V + 1) - PICO_1KV_2_5V,
 
+            PICO_CURRENT_CLAMP_2000ARMS_10A = 6500,
+            PICO_CURRENT_CLAMP_2000ARMS_20A,
+            PICO_CURRENT_CLAMP_2000ARMS_50A,
+            PICO_CURRENT_CLAMP_2000ARMS_100A,
+            PICO_CURRENT_CLAMP_2000ARMS_200A,
+            PICO_CURRENT_CLAMP_2000ARMS_500A,
+            PICO_CURRENT_CLAMP_2000ARMS_1000A,
+            PICO_CURRENT_CLAMP_2000ARMS_2000A,
+            PICO_CURRENT_CLAMP_2000ARMS_5000A,
+            PICO_CURRENT_CLAMP_2000ARMS_RANGES = (PICO_CURRENT_CLAMP_2000ARMS_5000A + 1) - PICO_CURRENT_CLAMP_2000ARMS_10A,
+
+            PICO_CURRENT_CLAMP_100A_2_5A = 10000,
+            PICO_CURRENT_CLAMP_100A_5A,
+            PICO_CURRENT_CLAMP_100A_10A,
+            PICO_CURRENT_CLAMP_100A_25A,
+            PICO_CURRENT_CLAMP_100A_50A,
+            PICO_CURRENT_CLAMP_100A_100A,
+
+            PICO_CURRENT_CLAMP_60A_2A = 10500,
+            PICO_CURRENT_CLAMP_60A_5A,
+            PICO_CURRENT_CLAMP_60A_10A,
+            PICO_CURRENT_CLAMP_60A_20A,
+            PICO_CURRENT_CLAMP_60A_50A,
+            PICO_CURRENT_CLAMP_60A_60A,
+
+            PICO_OPTICAL_SENSOR_10V = 10550,
+
+            PICO_CURRENT_CLAMP_60A_V2_0_5A = 10600,
+            PICO_CURRENT_CLAMP_60A_V2_1A,
+            PICO_CURRENT_CLAMP_60A_V2_2A,
+            PICO_CURRENT_CLAMP_60A_V2_5A,
+            PICO_CURRENT_CLAMP_60A_V2_10A,
+            PICO_CURRENT_CLAMP_60A_V2_20A,
+            PICO_CURRENT_CLAMP_60A_V2_50A,
+            PICO_CURRENT_CLAMP_60A_V2_60A,
+
+            PICO_X10_ACTIVE_PROBE_100MV = 10700,
+            PICO_X10_ACTIVE_PROBE_200MV,
+            PICO_X10_ACTIVE_PROBE_500MV,
+            PICO_X10_ACTIVE_PROBE_1V,
+            PICO_X10_ACTIVE_PROBE_2V,
+            PICO_X10_ACTIVE_PROBE_5V,
         }
 
         #endregion

@@ -225,8 +225,15 @@ namespace DriverImports
 
     Arbitrary = 0x10000000
   }
+    public enum SweepType
+    {
+        Up = 0,
+        Down = 1,
+        UpDown = 2,
+        DownUp = 3      
+    }
 
-  public enum PulseWidthType
+    public enum PulseWidthType
   {
     None = 0,
     Less_Than = 1,
@@ -242,7 +249,6 @@ namespace DriverImports
     GateHigh,
     GateLow
   }
-
   public enum SiggenTrigSource
   {
     None,
@@ -252,6 +258,18 @@ namespace DriverImports
     SoftwareTrigger
   }
 
+    public enum SigGenFilterState
+    {
+        FilterAuto = 0,
+        FilterOff =1,
+        FilterOn =2           
+    }
+    public enum SigGenParameter
+    {
+        SigGenParamOutputVolts = 0,
+        SigGenParamOutputSample = 1,
+        SigGenParamOutputBufferLenght = 2
+    }
   public enum DigitalPort
   {
     DigitalNone = 0x00000000,
