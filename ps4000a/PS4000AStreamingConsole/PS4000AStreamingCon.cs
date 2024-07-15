@@ -15,7 +15,7 @@
  *     Collect a stream of data immediately
  *     Collect a stream of data when a trigger event occurs
  *    
- *  Copyright © 2015-2018 Pico Technology Ltd. See LICENSE file for terms.
+ *  Copyright © 2015-2024 Pico Technology Ltd. See LICENSE file for terms.
  *
  ******************************************************************************/
 
@@ -27,15 +27,11 @@ using System.Threading;
 using PS4000AImports;
 using PicoStatus;
 using PicoPinnedArray;
+using ProbeScaling;
+using PicoConnectProbes;
 
 namespace PS4000AStreamingConsole
 {
-    struct ChannelSettings
-    {
-        public Imports.Range range;
-        public bool enabled;
-    }
-
     class StreamingConSole
     {
         private readonly short _handle;
@@ -46,7 +42,6 @@ namespace PS4000AStreamingConsole
         short[][] appBuffers;
         short[][] buffers;
 
-        uint[] inputRanges = { 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000 };
         bool _ready = false;
         short _trig = 0;
         uint _trigAt = 0;
@@ -55,8 +50,10 @@ namespace PS4000AStreamingConsole
         bool _autoStop;
         short _maxValue;
 
-        public Imports.Range _firstRange;
-        public Imports.Range _lastRange;
+        static short maxADCValue = 0;
+
+        public Scaling.Std_Voltage_Range _firstRange;
+        public Scaling.Std_Voltage_Range _lastRange;
 
         private string StreamFile = "stream.txt";
 
@@ -113,29 +110,6 @@ namespace PS4000AStreamingConsole
             {
                 Console.ReadKey(true); // clear the key
             }
-        }
-
-
-        /****************************************************************************
-         * adc_to_mv
-         *
-         * Convert an 16-bit ADC count into millivolts
-         ****************************************************************************/
-        int adc_to_mv(int raw, int ch)
-        {
-            return (raw * (int) inputRanges[ch]) / _maxValue;
-        }
-
-        /****************************************************************************
-         * mv_to_adc
-         *
-         * Convert a millivolt value into a 16-bit ADC count
-         *
-         *  (useful for setting trigger thresholds)
-         ****************************************************************************/
-        short mv_to_adc(short mv, short ch)
-        {
-            return (short)((mv * _maxValue) / inputRanges[ch]);
         }
 
         /****************************************************************************
@@ -248,9 +222,14 @@ namespace PS4000AStreamingConsole
                                 sb.AppendFormat("{0,10} {1,10} {2,10} {3,10} {4,10}",
                                                 (char)('A' + (ch / 2)),
                                                 appBuffersPinned[ch].Target[i],
-                                                adc_to_mv(appBuffersPinned[ch].Target[i], (int)_channelSettings[(int)(Imports.Channel.CHANNEL_A + (ch / 2))].range),
+
+                                                Scaling.adc_to_mv(appBuffersPinned[ch].Target[i],
+                                                    (uint)_channelSettings[(int)(Imports.Channel.CHANNEL_A + (ch / 2))].range, maxADCValue),
+                                                
                                                 appBuffersPinned[ch + 1].Target[i],
-                                                adc_to_mv(appBuffersPinned[ch + 1].Target[i], (int)_channelSettings[(int)(Imports.Channel.CHANNEL_A + (ch / 2))].range));
+
+                                                Scaling.adc_to_mv(appBuffersPinned[ch + 1].Target[i],
+                                                    (uint)_channelSettings[(int)(Imports.Channel.CHANNEL_A + (ch / 2))].range, maxADCValue));
                             }
                         }
 
@@ -294,7 +273,7 @@ namespace PS4000AStreamingConsole
             /* See what ranges are available... */
             for (int i = (int)_firstRange; i <= (int)_lastRange; i++)
             {
-                Console.WriteLine("{0} . {1} mV", i, inputRanges[i]);
+                Console.WriteLine("{0} . {1} mV", i, Scaling.inputRanges[i]);
             }
 
             /* Ask the user to select a range */
@@ -327,15 +306,19 @@ namespace PS4000AStreamingConsole
 
                     if (range != 99)
                     {
-                        status = Imports.SetChannel(_handle, Imports.Channel.CHANNEL_A + ch, 1, Imports.Coupling.DC, (Imports.Range)range, 0);
+                        status = Imports.SetChannel(_handle, Imports.Channel.CHANNEL_A + ch, 1, Imports.Coupling.DC,
+                            (PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange)range, 0);
+
                         _channelSettings[ch].enabled = true;
-                        _channelSettings[ch].range = (Imports.Range)range;
-                        Console.WriteLine(" = {0} mV", inputRanges[range]);
+                        _channelSettings[ch].range = (PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange)range;
+                        Console.WriteLine(" = {0} mV", Scaling.inputRanges[range]);
                         allChannelsOff = false;
                     }
                     else
                     {
-                        status = Imports.SetChannel(_handle, Imports.Channel.CHANNEL_A + ch, 0, Imports.Coupling.DC, Imports.Range.Range_1V, 0);
+                        status = Imports.SetChannel(_handle, Imports.Channel.CHANNEL_A + ch, 0, Imports.Coupling.DC,
+                            PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X1_PROBE_1V, 0);
+
                         _channelSettings[ch].enabled = false;
                         Console.WriteLine("Channel Switched off");
 
@@ -355,7 +338,12 @@ namespace PS4000AStreamingConsole
         ****************************************************************************/
         void GetDeviceInfo()
         {
-            Imports.MaximumValue(_handle, out _maxValue);
+            uint status = StatusCodes.PICO_OK;
+            status = Imports.MaximumValue(_handle, out maxADCValue);
+            if (status != StatusCodes.PICO_OK)
+            {
+                Console.WriteLine("MaximumValue - error has been encountered : {0}", status);
+            }
 
             string[] description = {
                                        "Driver Version",
@@ -378,7 +366,7 @@ namespace PS4000AStreamingConsole
                 for (int i = 0; i < 11; i++)
                 {
                     short requiredSize;
-                    Imports.GetUnitInfo(_handle, line, 80, out requiredSize, (uint) i);
+                    Imports.GetUnitInfo(_handle, line, 80, out requiredSize, (DriverImports.InfoType)i);
                     Console.WriteLine("{0}: {1}", description[i], line);
 
                     if (i == 3) // Variant information
@@ -386,16 +374,8 @@ namespace PS4000AStreamingConsole
                         _channelCount = int.Parse(line[1].ToString());
                         _channelSettings = new ChannelSettings[_channelCount];
 
-                        if (_channelCount == 8)
-                        {
-                            _firstRange = Imports.Range.Range_10MV;
-                            _lastRange = Imports.Range.Range_50V;
-                        }
-                        else
-                        {
-                            _firstRange = Imports.Range.Range_50MV;
-                            _lastRange = Imports.Range.Range_200V;
-                        }
+                        _firstRange = Scaling.Std_Voltage_Range.Range_10MV;
+                        _lastRange = Scaling.Std_Voltage_Range.Range_50V;
                     }
                 }
 
@@ -405,9 +385,11 @@ namespace PS4000AStreamingConsole
 
                 for (int ch = 0; ch < _channelCount; ch++)
                 {
-                    Imports.SetChannel(_handle, Imports.Channel.CHANNEL_A + ch, 1, Imports.Coupling.DC, Imports.Range.Range_5V, 0);
+                    Imports.SetChannel(_handle, Imports.Channel.CHANNEL_A + ch, 1, Imports.Coupling.DC,
+                        PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X1_PROBE_5V, 0);
+
                     _channelSettings[ch].enabled = true;
-                    _channelSettings[ch].range = Imports.Range.Range_5V;
+                    _channelSettings[ch].range = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X1_PROBE_5V;
                     Console.WriteLine("Channel {0}: 5V", (char)('A' + ch));
                 }
             }
@@ -438,7 +420,7 @@ namespace PS4000AStreamingConsole
          ***************************************************************************/
         void CollectStreamingTriggered()
         {
-            short triggerVoltage = mv_to_adc(1000, (short)_channelSettings[(int)Imports.Channel.CHANNEL_A].range); // ChannelInfo stores ADC counts            
+            short triggerVoltage = Scaling.mv_to_adc(1000, (uint)_channelSettings[(int)Imports.Channel.CHANNEL_A].range, maxADCValue);             
 
             Console.WriteLine("Collect streaming triggered...");
             Console.WriteLine("Data is written to disk file (stream.txt)");

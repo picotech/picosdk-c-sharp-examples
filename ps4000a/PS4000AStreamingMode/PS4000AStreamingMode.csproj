@@ -2,11 +2,15 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
+    <Platforms>ARM32;x86;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\shared\PicoConnectProbes.cs" Link="PicoConnectProbes.cs" />
+    <Compile Include="..\..\shared\PicoDeviceEnums.cs" Link="PicoDeviceEnums.cs" />
     <Compile Include="..\..\shared\PicoPinnedArray.cs" Link="PicoPinnedArray.cs" />
+    <Compile Include="..\..\shared\PicoScaling.cs" Link="PicoScaling.cs" />
     <Compile Include="..\..\shared\PicoStatus.cs" Link="PicoStatus.cs" />
     <Compile Include="..\PS4000AImports.cs" Link="PS4000AImports.cs" />
   </ItemGroup>

@@ -22,52 +22,24 @@ using System.Text;
 using PS4000AImports;
 using PicoPinnedArray;
 using PicoStatus;
+using ProbeScaling;
 
 namespace PS4000ARapidBlockMode
 {
-    struct ChannelSettings
-    {
-        public Imports.Coupling DCcoupled;
-        public Imports.Range range;
-        public bool enabled;
-    }
-
     class PS4000ARapidBlockMode
     {
         bool _ready = false;
         short _handle;
         private ChannelSettings[] _channelSettings;
-        public const int MAX_CHANNELS = 4;
-        private int channelCount = 4;
+        public const int MAX_CHANNELS = 8;
+        private int channelCount = 8;
         bool _scaleVoltages = true;
-        ushort[] inputRanges = { 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000 };
         uint _timebase = 8;
         short _oversample = 1;
         private int _channelCount = 2;
         public const int RAPID_BLOCK_BUFFER_SIZE = 100; // Number of samples per waveform capture for rapid block captures
         private Imports.ps4000aBlockReady _callbackDelegate;
-
-        /****************************************************************************
-		 * adc_to_mv
-		 *
-		 * Convert an 16-bit ADC count into millivolts
-		 ****************************************************************************/
-        int adc_to_mv(int raw, int ch)
-        {
-            return (raw * inputRanges[ch]) / Imports.MaxValue;
-        }
-
-        /****************************************************************************
-		 * mv_to_adc
-		 *
-		 * Convert a millivolt value into a 16-bit ADC count
-		 *
-		 *  (useful for setting trigger thresholds)
-		 ****************************************************************************/
-        short mv_to_adc(short mv, short ch)
-        {
-            return (short)((mv * Imports.MaxValue) / inputRanges[ch]);
-        }
+        static short maxADCValue = 0;
 
         /****************************************************************************
 		 * BlockCallback
@@ -108,6 +80,11 @@ namespace PS4000ARapidBlockMode
             {
                 // Do nothing 
             }
+            status = Imports.MaximumValue(handle, out maxADCValue);
+            if (status != StatusCodes.PICO_OK)
+            {
+                Console.WriteLine("MaximumValue - error has been encountered : {0}", status);
+            }
             Console.WriteLine("\n Device Successfully opened !...");
             PS4000ARapidBlockMode RapidCapture = new PS4000ARapidBlockMode(handle);
             RapidCapture.ChannelSetup();
@@ -126,7 +103,7 @@ namespace PS4000ARapidBlockMode
                 {
                     _channelSettings[i].enabled = true;
                     _channelSettings[i].DCcoupled = Imports.Coupling.DC;
-                    _channelSettings[i].range = Imports.Range.Range_5V;
+                    _channelSettings[i].range = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X1_PROBE_5V;
                 }
 
                 for (int i = 0; i < channelCount; i++) // reset channels to most recent settings
@@ -199,7 +176,7 @@ namespace PS4000ARapidBlockMode
 
             // Set simple trigger on Channel A
 
-            short triggerVoltage = mv_to_adc(0, (short)_channelSettings[(int)Imports.Channel.CHANNEL_A].range); // Threshold value to be used for "SetSimpleTrigger"
+            short triggerVoltage = Scaling.mv_to_adc(0, (uint)_channelSettings[(int)Imports.Channel.CHANNEL_A].range, maxADCValue); // Threshold value to be used for "SetSimpleTrigger"
 
             status = Imports.SetSimpleTrigger(_handle, 1, Imports.Channel.CHANNEL_A, triggerVoltage, Imports.ThresholdDirection.Rising, 0, 0);
 
@@ -333,8 +310,6 @@ namespace PS4000ARapidBlockMode
                 {
                     Console.WriteLine("Capture {0}:\n", seg + 1);
 
-
-
                     for (chan = 0; chan < _channelCount; chan++)
                     {
                         if (_channelSettings[chan].enabled)
@@ -351,18 +326,15 @@ namespace PS4000ARapidBlockMode
                         {
                             if (_channelSettings[chan].enabled)
                             {
-                                Console.Write("{0}\t", _scaleVoltages ?
-                                                        adc_to_mv(pinned[seg, chan].Target[i], (int)_channelSettings[(int)(Imports.Channel.CHANNEL_A + chan)].range) // If _scaleVoltages, show mV values
-                                                        : pinned[seg, chan].Target[i]);                                                                             // else show ADC counts
+                                Console.Write("{0:N3}\t", _scaleVoltages ?
+                                                        Scaling.adc_to_mv(pinned[seg, chan].Target[i],
+                                                        (uint)_channelSettings[(int)(Imports.Channel.CHANNEL_A + chan)].range, maxADCValue) // If _scaleVoltages, show mV values
+                                                        : pinned[seg, chan].Target[i]);                                                     // else show ADC counts
                             }
                         }
-
                         Console.WriteLine();
                     }
-
-                    //  Console.WriteLine();
                 }
-
                 // Un-pin the arrays
                 foreach (PinnedArray<short> p in pinned)
                 {

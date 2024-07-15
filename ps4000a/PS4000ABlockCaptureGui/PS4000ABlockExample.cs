@@ -11,7 +11,7 @@
  *     Collect a block of samples immediately
  *     Collect a block of samples when a trigger event occurs
  *
- *  Copyright (C) 2014 - 2017 Pico Technology Ltd. See LICENSE file for terms.
+ *  Copyright (C) 2014 - 2024 Pico Technology Ltd. See LICENSE file for terms.
  * 
  ******************************************************************************/
 
@@ -23,6 +23,7 @@ using System.Windows.Forms;
 using PS4000AImports;
 using PicoStatus;
 using PicoPinnedArray;
+using ProbeScaling;
 
 
 namespace PS4000ABlockCaptureGui
@@ -39,26 +40,17 @@ namespace PS4000ABlockCaptureGui
 
         uint status = 0;
         int timeInterval;
-        ushort[] inputRanges = { 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000 };
+
         short handle = 0;
         uint _timebase = 8;
-        Imports.Range[] combobox_values = new Imports.Range[8];
+        PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange[] combobox_values = new PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange[8];
         private int numberOfChannels = 0;
+        static short maxADCValue = 0;
 
         void BlockCallback(short handle, short status, IntPtr pVoid)
         {
             // flag to say done reading data
             _ready = true;
-        }
-
-        int adc_to_mv(int raw, Imports.Range range)
-        {
-            return (raw * inputRanges[(int)(range)]) / Imports.MaxValue;
-        }
-
-        short mv_to_adc(int mv, Imports.Range range)
-        {
-            return (short)((mv * Imports.MaxValue) / inputRanges[(int)(range)]);
         }
 
         private void BlockExample_Close(object sender, FormClosedEventArgs e)
@@ -82,6 +74,12 @@ namespace PS4000ABlockCaptureGui
             {
                 MessageBox.Show("Using USB power", "Under Powered", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 status = Imports.ps4000aChangePowerSource(handle, status);
+            }
+
+            status = Imports.MaximumValue(handle, out maxADCValue);
+            if (status != StatusCodes.PICO_OK)
+            {
+                Console.WriteLine("MaximumValue - error has been encountered : {0}", status);
             }
 
             Voltset.Visible = true;
@@ -119,11 +117,11 @@ namespace PS4000ABlockCaptureGui
             for (int i = 0; i < 9; i++)
             {
                 short requiredSize;
-                Imports.GetUnitInfo(handle, line, 80, out requiredSize, (uint) i);
+                Imports.GetUnitInfo(handle, line, 80, out requiredSize, (DriverImports.InfoType)i);
 
                 DeviceInfo.Text += description[i].ToString() + " : " + line.ToString() + Environment.NewLine;
 
-                if (i == PicoInfo.PICO_VARIANT_INFO)
+                if (i == (int)PicoInfo.PICO_VARIANT_INFO)
                 {
                     try
                     {
@@ -142,17 +140,17 @@ namespace PS4000ABlockCaptureGui
         private void volt_next_Click(object sender, EventArgs e)
         {
             // range is shifted by -1 bcause of index list number
-            combobox_values[0] = (Imports.Range)(ChannelA_volt.SelectedIndex - 1);
-            combobox_values[1] = (Imports.Range)(ChannelB_volt.SelectedIndex - 1);
-            combobox_values[2] = (Imports.Range)(ChannelC_volt.SelectedIndex - 1);
-            combobox_values[3] = (Imports.Range)(ChannelD_volt.SelectedIndex - 1);
-            combobox_values[4] = (Imports.Range)(ChannelE_volt.SelectedIndex - 1);
-            combobox_values[5] = (Imports.Range)(ChannelF_volt.SelectedIndex - 1);
-            combobox_values[6] = (Imports.Range)(ChannelG_volt.SelectedIndex - 1);
-            combobox_values[7] = (Imports.Range)(ChannelH_volt.SelectedIndex - 1);
+            combobox_values[0] = (PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange)(ChannelA_volt.SelectedIndex - 1);
+            combobox_values[1] = (PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange)(ChannelB_volt.SelectedIndex - 1);
+            combobox_values[2] = (PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange)(ChannelC_volt.SelectedIndex - 1);
+            combobox_values[3] = (PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange)(ChannelD_volt.SelectedIndex - 1);
+            combobox_values[4] = (PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange)(ChannelE_volt.SelectedIndex - 1);
+            combobox_values[5] = (PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange)(ChannelF_volt.SelectedIndex - 1);
+            combobox_values[6] = (PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange)(ChannelG_volt.SelectedIndex - 1);
+            combobox_values[7] = (PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange)(ChannelH_volt.SelectedIndex - 1);
 
             // Check to make sure that not all channels are off
-            if (combobox_values.All(item => item.Equals((Imports.Range)(-1))))
+            if (combobox_values.All(item => item.Equals((PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange)(-1))))
             {
                 MessageBox.Show("One channel needs to be enabled", "Error Channel Selection", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -162,12 +160,14 @@ namespace PS4000ABlockCaptureGui
             {
                  status = Imports.SetChannel(handle,                                                                                // the device handle
                                             Imports.Channel.CHANNEL_A + ch,                                                         // the channel you wish to set
-                                            (short)(combobox_values[ch] != (Imports.Range)(-1) ? 1 : 0),                            // is enabled if off is not selected
+                                            (short)(combobox_values[ch] != (PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange)(-1) ? 1 : 0),                            // is enabled if off is not selected
                                             Imports.Coupling.DC,
-                                            combobox_values[ch] != (Imports.Range)(-1) ? combobox_values[ch] : (Imports.Range)(0),  // -1 is not a correct range will cause an error
+                                            combobox_values[ch] !=
+                                            (PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange)(-1) ? combobox_values[ch] : (PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange)(0),
+                                            // -1 is not a correct range will cause an error
                                              0); // no analogue offset 
 
-                 if (combobox_values[ch] != (Imports.Range)(-1))
+                 if (combobox_values[ch] != (PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange)(-1))
                  {
                      results_chart.Series[((char)(ch + 65)).ToString()].Enabled = true;
                  }
@@ -237,7 +237,7 @@ namespace PS4000ABlockCaptureGui
         // Enables or disables the trigger depending on the check box
         private void trig_next_Click(object sender, EventArgs e)
         {
-            short _threshold = 0;
+            double _threshold = 0;
 
             if (!Trigger_enable.Checked)
             {
@@ -251,7 +251,7 @@ namespace PS4000ABlockCaptureGui
             }
             else
             {
-                if (combobox_values[Channel.SelectedIndex] == (Imports.Range)(-1))
+                if (combobox_values[Channel.SelectedIndex] == (PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange)(-1))
                 {
                     MessageBox.Show("Please Select a Channel which is enabled");
                     return;
@@ -259,18 +259,18 @@ namespace PS4000ABlockCaptureGui
 
                 try
                 {
-                    _threshold = Int16.Parse(threshold.Text);
+                    _threshold = Double.Parse(threshold.Text);
                 }
                 catch (FormatException)
                 {
-                    MessageBox.Show("Please enter numeric value only for threshold", "Input Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Please enter numeric value only for threshold (mV)", "Input Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
                 status = Imports.SetSimpleTrigger(handle,                                                           // handle selects the device
                                             1,                                                                      // if this value is non zero will enable trigger
                                             Imports.Channel.CHANNEL_A + Channel.SelectedIndex,                       // select channel
-                                            mv_to_adc(_threshold, combobox_values[Channel.SelectedIndex]),          // function use adc values, so must be converted
+                                            Scaling.mv_to_adc(_threshold, (uint)combobox_values[Channel.SelectedIndex], maxADCValue),//function use adc values, so must be converted
                                             Imports.ThresholdDirection.Above + direction.SelectedIndex,             // Direction that trigger will see e.g rising or above
                                             0,                                                                      //  Delay time ins sample period between trigger and first sample being taken
                                             0);                                                                     //  time is ms that system will wait if no trigger occurs, set to zero to wait indefinately
@@ -328,11 +328,11 @@ namespace PS4000ABlockCaptureGui
                 {
                     for (int ch = 0; ch < numberOfChannels; ch++)
                     {
-                        if (combobox_values[ch] != (Imports.Range)(-1))
+                        if (combobox_values[ch] != (PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange)(-1))
                         {
 
                             double time = timeInterval * i;
-                            int value = adc_to_mv(maxPinned[ch].Target[i], combobox_values[ch]);
+                            double value = Scaling.adc_to_mv(maxPinned[ch].Target[i], (uint)combobox_values[ch], maxADCValue);
                             results_chart.Series[((char)(ch + 65)).ToString()].Points.AddY(value);
                             results_chart.Series[((char)(ch + 65)).ToString()].Points[i].AxisLabel = time.ToString();
 

@@ -9,7 +9,7 @@
  *  Examples:
  *     Collect a stream of data immediately
  *    
- *  Copyright © 2022 Pico Technology Ltd. See LICENSE file for terms.
+ *  Copyright © 2022-2024 Pico Technology Ltd. See LICENSE file for terms.
  *
  ******************************************************************************/
 
@@ -21,23 +21,17 @@ using System.Text;
 using PS4000AImports;
 using PicoPinnedArray;
 using PicoStatus;
+using ProbeScaling;
 
 namespace PS4000AStreamingMode
 {
-    struct ChannelSettings
-    {
-        public Imports.Coupling DCcoupled;
-        public Imports.Range range;
-        public bool enabled;
-    }
     internal class StreamingMode
 
     {
-        public const int MAX_CHANNELS = 4;
+        public const int MAX_CHANNELS = 8;
         bool _scaleVoltages = true;
-        ushort[] inputRanges = { 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000 };
         private ChannelSettings[] _channelSettings;
-        private int channelCount = 4;
+        int channelCount = 0;
         short _handle;
 
         // buffers used for streaming data collection 
@@ -50,6 +44,7 @@ namespace PS4000AStreamingMode
         uint _trigAt = 0;
         int _sampleCount;
         uint _startIndex = 0;
+        static short maxADCValue = 0;
 
         /****************************************************************************
 		 * StreamingCallback
@@ -77,21 +72,7 @@ namespace PS4000AStreamingMode
             // flags to show if & where a trigger has occurred
             _trig = triggered;
             _trigAt = triggerAt;
-
-
         }
-
-        /****************************************************************************
-        * adc_to_mv
-        *
-        * If the user selects scaling to millivolts,
-        * Convert an 16-bit ADC count into millivolts
-        ****************************************************************************/
-        int adc_to_mv(int raw, int ch)
-        {
-            return (_scaleVoltages) ? (raw * inputRanges[ch]) / Imports.MaxValue : raw;
-        }
-
 
         static void Main(string[] args)
         {
@@ -126,6 +107,12 @@ namespace PS4000AStreamingMode
         }
         private void getdeviceinfo()
         {
+            uint status = Imports.MaximumValue(_handle, out maxADCValue);
+            if (status != StatusCodes.PICO_OK)
+            {
+                Console.WriteLine("MaximumValue - error has been encountered : {0}", status);
+            }
+
             string[] description = {
                            "Driver Version    ",
                            "USB Version       ",
@@ -142,17 +129,16 @@ namespace PS4000AStreamingMode
 
             StringBuilder line = new StringBuilder(80);
 
-
             for (uint i = 0; i < description.Length; i++)
             {
                 short requiredSize;
-                Imports.GetUnitInfo(_handle, line, 80, out requiredSize, i);
-
-
-
+                Imports.GetUnitInfo(_handle, line, 80, out requiredSize, (DriverImports.InfoType)i );
                 Console.WriteLine("{0}: {1}", description[i], line);
-
-
+                if (i == 3) // Variant information
+                {
+                    channelCount = int.Parse(line[1].ToString());
+                    _channelSettings = new ChannelSettings[channelCount];
+                }
             }
             setchannel();
         }
@@ -166,8 +152,9 @@ namespace PS4000AStreamingMode
                 {
                     _channelSettings[i].enabled = true;
                     _channelSettings[i].DCcoupled = Imports.Coupling.DC;
-                    _channelSettings[i].range = Imports.Range.Range_5V;
-                }
+                    _channelSettings[i].range = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X1_PROBE_5V;
+                    _channelSettings[i].analogoffset = (float)0.0;
+            }
 
                 for (int i = 0; i < channelCount; i++) // reset channels to most recent settings
                 {
@@ -175,12 +162,11 @@ namespace PS4000AStreamingMode
                                        (short)(_channelSettings[(int)(Imports.Channel.CHANNEL_A + i)].enabled ? 1 : 0),
                                        _channelSettings[(int)(Imports.Channel.CHANNEL_A + i)].DCcoupled,
                                        _channelSettings[(int)(Imports.Channel.CHANNEL_A + i)].range,
-                                       (float)0.0);
+                                       _channelSettings[(int)(Imports.Channel.CHANNEL_A + i)].analogoffset
+                                       );
                 }
                 streamingdatahandler(0);
-
             }
-
         }
         /****************************************************************************
 		 * StreamingDataHandler
@@ -193,7 +179,6 @@ namespace PS4000AStreamingMode
         private void streamingdatahandler(uint preTrigger)
         {
 
-
             Console.WriteLine("Press a key to start");
             while (!Console.KeyAvailable) Thread.Sleep(100);
 
@@ -204,7 +189,6 @@ namespace PS4000AStreamingMode
             //set trigger
 
             Imports.SetSimpleTrigger(_handle, 0, Imports.Channel.CHANNEL_A, 0, Imports.ThresholdDirection.None, 0, 0);/* Trigger disabled	*/
-
 
             uint tempBufferSize = 50000; /*  Ensure buffer is large enough */
 
@@ -217,20 +201,17 @@ namespace PS4000AStreamingMode
             uint sampleInterval;
             Imports.DownSamplingMode ratioMode;
             uint postTrigger;
-            bool autoStop;
+            //bool autoStop;
 
             downsampleRatio = 1;
             timeUnits = Imports.ReportedTimeUnits.MilliSeconds;
             sampleInterval = 10;
             ratioMode = Imports.DownSamplingMode.None;
             postTrigger = 10;
-            autoStop = false;
-
+            //autoStop = false;
 
             // pinned buffer creation
             PinnedArray<short>[] appBuffersPinned = new PinnedArray<short>[channelCount];
-
-
 
             buffers = new short[channelCount][];
 
@@ -277,7 +258,6 @@ namespace PS4000AStreamingMode
                 else
                 {
                     // Do nothing
-
                 }
 
                 if (_ready && _sampleCount > 0) /* can be ready and have no data, if autoStop has fired */
@@ -303,29 +283,22 @@ namespace PS4000AStreamingMode
                         {
                             if (_channelSettings[ch].enabled)
                             {
-                                Console.Write("\n{0} {1} {2} {3} {4},",
+                                Console.Write("\n{0} {1} {2},",
                                                 (char)('A' + ch),
                                                 appBuffersPinned[ch].Target[i],
-                                                adc_to_mv(appBuffersPinned[ch].Target[i], (int)_channelSettings[(int)(Imports.Channel.CHANNEL_A + ch)].range),
-                                                appBuffersPinned[ch].Target[i],
-                                                adc_to_mv(appBuffersPinned[ch].Target[i], (int)_channelSettings[(int)(Imports.Channel.CHANNEL_A + ch)].range));
-
+                                                Scaling.adc_to_mv(appBuffersPinned[ch].Target[i],
+                                                    (uint)_channelSettings[(int)(Imports.Channel.CHANNEL_A + ch)].range, maxADCValue)
+                                                );
                             }
                         }
-
                         Console.WriteLine();
                     }
-
                 }
-
-
             }
             if (Console.KeyAvailable)
             {
                 Console.ReadKey(true); // clear the key
             }
-
-            Imports.Stop(_handle);
 
             if (!_autoStop)
             {
@@ -337,7 +310,10 @@ namespace PS4000AStreamingMode
                     Console.ReadKey(true); // clear the key
                 }
             }
-            Console.WriteLine();
+            Console.WriteLine("\nStopping Streaming...");
+            Imports.Stop(_handle);
+            Console.WriteLine("\nClosing Unit...");
+            Imports.CloseUnit(_handle);
         }
     }
 }

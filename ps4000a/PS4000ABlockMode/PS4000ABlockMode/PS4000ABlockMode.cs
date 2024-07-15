@@ -10,7 +10,7 @@
  * Examples:
  *    Collect a block of samples immediately
 
- * Copyright (C) 2021 Pico Technology Ltd. See LICENSE file for terms.
+ * Copyright (C) 2024 Pico Technology Ltd. See LICENSE file for terms.
  *  
  **************************************************************************/
 
@@ -23,40 +23,24 @@ using System.Text;
 using PS4000AImports;
 using PicoPinnedArray;
 using PicoStatus;
+using ProbeScaling;
 
 namespace PS4000AExample
 
 {
-    struct ChannelSettings
-    {
-        public Imports.Coupling DCcoupled;
-        public Imports.Range range;
-        public bool enabled;
-    }
+
     class PS4000ABlockMode
     {
-        public const int MAX_CHANNELS = 4;
+        public const int MAX_CHANNELS = 8;//4
         uint sampleCount = 10000;
         short _handle;
         bool _ready = false;
         private Imports.ps4000aBlockReady _callbackDelegate;
         private static uint _timebase = 2;
         bool _scaleVoltages = true;
-        ushort[] inputRanges = { 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000 };
         private ChannelSettings[] _channelSettings;
-        private int channelCount = 4;
-
-        /****************************************************************************
-        * adc_to_mv
-        *
-        * If the user selects scaling to millivolts,
-        * Convert an 16-bit ADC count into millivolts
-        ****************************************************************************/
-        int adc_to_mv(int raw, int ch)
-        {
-            return (_scaleVoltages) ? (raw * inputRanges[ch]) / Imports.MaxValue : raw;
-        }
-
+        private int channelCount = 2;//4
+        static short maxADCValue = 0;
 
         /****************************************************************************
 		 * Callback
@@ -69,22 +53,16 @@ namespace PS4000AExample
             if (status != (short)StatusCodes.PICO_CANCELLED)
                 _ready = true;
         }
-
-
-
         public PS4000ABlockMode(short handle)
         {
             _handle = handle;
         }
-
-
         static void Main(string[] args)
         {
             Console.WriteLine("PicoScope 4000 Series (ps4000a) Driver C# Block mode example");
             Console.WriteLine("\nOpening the device...");
 
             short handle;
-
 
             //Open unit 
             uint status = Imports.OpenUnit(out handle, null);
@@ -102,12 +80,18 @@ namespace PS4000AExample
             }
             Console.WriteLine("\nDevice successfully opened!..");
 
+            
+            status = Imports.MaximumValue(handle, out maxADCValue);
+            if (status != StatusCodes.PICO_OK)
+            {
+                Console.WriteLine("MaximumValue - error has been encountered : {0}", status);
+            }
+
             PS4000ABlockMode blockCapture = new PS4000ABlockMode(handle);
             blockCapture.ChannelSetup();
             blockCapture.BlockDataHandler("First 10 readings", 0);
             Imports.CloseUnit(handle);
         }
-
 
         /****************************************************************************
 		 * Set Channel/(s) 
@@ -121,7 +105,7 @@ namespace PS4000AExample
                 {
                     _channelSettings[i].enabled = true;
                     _channelSettings[i].DCcoupled = Imports.Coupling.DC;
-                    _channelSettings[i].range = Imports.Range.Range_5V;
+                    _channelSettings[i].range = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X1_PROBE_5V;
                 }
 
                 for (int i = 0; i < channelCount; i++) // reset channels to most recent settings
@@ -168,9 +152,7 @@ namespace PS4000AExample
                 }
             }
 
-
-            /* Find the time interval (in nanoseconds) at the current _timebase. */
-            
+            /* Find the time interval (in nanoseconds) at the current _timebase. */          
             int timeInterval;
             int maxSamples;
 
@@ -220,8 +202,8 @@ namespace PS4000AExample
                     {
                         if (_channelSettings[ch].enabled)
                         {
-                            Console.Write("{0,6}    ", _scaleVoltages ?
-                                              adc_to_mv(maxPinned[ch].Target[i], (int)_channelSettings[(int)(Imports.Channel.CHANNEL_A + ch)].range)  // If _scaleVoltages, show mV values
+                            Console.Write("{0:N3}    ", _scaleVoltages ?
+                                              Scaling.adc_to_mv(maxPinned[ch].Target[i], (uint)_channelSettings[(int)(Imports.Channel.CHANNEL_A + ch)].range, maxADCValue)  // If _scaleVoltages, show mV values
                                               : maxPinned[ch].Target[i]);                                                                           // else show ADC counts
                         }
                     }
@@ -230,7 +212,7 @@ namespace PS4000AExample
 
                 }
 
-            }
+             }
             foreach (PinnedArray<short> p in minPinned)
             {
                 if (p != null)
@@ -246,6 +228,6 @@ namespace PS4000AExample
                     p.Dispose();
                 }
             }
-        }
+         }
     }
 }

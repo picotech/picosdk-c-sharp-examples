@@ -7,7 +7,7 @@
 *  defined in the ps4000aApi.h C header file. 
 *  It also has the enums and structs required by the (wrapped) function calls.
 *   
-* Copyright © 2014-2018 Pico Technology Ltd. See LICENSE file for terms.
+* Copyright © 2014-2024 Pico Technology Ltd. See LICENSE file for terms.
 *
 ******************************************************************************/
 
@@ -17,13 +17,22 @@ using System.Text;
 
 namespace PS4000AImports
 {
+    using PicoConnectProbes;
+    using DriverImports;
+
+    struct ChannelSettings
+    {
+        public Imports.Coupling DCcoupled;
+        public PicoConnectProbes.PicoConnectProbeRange range;
+        public bool enabled;
+        public float analogoffset;
+        BandwidthLimiter bandwidthlimiter;
+    }
     class Imports
     {
         #region Constants
         private const string _DRIVER_FILENAME = "ps4000a.dll";
-
-        public const int MaxValue = 32767;
-
+        public const int DUAL_SCOPE = 2; // PicoScope with 2 channels
         public const int QUAD_SCOPE = 4; // PicoScope with 4 channels
         public const int OCTO_SCOPE = 8; // PicoScope with 8 channels
 
@@ -61,23 +70,7 @@ namespace PS4000AImports
             PULSE_WIDTH_SOURCE = 0x10000000
         }
 
-        public enum Range : int
-        {
-            Range_10MV,
-            Range_20MV,
-            Range_50MV,
-            Range_100MV,
-            Range_200MV,
-            Range_500MV,
-            Range_1V,
-            Range_2V,
-            Range_5V,
-            Range_10V,
-            Range_20V,
-            Range_50V,
-            Range_100V,
-            Range_200V
-        }
+
 
         public enum DeviceResolution : int
         {
@@ -357,6 +350,40 @@ namespace PS4000AImports
             }
         }
 
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct tPS4000AUserProbeInteractions
+        {
+            public ushort Connected;
+
+            public Channel Channel;
+            public ushort Enabled;
+
+            //In ps4000aApi.h, we have "PicoConnectProbe probeName" for the next field
+            //but in PicoConnectProbes.h, there is "typedef int32_t PicoConnectProbe;"
+            //Hence the following strange-looking line
+            //public int probeName;
+            public PicoConnectProbes.PicoConnectProbe ProbeName;
+
+            public byte RequiresPower;   //These uint8_t things might be better defined as bool ...
+            public byte IsPowered;       // ... if that works here
+
+            public uint Status;
+
+            public PicoConnectProbes.PicoConnectProbeRange ProbeOff;
+
+            public PicoConnectProbes.PicoConnectProbeRange RangeFirst;
+            public PicoConnectProbes.PicoConnectProbeRange RangeLast;
+            public PicoConnectProbes.PicoConnectProbeRange RangeCurrent;
+
+            public Coupling CouplingFirst;
+            public Coupling CouplingLast;
+            public Coupling CouplingCurrent;
+
+            public BandwidthLimiterFlags FilterFlags;
+            public BandwidthLimiterFlags FilterCurrent;
+
+            public BandwidthLimiter DefaultFilter;
+        };  //PS4000A_USER_PROBE_INTERACTIONS;
         #endregion
 
         #region Driver Imports
@@ -379,13 +406,33 @@ namespace PS4000AImports
                                                 int noOfSamples,
                                                 short overflow,
                                                 IntPtr pVoid);
+
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        public delegate void ps4000aProbeInteractions(
+                                        short handle,
+                                        UInt32 status,
+                                        IntPtr probes,
+                                        uint nProbes);
         #endregion
 
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aSetProbeInteractionCallback")]
+        public static extern UInt32 SetProbeInteractionCallback(short handle, ps4000aProbeInteractions lps4000aProbeInteractions);
+        //ps4000aStreamingReady lpps4000aStreamingReady
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aOpenUnit")]
         public static extern UInt32 OpenUnit(out short handle, StringBuilder serial);
 
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aMinimumValue")]
+        public static extern UInt32 MinimumValue(out short handle, out short value);
+
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aOpenUnitWithResolution")]
         public static extern UInt32 OpenUnitWithResolution(out short handle, StringBuilder serial, DeviceResolution resolution);
+
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aOpenUnitAsyncWithResolution")]
+        public static extern UInt32 OpenUnitAsyncWithResolution(out short handle, StringBuilder serial, DeviceResolution resolution);
+
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aOpenUnitProgress")]
+        public static extern UInt32 OpenUnitProgress(out short handle, out short progressPercent, out short complete);
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aCloseUnit")]
         public static extern UInt32 CloseUnit(short handle);
@@ -413,7 +460,7 @@ namespace PS4000AImports
                                                 Channel channel,
                                                 short enabled,
                                                 Coupling dc,
-                                                Range range,
+                                                PicoConnectProbes.PicoConnectProbeRange range,
                                                 float analogOffset);
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aSetDataBuffer")]
@@ -505,7 +552,17 @@ namespace PS4000AImports
                                                         short autotrigger_ms);
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aGetUnitInfo")]
-        public static extern UInt32 GetUnitInfo(short handle, StringBuilder infoString, short stringLength, out short requiredSize, uint info);
+        public static extern UInt32 GetUnitInfo(short handle, StringBuilder infoString, short stringLength, out short requiredSize, InfoType info);
+
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aGetAccessoryInfo")]
+        public static extern UInt32 GetAccessoryInfo(
+                                            short handle,
+                                            Channel channel,
+                                            StringBuilder Acc_string,
+                                            short stringLength,
+                                            out short requiredSize,
+                                            short autoStop,
+                                            InfoType info);
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "ps4000aRunStreaming")]
         public static extern UInt32 RunStreaming(
