@@ -14,11 +14,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
 
-//TO DO add Array of structs for Probe enums
-// PICO_CONNECT_PROBE, string //for each probe
-
-//TO DO ADDING ALL Probes to Array BELOW!!!
-
 namespace ProbeScaling
 {
     public struct PicoProbeScaling
@@ -45,6 +40,23 @@ namespace ProbeScaling
     class Scaling
     {
         public static readonly uint[] inputRanges = { 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000 };
+        public enum Std_Voltage_Range : int
+        {
+            Range_10MV,
+            Range_20MV,
+            Range_50MV,
+            Range_100MV,
+            Range_200MV,
+            Range_500MV,
+            Range_1V,
+            Range_2V,
+            Range_5V,
+            Range_10V,
+            Range_20V,
+            Range_50V,
+            Range_100V,
+            Range_200V
+        }
 
         public static readonly ReadOnlyCollection<PicoProbeScaling> ProbeArray = new ReadOnlyCollection<PicoProbeScaling>(new[]
         {
@@ -67,22 +79,22 @@ namespace ProbeScaling
         new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X1_PROBE_200V,
             Probe_Range_text = "200V", MinScale = -200, MaxScale = 200, Unit_text = "V"},
         // x10
-        new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X10_PROBE_100MV, Probe_Range_text = "100mV",  MinScale = -0.1, MaxScale = 0.1,   Unit_text =  "V"},
-        new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X10_PROBE_200MV, Probe_Range_text = "200mV",  MinScale = -0.2, MaxScale = 0.2,   Unit_text =  "V"},
-        new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X10_PROBE_500MV, Probe_Range_text = "500mV",  MinScale = -0.5, MaxScale = 0.5,   Unit_text =  "V"},
-        new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X10_PROBE_1V, Probe_Range_text = "1V",     MinScale = -1,   MaxScale = 1,   Unit_text =  "V"},
-        new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X10_PROBE_2V, Probe_Range_text = "2V",     MinScale = -2,   MaxScale = 2,   Unit_text =  "V"},
-        new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X10_PROBE_5V, Probe_Range_text = "5V",     MinScale = -5,   MaxScale = 5,   Unit_text =  "V"},
-        new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X10_PROBE_10V, Probe_Range_text = "10V",    MinScale = -10,   MaxScale = 10,   Unit_text =  "V"},
-        new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X10_PROBE_20V, Probe_Range_text = "20V",    MinScale = -20,   MaxScale = 20,   Unit_text =  "V"},
+        new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X10_PROBE_100MV, Probe_Range_text = "x10_100mV",  MinScale = -0.1, MaxScale = 0.1,   Unit_text =  "V"},
+        new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X10_PROBE_200MV, Probe_Range_text = "x10_200mV",  MinScale = -0.2, MaxScale = 0.2,   Unit_text =  "V"},
+        new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X10_PROBE_500MV, Probe_Range_text = "x10_500mV",  MinScale = -0.5, MaxScale = 0.5,   Unit_text =  "V"},
+        new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X10_PROBE_1V, Probe_Range_text = "x10_1V",     MinScale = -1,   MaxScale = 1,   Unit_text =  "V"},
+        new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X10_PROBE_2V, Probe_Range_text = "x10_2V",     MinScale = -2,   MaxScale = 2,   Unit_text =  "V"},
+        new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X10_PROBE_5V, Probe_Range_text = "x10_5V",     MinScale = -5,   MaxScale = 5,   Unit_text =  "V"},
+        new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X10_PROBE_10V, Probe_Range_text = "x10_10V",    MinScale = -10,   MaxScale = 10,   Unit_text =  "V"},
+        new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X10_PROBE_20V, Probe_Range_text = "x10_20V",    MinScale = -20,   MaxScale = 20,   Unit_text =  "V"},
         new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X10_PROBE_50V,
-            Probe_Range_text = "50V", MinScale = -50, MaxScale = 50, Unit_text = "V"},
+            Probe_Range_text = "x10_50V", MinScale = -50, MaxScale = 50, Unit_text = "V"},
         new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X10_PROBE_100V,
-            Probe_Range_text = "100V", MinScale = -100, MaxScale = 100, Unit_text = "V"},
+            Probe_Range_text = "x10_100V", MinScale = -100, MaxScale = 100, Unit_text = "V"},
         new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X10_PROBE_200V,
-            Probe_Range_text = "200V", MinScale = -200, MaxScale = 200, Unit_text = "V"},
+            Probe_Range_text = "x10_200V", MinScale = -200, MaxScale = 200, Unit_text = "V"},
         new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X10_PROBE_500V,
-            Probe_Range_text = "500V", MinScale = -500, MaxScale = 500, Unit_text = "V"},
+            Probe_Range_text = "x10_500V", MinScale = -500, MaxScale = 500, Unit_text = "V"},
         // D9_BNC
         new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_D9_BNC_10MV, Probe_Range_text = "D9_BNC_10mV",  MinScale = -0.01, MaxScale = 0.01,   Unit_text =  "V"},
         new PicoProbeScaling(){ ProbeEnum = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_D9_BNC_20MV, Probe_Range_text = "D9_BNC_20mV",  MinScale = -0.02, MaxScale = 0.02,   Unit_text =  "V"},
