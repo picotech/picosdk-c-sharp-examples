@@ -1,3 +1,6 @@
+// This file contains shared functions for ps6000a API examples
+// Copyright © 2020-2024 Pico Technology Ltd. See LICENSE file for terms.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,6 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DriverImports;
+using ProbeScaling;
 
 class ps6000aDevice
 {
@@ -16,11 +20,39 @@ class ps6000aDevice
     {
         public bool enabled;
         public Coupling coupling;
-        public ChannelRange range;
+        public PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange range;//public ChannelRange range;
         public double AnalogueOffset;
         public BandwidthLimiter bandwidthLimiter;
     }
+    /// <summary>
+    /// Tranforms local ChannelSettings API structure to a generic one
+    /// </summary>
+    public static void FormatChannelSettings(in ChannelSettings[] channelSetup, out ChannelSettingsGeneric[] channelSetupGeneric)
+    {
+        channelSetupGeneric = new ChannelSettingsGeneric[channelSetup.Length];
+        int NoEnabledchannels = 0;
 
+        //Convert sturture ChannelSettingsGeneric
+        for (var channelcount = Channel.ChannelA; channelcount < (Channel)channelSetup.Length; channelcount++)
+        {
+            if (channelSetup[(int)channelcount].enabled)
+            {
+                channelSetupGeneric[(int)channelcount].enabled = true;
+                channelSetupGeneric[(int)channelcount].driverRangeType = 0;//0 is default enum range APIs, 1 is for psospa range type
+                //channelSetupGeneric[(int)channelcount].coupling = channelSetup[(int)channelcount].coupling;
+
+                channelSetupGeneric[(int)channelcount].range = channelSetup[(int)channelcount].range;
+
+                channelSetupGeneric[(int)channelcount].AnalogueOffset = channelSetup[(int)channelcount].AnalogueOffset;
+                //channelSetupGeneric[(int)channelcount].bandwidthLimiter = channelSetup[(int)channelcount].bandwidthLimiter;
+                NoEnabledchannels++;
+            }
+            else
+            {
+                channelSetupGeneric[(int)channelcount].enabled = false;
+            }
+        }
+    }
 
     /// <summary>
     /// Opens a ps6000a unit
@@ -45,6 +77,7 @@ class ps6000aDevice
 
         return status;
     }
+
     /// <summary>
     /// Closes a ps6000a unit
     /// </summary>
@@ -52,6 +85,7 @@ class ps6000aDevice
     {
         DriverImports.PS6000a.CloseUnit(handle);
     }
+
     /// <summary>
     /// Set up the ps6000a device during capture to wait until it has captured n waveforms, and to store them in the applying n memory segments.
     /// </summary>
@@ -67,6 +101,7 @@ class ps6000aDevice
 
         return status;
     }
+
     /// <summary>
     /// Enables a desired channel and disables all other channels.
     /// </summary>
@@ -84,7 +119,8 @@ class ps6000aDevice
         foreach (var channel in channels)
         {
             //Note: 50 Ohm coupling limits the max voltage range to 5V
-            status = DriverImports.PS6000a.SetChannelOn(handle, channel, Coupling.DC50Ohm, ChannelRange.Range_500MV,
+            status = DriverImports.PS6000a.SetChannelOn(handle, channel, Coupling.DC50Ohm,
+                                                        PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X1_PROBE_500MV,
                                                         0, BandwidthLimiter.BW_FULL);
             if (status == StandardDriverStatusCode.Ok)
                 Console.WriteLine(channel + " enabled successfully.");
@@ -132,6 +168,7 @@ class ps6000aDevice
         }
     return status;
     }
+
     /// <summary>
     /// Enables a specified digital port.
     /// </summary>
@@ -456,73 +493,8 @@ class ps6000aDevice
   }
 
     /// <summary>
-    /// Writes 3D array to OutputN.txt files
-    /// </summary>
-    /// 
-    /*
-    public static void WriteArrayToFiles(short[][][] ArrayData, 
-                                        ChannelSettings[] _channelSettings,
-                                        double actualTimeInterval = 1,
-                                        string startOfFileName = "Output",
-                                        short Triggersample = 0)
-    {
-        string filename;
-        short numChannels = (short)ArrayData[0].Length;//Equal to Number of Channels
-        short memorysegments = (short)ArrayData.GetLength(0);
-        ulong numSamples = (ulong)ArrayData[0][0].Length;
-
-        for (short segments = 0; segments < memorysegments; segments++)
-        {
-            numSamples = (ulong)ArrayData[segments][0].Length;
-
-            filename = startOfFileName + segments + ".txt";//next file name
-            try
-            {
-                using (var writer = new StreamWriter(filename))
-                {
-                    //Write 2 header lines (one for Info, one for Channels)
-                    writer.WriteLine("Segment " + segments + " SampleRate " + actualTimeInterval + " SamplesPerBlock " + numSamples + " Trigger@Sample " + Triggersample);
-                    short channel;
-                    for (channel = 0; channel < numChannels; channel++)
-                    {
-                        if (_channelSettings[channel].enabled)
-                            writer.Write((Channel)channel + " ");
-                    }
-                    writer.Write("\n");
-                    //Write array data to file
-                    for (ulong sample = 0; sample < numSamples; sample++)
-                    {
-                        for (channel = 0; channel < numChannels; channel++)
-                        {
-                            if (_channelSettings[channel].enabled)
-                            {
-                                writer.Write(ArrayData[segments][channel][sample] + " ");
-
-                                //Write scaled data here
-                                //GetScalingValues(int handle, out ScalingFactors scalingValues, int nChannels);
-                                /////////////////writer.Write(ArrayData[segments][channel][sample] + " ");
-                            }
-                        }
-                        writer.Write("\n");
-                    }
-                    writer.Close();
-                }
-                Console.WriteLine("The captured data has been written to " + filename + ".");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Failed to write data to " + filename + ". Please check that there are no other instances of " + filename + " being used.");
-                Console.WriteLine(e);
-            }
-        }
-    }
-    */
-
-    /// <summary>
     /// Writes data to Output.csv
     /// </summary>
- 
-
   public static StandardDriverStatusCode GetTimeToTriggerForWaveformIndex(short handle, double actualTimeInterval,
     ulong waveformIndex, out double timeToTriggerInMilliseconds)
   {
