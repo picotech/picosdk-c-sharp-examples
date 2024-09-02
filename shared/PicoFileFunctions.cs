@@ -17,9 +17,10 @@ using System.Linq;
 using System.Collections.Generic;
 using ProbeScaling;
 using System.Globalization;
-
+using System.Runtime.Remoting.Channels;
 public static class PicoFileFunctions
     {
+
     #region PicoFileFunctions constants
 
     #endregion
@@ -29,15 +30,12 @@ public static class PicoFileFunctions
     #endregion
 
     #region Functions
-    /*
-      * Functions X
-      * 
-      */
+
     /// <summary>
-    /// Writes 2D array to Output.txt file
+    /// Writes 3D array to Output.txt file
     /// </summary>
-    internal static void WriteArrayToFile(short[][] ArrayData,
-                                        ps6000aDevice.ChannelSettings[] _channelSettings,
+    internal static void WriteArrayToFilesGeneric(short[][][] ArrayData,
+                                        ProbeScaling.ChannelSettingsGeneric[] _channelSettings,
                                         double actualTimeInterval = 1,
                                         string startOfFileName = "Output",
                                         short Triggersample = 0,
@@ -45,41 +43,69 @@ public static class PicoFileFunctions
     {
         string filename;
         short numChannels = (short)ArrayData.Length;//Equal to Number of Channels
-        //short memorysegments = (short)ArrayData.GetLength(0);
-        ulong numSamples = (ulong)ArrayData[0].Length;
+        short memorysegments = (short)ArrayData.GetLength(0);
+        ulong numSamples = (ulong)ArrayData[0][0].Length;
 
-            filename = startOfFileName + ".txt";//next file name
+        //For scaling Info for each channel
+        PicoProbeScaling[] ChannelRangeInfo = new PicoProbeScaling[_channelSettings.Length];
+        PicoProbeScaling ChannelRangeInfoTemp = new PicoProbeScaling();
+
+        for (short segments = 0; segments < memorysegments; segments++)
+        {
+            numSamples = (ulong)ArrayData[segments][0].Length;
+
+            filename = startOfFileName + segments + ".txt";//next file name
             try
             {
                 using (var writer = new StreamWriter(filename))
                 {
                     //Write 2 header lines (one for Info, one for Channels)
-                    writer.WriteLine("SampleRate " + actualTimeInterval + " SamplesPerBlock " + numSamples + " Trigger@Sample " + Triggersample);
+                    writer.WriteLine("Segment " + segments + " SampleRate " + actualTimeInterval + " SamplesPerBlock " + numSamples + " Trigger@Sample " + Triggersample);
                     short channel;
-                    for (channel = 0; channel < numChannels; channel++)
-                    {
-                        if (_channelSettings[channel].enabled)
-                            writer.Write((Channel)channel + "-ADC mV ");
-                }
-                    writer.Write("\n");
+
+                    bool tempheader = false;
                     //Write array data to file
                     for (ulong sample = 0; sample < numSamples; sample++)
                     {
                         for (channel = 0; channel < numChannels; channel++)
                         {
-                            if (_channelSettings[channel].enabled)
-                            {
-                                writer.Write(ArrayData[channel][sample] + " ");
+ 
+                            if (_channelSettings[channel].driverRangeType == 1) //psospa API
+                            {   // Find channel rangeMax value for standard ranges and convert to PicoConnectProbes ranges
+                                _channelSettings[channel].range = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X1_PROBE_10MV +
+                                   Array.IndexOf(ProbeScaling.Scaling.inputRanges, (uint)(_channelSettings[channel].rangeMax / 1000000));
+                            }
+                            //Get ChannelRangeInfo for scaling
+                            if (Scaling.getRangeScaling(_channelSettings[channel].range, out ChannelRangeInfoTemp))
+                                ChannelRangeInfo[channel] = ChannelRangeInfoTemp;
 
-                                //Write scaled data here
-                                double value = ProbeScaling.Scaling.adc_to_mv(ArrayData[channel][sample],
-                                    (uint)_channelSettings[channel].range,
-                                    maxADCValue);
-                                value.ToString("###.0##e+00");
-                                writer.Write(String.Format("{0:###.0##e+00} ", value));
-                        }
+                            //Write header
+                            if (tempheader == false)
+                            {
+                                if (_channelSettings[channel].enabled)
+                                {
+                                    writer.Write((Channel)channel + "-ADC ");
+                                    writer.Write(ChannelRangeInfo[channel].Unit_text + " ");
+                                }
+                            }
+                            //write channel values
+                            else
+                            {
+                                if (_channelSettings[channel].enabled)
+                                {
+                                    writer.Write(ArrayData[segments][channel][sample] + " ");
+                                    //Scale a value
+                                    double value = ProbeScaling.Scaling.adc_to_scaled_value(ArrayData[segments][channel][sample],
+                                        ChannelRangeInfo[channel],
+                                        maxADCValue);
+
+                                    value.ToString("###.0##e+00");
+                                    writer.Write(String.Format("{0:###.0##e+00} ", value));
+                                }
+                            }                         
                         }
                         writer.Write("\n");
+                        tempheader = true;//header text done
                     }
                     writer.Close();
                 }
@@ -90,72 +116,92 @@ public static class PicoFileFunctions
                 Console.WriteLine("Failed to write data to " + filename + ". Please check that there are no other instances of " + filename + " being used.");
                 Console.WriteLine(e);
             }
+        }
     }
 
     /// <summary>
-    /// Writes 3D array to OutputN.txt files
+    /// Writes 2D array to Output.txt file
     /// </summary>
-    internal static void WriteArrayToFiles(short[][][] ArrayData,
-                                            ps6000aDevice.ChannelSettings[] _channelSettings,
-                                            double actualTimeInterval = 1,
-                                            string startOfFileName = "Output",
-                                            short Triggersample = 0,
-                                            short maxADCValue = 0)
+    internal static void WriteArrayToFileGeneric(short[][] ArrayData,
+                                        ProbeScaling.ChannelSettingsGeneric[] _channelSettings,
+                                        double actualTimeInterval = 1,
+                                        string startOfFileName = "Output",
+                                        short Triggersample = 0,
+                                        short maxADCValue = 0)
+    {
+
+        string filename;
+        short numChannels = (short)ArrayData.Length;//Equal to Number of Channels
+        //short memorysegments = (short)ArrayData.GetLength(0);
+        ulong numSamples = (ulong)ArrayData[0].Length;
+        bool tempheader = false;
+
+        filename = startOfFileName + ".txt";//next file name
+        try
         {
-            string filename;
-            short numChannels = (short)ArrayData[0].Length;//Equal to Number of Channels
-            short memorysegments = (short)ArrayData.GetLength(0);
-            ulong numSamples = (ulong)ArrayData[0][0].Length;
-
-            for (short segments = 0; segments < memorysegments; segments++)
+            using (var writer = new StreamWriter(filename))
             {
-                numSamples = (ulong)ArrayData[segments][0].Length;
+                //For scaling Info for each channel
+                PicoProbeScaling[] ChannelRangeInfo = new PicoProbeScaling[_channelSettings.Length];
+                PicoProbeScaling ChannelRangeInfoTemp = new PicoProbeScaling();
 
-                filename = startOfFileName + segments + ".txt";//next file name
-                try
+                //Write 2 header lines (one for Info, one for Channels)
+                writer.WriteLine("SampleRate " + actualTimeInterval + " SamplesPerBlock " + numSamples + " Trigger@Sample " + Triggersample);
+                short channel;
+                
+                //Write array data to file
+                for (ulong sample = 0; sample < numSamples; sample++)
                 {
-                    using (var writer = new StreamWriter(filename))
+                    for (channel = 0; channel < numChannels; channel++)
                     {
-                        //Write 2 header lines (one for Info, one for Channels)
-                        writer.WriteLine("Segment " + segments + " SampleRate " + actualTimeInterval + " SamplesPerBlock " + numSamples + " Trigger@Sample " + Triggersample);
-                        short channel;
-                        for (channel = 0; channel < numChannels; channel++)
+                        if (_channelSettings[channel].driverRangeType == 1) //psospa API
+                        {   // Find channel rangeMax value for standard ranges and convert to PicoConnectProbes ranges
+                            _channelSettings[channel].range = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X1_PROBE_10MV +
+                               Array.IndexOf(ProbeScaling.Scaling.inputRanges, (uint)(_channelSettings[channel].rangeMax / 1000000));
+                        }
+                        //Get ChannelRangeInfo for scaling
+                        if (Scaling.getRangeScaling(_channelSettings[channel].range, out ChannelRangeInfoTemp)) 
+                            ChannelRangeInfo[channel] = ChannelRangeInfoTemp;
+
+                        //Write header
+                        if (tempheader == false)
                         {
                             if (_channelSettings[channel].enabled)
-                                writer.Write((Channel)channel + "-ADC mV ");
-                        }
-                        writer.Write("\n");
-                        //Write array data to file
-                        for (ulong sample = 0; sample < numSamples; sample++)
-                        {
-                            for (channel = 0; channel < numChannels; channel++)
                             {
-                                if (_channelSettings[channel].enabled)
-                                {
-                                    writer.Write(ArrayData[segments][channel][sample] + " ");
-
-                                    double value = ProbeScaling.Scaling.adc_to_mv(ArrayData[segments][channel][sample],
-                                        (uint)_channelSettings[channel].range,
-                                        maxADCValue);
-                                    value.ToString("###.0##e+00");
-                                    writer.Write(String.Format("{0:###.0##e+00} ", value));
-
+                                writer.Write((Channel)channel + "-ADC ");
+                                writer.Write(ChannelRangeInfo[channel].Unit_text + " ");
                             }
                         }
-                            writer.Write("\n");
-                        }
-                        writer.Close();
-                    }
-                    //Console.WriteLine("The captured data has been written to " + filename + ".");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Failed to write data to " + filename + ". Please check that there are no other instances of " + filename + " being used.");
-                    Console.WriteLine(e);
-                }
-            }
-        }
+                        //write channel values
+                        else
+                        {
+                            if (_channelSettings[channel].enabled)
+                            {
+                                writer.Write(ArrayData[channel][sample] + " ");
 
+                                //Scale a value
+                                double value = ProbeScaling.Scaling.adc_to_scaled_value(ArrayData[channel][sample],
+                                    ChannelRangeInfo[channel],
+                                    maxADCValue);
+
+                                value.ToString("###.0##e+00");
+                                writer.Write(String.Format("{0:###.0##e+00} ", value));
+                            }
+                        }
+                    }
+                    writer.Write("\n");
+                    tempheader = true;//header text done
+                }
+                writer.Close();
+            }
+            //Console.WriteLine("The captured data has been written to " + filename + ".");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Failed to write data to " + filename + ". Please check that there are no other instances of " + filename + " being used.");
+            Console.WriteLine(e);
+        }
+    }
     internal static void WriteDataToFile(short[] data, string filename = "Output.csv")
     {
         try
@@ -179,6 +225,8 @@ public static class PicoFileFunctions
             Console.WriteLine(e);
         }
     }
+
+    
 
     /// <summary>
     /// Writes digital data to Output.csv

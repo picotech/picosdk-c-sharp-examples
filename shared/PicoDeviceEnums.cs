@@ -1,7 +1,9 @@
+// Copyright © 2020-2024 Pico Technology Ltd. See LICENSE file for terms.
 using System;
 
 namespace DriverImports
 {
+
   public enum InfoType
   {
     DriverVersion = 0x00000000,
@@ -17,7 +19,19 @@ namespace DriverImports
     FpgaVersion2 = 0x0000000F,
     FrontPanelFirmwareVersion = 0x00000010
   }
+  public enum enPicoUsbPowerDeliveryDeviceType
+  {
+  Nothing = 0,
+  Source = 2,
+  Debug = 3
+  }
 
+public enum enPicoProbeRangeInfo
+  {
+  PICO_PROBE_NONE_NV,
+  PICO_X1_PROBE_NV,
+  PICO_X10_PROBE_NV
+  }
   public enum DeviceResolution
   {
     PICO_DR_8BIT = 0,

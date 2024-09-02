@@ -1,7 +1,7 @@
 /****************************************************************************
  *
  * Filename:    PicoScaling.cs
- * Copyright:   Pico Technology Limited 2023 - 2024
+ * Copyright:   Pico Technology (C) Limited 2023 - 2024
  * Description:
  *
  * This header defines scaling related to all channel and probe ranges
@@ -13,9 +13,25 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
+using System.Text;
+using DriverImports;
 
 namespace ProbeScaling
 {
+
+    public struct ChannelSettingsGeneric
+    {
+        public int driverRangeType;   //psospa range limits or Range enum
+        public bool enabled;
+        public StringBuilder coupling;
+        public PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange range;
+        public long rangeMin;
+        public long rangeMax;
+        public enPicoProbeRangeInfo rangeType; //public enPicoProbeRangeInfo rangeType;
+        public double AnalogueOffset;
+        public double bandwidthLimiter;
+    }
+
     public struct PicoProbeScaling
 	{
         public PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange ProbeEnum;
@@ -303,7 +319,7 @@ namespace ProbeScaling
             ChannelRangeInfo = Unknown_UnitLess; //ProbeArray[6];//1V x1 range
 
             // search
-            //return probeScaling.Find(x => x.ProbeEnum == probe);
+            // ChannelRangeInfo = Array.Find(ProbeScaling.Scaling.inputRanges, x => x.ProbeEnum == ChannelRange );
             // returns -1 if not found, else the found index 
             long pos = -1;
             for (uint i = 0; i < max_index; i++)

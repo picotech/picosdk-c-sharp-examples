@@ -1,4 +1,5 @@
-using System;
+// Copyright © 2020-2024 Pico Technology Ltd. See LICENSE file for terms.
+
 using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Channels;
 
@@ -25,6 +26,55 @@ namespace DriverImports
             ThresholdMinor = thresholdMinor;
             HysteresisMinor = hysteresisMinor;
             Channel = channel;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct PicoUsbPowerDelivery
+    {
+        public byte Valid_;
+        public uint BusVoltagemV_;
+        public uint RpCurrentLimitmA_;
+        public byte PartnerConnected_;
+        public byte CcPolarity_;
+        public enPicoUsbPowerDeliveryDeviceType AttachedDevice_;
+        public byte ContractExists_;
+        public uint CurrentPdo_;
+        public uint CurrentRdo_;
+
+        public PicoUsbPowerDelivery(byte valid_,
+                                    uint busVoltagemV_,
+                                    uint rpCurrentLimitmA_,
+                                    byte partnerConnected_,
+                                    byte ccPolarity_,
+                                    enPicoUsbPowerDeliveryDeviceType attachedDevice_,
+                                    byte contractExists_,
+                                    uint currentPdo_,
+                                    uint currentRdo_ )
+        {
+            Valid_ = valid_;
+            BusVoltagemV_ = busVoltagemV_;
+            RpCurrentLimitmA_ = rpCurrentLimitmA_;
+            PartnerConnected_ = partnerConnected_;
+            CcPolarity_ = ccPolarity_;
+            AttachedDevice_ = attachedDevice_;
+            ContractExists_ = contractExists_;
+            CurrentPdo_ = currentPdo_;
+            CurrentRdo_ = currentRdo_;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct PicoUsbPowerDetails
+    {
+        public byte PowerErrorLikely_;
+        public PicoUsbPowerDelivery DataPort_;
+        public PicoUsbPowerDelivery PowerPort_;
+        public PicoUsbPowerDetails(byte powerErrorLikely_, PicoUsbPowerDelivery dataPort_, PicoUsbPowerDelivery powerPort_)
+        {
+            PowerErrorLikely_ = powerErrorLikely_;
+            DataPort_ = dataPort_;
+            PowerPort_ = powerPort_;
         }
     }
 

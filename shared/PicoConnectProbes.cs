@@ -51,7 +51,6 @@ namespace PicoConnectProbes
             PICO_CONNECT_PROBE_FAULT_PROBE = (uint) 0xFFFFFFFF
         }
 
-
         public enum PicoConnectProbeRange : int
         {
             PICO_X1_PROBE_10MV,
@@ -217,6 +216,12 @@ namespace PicoConnectProbes
             PICO_X10_ACTIVE_PROBE_1V,
             PICO_X10_ACTIVE_PROBE_2V,
             PICO_X10_ACTIVE_PROBE_5V,
+        }
+        public enum enPicoProbeRangeInfo
+        {
+            PICO_PROBE_NONE_NV = 0,
+            PICO_X1_PROBE_NV = 1,
+            PICO_X10_PROBE_NV = 10,
         }
 
         #endregion
