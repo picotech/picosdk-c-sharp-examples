@@ -1,5 +1,6 @@
 ﻿// This is an example of how to capture MSO data from Port0 using the latest ps6000a Driver.
 // A trigger is setup to trigger on Port 0 Channel 5
+// Copyright © 2020-2024 Pico Technology Ltd. See LICENSE file for terms.
 
 using System;
 using System.Collections.Generic;

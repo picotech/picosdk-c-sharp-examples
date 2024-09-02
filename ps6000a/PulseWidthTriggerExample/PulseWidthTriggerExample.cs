@@ -3,6 +3,7 @@
 // trigger expecting a waveform with a pulse width greater than the trigger, and 
 // the other expecting a waveform with a pulse width less than the trigger.
 // *** This program requires BNC connection between device's signal generator and Channel A. ***
+// Copyright © 2020-2024 Pico Technology Ltd. See LICENSE file for terms.
 
 using System;
 using System.Collections.Generic;

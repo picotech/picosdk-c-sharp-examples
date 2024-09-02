@@ -1,4 +1,5 @@
 ﻿// This is an example of how to setup and capture in block mode with a callback for PicoScope 6000 Series PC Oscilloscope consuming the ps6000a driver
+// Copyright © 2020-2024 Pico Technology Ltd. See LICENSE file for terms.
 
 using System;
 using System.Collections.Generic;

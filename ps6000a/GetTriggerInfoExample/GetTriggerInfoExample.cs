@@ -2,6 +2,7 @@
 // This program captures 10 waveforms from the siggen, and uses ps6000aGetTriggerInfo to get 
 // information about how much time has passed between a trigger and its subsequent trigger hitting. 
 // *** This program requires BNC connection between device's signal generator and Channel A. ***
+// Copyright © 2020-2024 Pico Technology Ltd. See LICENSE file for terms.
 
 using System;
 using System.Collections.Generic;

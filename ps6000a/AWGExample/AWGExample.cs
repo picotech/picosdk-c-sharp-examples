@@ -1,5 +1,6 @@
 ﻿// This is an example of how to setup the AWG for PicoScope 6000 Series PC Oscilloscope consuming the ps6000a driver
 // Connect a BNC Cable between the AWG output and Channel A and observe that data captured in Output.csv
+// Copyright © 2020-2024 Pico Technology Ltd. See LICENSE file for terms.
 
 using System;
 using System.Collections.Generic;

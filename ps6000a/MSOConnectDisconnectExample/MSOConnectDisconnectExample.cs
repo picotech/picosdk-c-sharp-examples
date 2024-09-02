@@ -1,4 +1,7 @@
-﻿using System;
+﻿// This is an example shows how Digital MSO pods are used to report there connection and dissconnection.
+// Copyright © 2020-2024 Pico Technology Ltd. See LICENSE file for terms.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;

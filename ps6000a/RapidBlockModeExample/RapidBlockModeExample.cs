@@ -1,4 +1,5 @@
-﻿// This is an example of how to setup and capture in block mode for PicoScope 6000 Series PC Oscilloscope consuming the ps6000a driver
+﻿// This is an example of how to setup and capture in RapidBlock mode for PicoScope 6000 Series PC Oscilloscope consuming the ps6000a driver
+// Copyright © 2020-2024 Pico Technology Ltd. See LICENSE file for terms.
 
 using System;
 using System.Collections.Generic;
@@ -61,6 +62,10 @@ namespace RapidBlockModeExample
             int NoEnablechannels;
             var status = ps6000aDevice.InitializeChannelsAndRanges(handle, in _channelSettings, numChannels, out NoEnablechannels);
             if (status != StandardDriverStatusCode.Ok) return status;
+
+            //Create structure used for file writing
+            ProbeScaling.ChannelSettingsGeneric[] fchannelSetupGeneric = new ProbeScaling.ChannelSettingsGeneric[_channelSettings.Length];
+            ps6000aDevice.FormatChannelSettings(_channelSettings, out fchannelSetupGeneric);
 
             //ps6000aMemorySegments
             ulong memorysegments = 3;
@@ -211,7 +216,11 @@ namespace RapidBlockModeExample
 
             //Write each segment to a file
             Console.WriteLine("\nWriting each segment of Channel buffers to file...");
-            PicoFileFunctions.WriteArrayToFiles(values, _channelSettings, actualTimeInterval, "RapidBlock_Segment", (short)noOfPreTriggerSamples, MaxValues);
+            PicoFileFunctions.WriteArrayToFilesGeneric(values,
+                fchannelSetupGeneric,
+                actualTimeInterval,
+                "RapidBlock_Segment",
+                (short)noOfPreTriggerSamples, MaxValues);
 
             return status;
         }
@@ -232,7 +241,7 @@ namespace RapidBlockModeExample
             {
                 _channelSettings[i].enabled = true;
                 _channelSettings[i].coupling = Coupling.DC50Ohm;
-                _channelSettings[i].range = ChannelRange.Range_500MV;
+                _channelSettings[i].range = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X1_PROBE_500MV;
                 _channelSettings[i].AnalogueOffset = 0;
                 _channelSettings[i].bandwidthLimiter = BandwidthLimiter.BW_FULL;
             }

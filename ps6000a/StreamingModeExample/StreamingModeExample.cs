@@ -1,4 +1,5 @@
 ﻿// This is an example of how to setup and capture in streaming mode for PicoScope 6000 Series PC Oscilloscope consuming the ps6000a driver
+// Copyright © 2020-2024 Pico Technology Ltd. See LICENSE file for terms.
 
 using System;
 using System.Collections.Generic;
@@ -38,8 +39,13 @@ namespace StreamingModeExample
             int NoEnabledchannels;
             var status = ps6000aDevice.InitializeChannelsAndRanges(handle, in _channelSettings, numChannels, out NoEnabledchannels);
             if (status != StandardDriverStatusCode.Ok) return status;
-            
+
+            //Create structure used for file writing
+            ProbeScaling.ChannelSettingsGeneric[] fchannelSetupGeneric = new ProbeScaling.ChannelSettingsGeneric[_channelSettings.Length];
+            ps6000aDevice.FormatChannelSettings(_channelSettings, out fchannelSetupGeneric);
+
             Console.WriteLine("\n");
+            //Set DataBuffer action variable
             DriverImports.Action Action_temp = DriverImports.Action.PICO_CLEAR_ALL | DriverImports.Action.PICO_ADD;
 
             //Create all buffers for each memory segment and channel
@@ -242,11 +248,12 @@ namespace StreamingModeExample
                         //Write one segment to a file as captured
                         Console.WriteLine("\nWriting Buffer Set: " + i + " to file");
                         string one_segment_filename = string.Format("Streaming BufferSet {0:d}", i);
-                        PicoFileFunctions.WriteArrayToFile(values[i], _channelSettings,
-                                                        (double)idealTimeInterval * (Math.Pow(10, 3 * sampleIntervalTimeUnits) / 1E+15),//sample interval
-                                                        one_segment_filename,
-                                                        (short)noOfPreTriggerSamples,//Trigger point if set in first BufferSet
-                                                        MaxValues);
+                        //fchannelSetupGeneric was created after channels were setup
+                        PicoFileFunctions.WriteArrayToFileGeneric(values[i], fchannelSetupGeneric,
+                                (double)idealTimeInterval * (Math.Pow(10, 3 * sampleIntervalTimeUnits) / 1E+15),//sample interval
+                                one_segment_filename,
+                                (short)noOfPreTriggerSamples,//Trigger point if set in first BufferSet
+                                MaxValues);
 
                         Console.WriteLine(" ");
                         if (streamingDataTriggerInfoArray[i].AutoStop == 1)//exit loop and stop
@@ -288,7 +295,7 @@ namespace StreamingModeExample
             {
                 _channelSettings[i].enabled = true;
                 _channelSettings[i].coupling = Coupling.DC50Ohm;
-                _channelSettings[i].range = ChannelRange.Range_500MV;
+                _channelSettings[i].range = PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange.PICO_X1_PROBE_500MV;
                 _channelSettings[i].AnalogueOffset = 0;
                 _channelSettings[i].bandwidthLimiter = BandwidthLimiter.BW_FULL;
             }

@@ -1,6 +1,7 @@
 ﻿// This is an example of how to use TriggerWithinPreTrigger for PicoScope 6000 Series PC Oscilloscope consuming the ps6000a driver
 // This program outputs a pulse from the siggen, which is then captured on channel A and stored using this pre-trigger functionality. 
 // *** This program requires BNC connection between device's signal generator and Channel A. ***
+// Copyright © 2020-2024 Pico Technology Ltd. See LICENSE file for terms.
 
 using System;
 using System.Collections.Generic;

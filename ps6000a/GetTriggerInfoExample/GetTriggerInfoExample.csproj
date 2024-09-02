@@ -74,6 +74,9 @@
     <Compile Include="..\..\shared\PicoDeviceStructs.cs">
       <Link>PicoDeviceStructs.cs</Link>
     </Compile>
+    <Compile Include="..\..\shared\PicoScaling.cs">
+      <Link>PicoScaling.cs</Link>
+    </Compile>
     <Compile Include="..\..\shared\PicoStatus.cs">
       <Link>PicoStatus.cs</Link>
     </Compile>
