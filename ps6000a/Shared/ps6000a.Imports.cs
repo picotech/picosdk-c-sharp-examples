@@ -1,3 +1,14 @@
+/**************************************************************************
+*
+* Filename:    ps6000aImports.cs
+*
+* Description:
+* This file contains .NET wrapper calls corresponding to function calls 
+* defined in the ps6000aApi.h C header file. 
+* 
+* Copyright © 2020-2024 Pico Technology Ltd. See LICENSE file for terms.
+*
+*************************************************************************/
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,7 +82,7 @@ namespace DriverImports
       short handle,
       Channel channel,
       Coupling coupling,
-      ChannelRange range,
+      PicoConnectProbes.PicoConnectProbes.PicoConnectProbeRange range,
       double analogueOffset,
       BandwidthLimiter bandwidth);
 
