@@ -1,3 +1,4 @@
+// Copyright © 2020-2024 Pico Technology Ltd. See LICENSE file for terms.
 using System;
 
 namespace DriverImports
