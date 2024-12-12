@@ -75,22 +75,18 @@ namespace DriverImports
       short handle,
       Channel channel);
 
-    /// <summary>
-    /// This function enables digital ports
-    /// </summary>
-    /// <param name="handle">The handle of the required device</param>
-    /// <param name="port">The digital port to be enabled.</param>
-    /// <param name="logicTresholdLevels">Array of thresholds for each channel to determine whether the signal is high or low. (Measured in ADC counts).</param>
-    /// <param name="logicThresholdLevelLength">The number of logic threshold levels.</param>
-    /// <param name="hysteresis">Hysteresis of the threshold levels.</param>
-    /// <returns></returns>
-    [DllImport(DriverName, EntryPoint = "psospaSetDigitalPortOn")]
+        /// <summary>
+        /// This function enables digital ports
+        /// </summary>
+        /// <param name="handle">The handle of the required device</param>
+        /// <param name="port">The digital port to be enabled.</param>
+        /// <param name="logicThresholdLevelVolts">Threshold for each port to determine whether the signal is high or low. (Measured in ADC counts).</param>
+        /// <returns></returns>
+        [DllImport(DriverName, EntryPoint = "psospaSetDigitalPortOn")]
     public static extern StandardDriverStatusCode SetDigitalPortOn(
       short handle,
       DigitalPort port,
-      short[] logicTresholdLevels,
-      short logicThresholdLevelLength,
-      DigitalPortHysteresis hysteresis);
+      double logicThresholdLevelVolts);
 
     [DllImport(DriverName, EntryPoint = "psospaSetDigitalPortOff")]
     public static extern StandardDriverStatusCode SetDigitalPortOff(

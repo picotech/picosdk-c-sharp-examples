@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Runtime.Remoting.Channels;
-using System.Runtime.Remoting.Messaging;
+//using System.Runtime.Remoting.Channels;
+//using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -181,12 +181,8 @@ class psospaDevice
     /// </summary>
     public static StandardDriverStatusCode InitializeDigitalChannels(short handle, Channel port)
   {
-    var thresholdLevels = Array.ConvertAll(Enumerable.Repeat(255, 8).ToArray(), thresholdArray => (short)thresholdArray);
-    var status = DriverImports.psospa.SetDigitalPortOn(handle, GetChannelDigitalPort(port), thresholdLevels,
-                                                        (short)thresholdLevels.Count(), DigitalPortHysteresis.NORMAL_100MV);
-
-    if (status == StandardDriverStatusCode.PICO_NO_MSO_POD_CONNECTED)
-      Console.WriteLine("No MSO pod is connected to " + port + ". Please connect an MSO Pod to " + port + " before running this program again.");
+    var logicThresholdLevelVolts = (double)1.25;
+    var status = DriverImports.psospa.SetDigitalPortOn(handle, GetChannelDigitalPort(port), logicThresholdLevelVolts);
 
     return status;
   }
