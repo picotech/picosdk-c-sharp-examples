@@ -1055,19 +1055,30 @@ namespace PS3000ACSConsole
 	   ****************************************************************************/
 		void CollectBlockTriggered()
 		{
-			short triggerVoltage = mv_to_adc(1000, (short)_channelSettings[(int)Imports.Channel.ChannelA].range); // ChannelInfo stores ADC counts
-			
-			Imports.TriggerChannelProperties[] sourceDetails = new Imports.TriggerChannelProperties[] {
+			//short triggerVoltage = mv_to_adc(1000, (short)_channelSettings[(int)Imports.Channel.ChannelA].range); // ChannelInfo stores ADC counts
+
+			short triggerVoltage = -1000;
+            ushort Hysteresis = 256;
+
+            Imports.TriggerChannelProperties[] sourceDetails = new Imports.TriggerChannelProperties[] {
 				new Imports.TriggerChannelProperties(triggerVoltage,
-														 256*10,
+                                                         Hysteresis,
 														 triggerVoltage,
-														 256*10,
+                                                         Hysteresis,
 														 Imports.Channel.ChannelA,
-														 Imports.ThresholdMode.Level)};
+														 Imports.ThresholdMode.Level),
+
+                new Imports.TriggerChannelProperties(triggerVoltage,
+                                                         Hysteresis,
+                                                         triggerVoltage,
+                                                         Hysteresis,
+                                                         Imports.Channel.ChannelB,
+                                                         Imports.ThresholdMode.Level)
+            };
 
 			Imports.TriggerConditions[] conditions = new Imports.TriggerConditions[] {
-			  new Imports.TriggerConditions(Imports.TriggerState.True,
-											Imports.TriggerState.DontCare,
+			  new Imports.TriggerConditions(Imports.TriggerState.True,//
+											Imports.TriggerState.True,
 											Imports.TriggerState.DontCare,
 											Imports.TriggerState.DontCare,
 											Imports.TriggerState.DontCare,
@@ -1075,8 +1086,8 @@ namespace PS3000ACSConsole
 											Imports.TriggerState.DontCare)};
 
 			Imports.ThresholdDirection[] directions = new Imports.ThresholdDirection[]
-											{ Imports.ThresholdDirection.Rising,
-											Imports.ThresholdDirection.None, 
+											{ Imports.ThresholdDirection.Falling,
+											Imports.ThresholdDirection.Above, 
 											Imports.ThresholdDirection.None, 
 											Imports.ThresholdDirection.None, 
 											Imports.ThresholdDirection.None,
@@ -1087,7 +1098,7 @@ namespace PS3000ACSConsole
 
 			Console.Write("Collects when value rises past {0}", (_scaleVoltages) ?
 						  adc_to_mv(sourceDetails[0].ThresholdMajor,
-									(int)_channelSettings[(int) Imports.Channel.ChannelA].range)
+                                    (short)_channelSettings[(int)Imports.Channel.ChannelA].range)
 									: sourceDetails[0].ThresholdMajor);
 			Console.WriteLine("{0}", (_scaleVoltages) ? ("mV") : (" ADC Counts"));
 
@@ -1098,8 +1109,8 @@ namespace PS3000ACSConsole
 
 			/* Trigger enabled
 			 * Rising edge
-			 * Threshold = 1000mV */
-			SetTrigger(sourceDetails, 1, conditions, 1, directions, null, 0, 0, 0);
+			 * Threshold = */
+			SetTrigger(sourceDetails, (short)sourceDetails.Length, conditions, 1, directions, null, 0, 0, 0);
 
 			BlockDataHandler("Ten readings after trigger:", 0, Imports.Mode.ANALOGUE);
 		}
@@ -2200,8 +2211,8 @@ namespace PS3000ACSConsole
 			short serialsLength = 40;
 			StringBuilder serials = new StringBuilder(serialsLength);
 
-			uint status = Imports.EnumerateUnits(out count, serials, ref serialsLength);
-
+            //uint status = Imports.EnumerateUnits(out count, serials, ref serialsLength);
+            uint status = (uint)0;
 			if (status != StatusCodes.PICO_OK)
 			{
 				Console.WriteLine("No devices found.\n");

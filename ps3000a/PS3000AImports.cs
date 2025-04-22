@@ -20,7 +20,7 @@ namespace PS3000AImports
 	class Imports
 	{
 		#region Constants
-		private const string _DRIVER_FILENAME = "C:\\Program Files (x86)\\Pico Technology\\SDK\\lib\\ps3000a.dll";
+		private const string _DRIVER_FILENAME = "ps3000a.dll";
 
 		public const int MaxValue = 32512;
         public const int MaxLogicLevel = 32767;
@@ -377,6 +377,36 @@ namespace PS3000AImports
 		}
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct PwqConditionsV2
+        {
+            public TriggerState ChannelA;
+            public TriggerState ChannelB;
+            public TriggerState ChannelC;
+            public TriggerState ChannelD;
+            public TriggerState External;
+            public TriggerState Aux;
+            public TriggerState Digital;
+
+            public PwqConditionsV2(
+                TriggerState channelA,
+                TriggerState channelB,
+                TriggerState channelC,
+                TriggerState channelD,
+                TriggerState external,
+                TriggerState aux,
+                TriggerState digital)
+            {
+                this.ChannelA = channelA;
+                this.ChannelB = channelB;
+                this.ChannelC = channelC;
+                this.ChannelD = channelD;
+                this.External = external;
+                this.Aux = aux;
+                this.Digital = digital;
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct DigitalChannelDirections
         {
             public DigitalChannel DigiPort;
@@ -546,7 +576,17 @@ namespace PS3000AImports
 			uint upper,
 			PulseWidthType type);
 
-		[DllImport(_DRIVER_FILENAME, EntryPoint = "ps3000aSetTriggerChannelProperties")]
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps3000aSetPulseWidthQualifierV2")]
+        public static extern uint SetPulseWidthQualifierV2(
+            short handle,
+            PwqConditionsV2[] conditions,
+            short nConditions,
+            ThresholdDirection direction,
+            uint lower,
+            uint upper,
+            PulseWidthType type);
+
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps3000aSetTriggerChannelProperties")]
         public static extern uint SetTriggerChannelProperties(
 			short handle,
 			TriggerChannelProperties[] channelProperties,
