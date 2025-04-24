@@ -853,7 +853,7 @@ namespace PicoStatus
     public const uint PICO_EXTERNAL_TRIGGER_NOT_SUPPORTED = (uint)0x0000020BUL;
 
 // The condition parameter is a null pointer.
-    public const uint PICO_NO_TRIGGER_CONDITIONS_SET							0x0000020CUL;
+    public const uint PICO_NO_TRIGGER_CONDITIONS_SET = (uint)0x0000020CUL;
 
 // The number of trigger channel properties it outside the allowed range (is less than zero).
     public const uint PICO_NO_OF_CHANNEL_TRIGGER_PROPERTIES_OUT_OF_RANGE = (uint)0x0000020DUL;
@@ -892,10 +892,10 @@ namespace PicoStatus
     public const uint PICO_TIMEBASE_NOT_SUPPORTED_BY_RESOLUTION = (uint)0x00000303UL;
 
 // The device variant is not supported by this current driver.
-    public const uint PICO_INVALID_VARIANT															0x00001000UL;
+    public const uint PICO_INVALID_VARIANT = (uint)0x00001000UL;
 
 // The actual memory module does not match the expected memory module.
-    public const uint PICO_MEMORY_MODULE_ERROR													0x00001001UL;
+    public const uint PICO_MEMORY_MODULE_ERROR = (uint)0x00001001UL;
 
 // A null pointer has been passed in the trigger function or one of the parameters is out of range.
     public const uint PICO_PULSE_WIDTH_QUALIFIER_LOWER_UPPER_CONFILCT  = (uint)0x00002000UL;
@@ -916,7 +916,7 @@ namespace PicoStatus
     public const uint PICO_THRESHOLD_UPPER_LOWER_MISMATCH = (uint)0x00002005UL;
 
 // The pulse width lower count is out of range.
-    public const uint PICO_PULSE_WIDTH_LOWER_OUT_OF_RANGE	0x00002006UL;
+    public const uint PICO_PULSE_WIDTH_LOWER_OUT_OF_RANGE = (uint)0x00002006UL;
 
 // The pulse width upper count is out of range.
     public const uint PICO_PULSE_WIDTH_UPPER_OUT_OF_RANGE = (uint)0x00002007UL;
@@ -931,7 +931,7 @@ namespace PicoStatus
     public const uint PICO_FRONT_PANEL_FEATURE = (uint)0x0000200CUL;
 
 // When setting the pulse width conditions either the pointer is null or the number of conditions is set to zero.
-    public const uint PICO_NO_PULSE_WIDTH_CONDITIONS_SET	0x0000200DUL;
+    public const uint PICO_NO_PULSE_WIDTH_CONDITIONS_SET = (uint)0x0000200DUL;
 
 // a trigger condition exists for a port, but the port has not been enabled
     public const uint PICO_TRIGGER_PORT_NOT_ENABLED = (uint)0x0000200EUL;
@@ -1055,7 +1055,7 @@ namespace PicoStatus
 //     PICO_RATIO_MODE_DISTRIBUTION
 //
 //	 average and sum are classed as one aggregation type
-    public const uint PICO_STREAMING_COMBINATION_OF_RAW_DATA_AND_ONE_AGGREGATION_DATA_TYPE_ALLOWED = (uint)0x00007002UL
+    public const uint PICO_STREAMING_COMBINATION_OF_RAW_DATA_AND_ONE_AGGREGATION_DATA_TYPE_ALLOWED = (uint)0x00007002UL;
 
     /// <summary>The time stamp per waveform segment has been reset.</summary>
     public const uint PICO_DEVICE_TIME_STAMP_RESET = (uint)0x01000000UL;
@@ -1574,7 +1574,7 @@ namespace DriverImports
 
     // the driver is performing a capture requested by RunStreaming or RunBlock
     // to interrupt this capture call Stop on the device first
-    PICO_HARDWARE_CAPTURING_CALL_STOP = = 0x00006002,
+    PICO_HARDWARE_CAPTURING_CALL_STOP = 0x00006002,
 
     // the number of samples is less than the minimum number allowed
     PICO_TOO_FEW_REQUESTED_STREAMING_SAMPLES = 0x00007000,
