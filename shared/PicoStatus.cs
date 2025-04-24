@@ -667,126 +667,126 @@ namespace PicoStatus
     public const uint PICO_UNKNOWN_ENDPOINT_REQUEST							 = (uint)0x00000159UL;
 
 // The ADC on board the device has not been correctly identified.
-    public const uint PICO_ADC_TYPE_ERROR													0x0000015AUL;
+    public const uint PICO_ADC_TYPE_ERROR = (uint)0x0000015AUL;
 
-    public const uint PICO_FPGA2_FAILED														0x0000015BUL;
+    public const uint PICO_FPGA2_FAILED = (uint)0x0000015BUL;
 
-    public const uint PICO_FPGA2_DEVICE_STATUS										0x0000015CUL;
+    public const uint PICO_FPGA2_DEVICE_STATUS = (uint)0x0000015CUL;
 
-    public const uint PICO_ENABLE_PROGRAM_FPGA2_FAILED						0x0000015DUL;
-    public const uint PICO_NO_CHANNELS_OR_PORTS_ENABLED									0x0000015EUL;
+    public const uint PICO_ENABLE_PROGRAM_FPGA2_FAILED = (uint)0x0000015DUL;
+    public const uint PICO_NO_CHANNELS_OR_PORTS_ENABLED = (uint)0x0000015EUL;
 
-    public const uint PICO_INVALID_RATIO_MODE											0x0000015FUL;
+    public const uint PICO_INVALID_RATIO_MODE = (uint)0x0000015FUL;
 
     public const uint PICO_READS_NOT_SUPPORTED_IN_CURRENT_CAPTURE_MODE = (uint)0x00000160UL;
 
 // These selection tests can be masked together to show that mode than one read selection has failed the tests,
 // therefore theses error codes cover = (uint)0x00000161UL to = (uint)0x0000016FUL.
-    public const uint PICO_TRIGGER_READ_SELECTION_CHECK_FAILED						0x00000161UL;
-    public const uint PICO_DATA_READ1_SELECTION_CHECK_FAILED						0x00000162UL;
-    public const uint PICO_DATA_READ2_SELECTION_CHECK_FAILED						0x00000164UL;
-    public const uint PICO_DATA_READ3_SELECTION_CHECK_FAILED						0x00000168UL;
+    public const uint PICO_TRIGGER_READ_SELECTION_CHECK_FAILED = (uint)0x00000161UL;
+    public const uint PICO_DATA_READ1_SELECTION_CHECK_FAILED = (uint)0x00000162UL;
+    public const uint PICO_DATA_READ2_SELECTION_CHECK_FAILED = (uint)0x00000164UL;
+    public const uint PICO_DATA_READ3_SELECTION_CHECK_FAILED = (uint)0x00000168UL;
 
 // The requested read is not one of the reads available in enPicoReadSelection.
-    public const uint PICO_READ_SELECTION_OUT_OF_RANGE						0x00000170UL;
+    public const uint PICO_READ_SELECTION_OUT_OF_RANGE = (uint)0x00000170UL;
 
 // The downsample ratio options cannot be combined together for this request.
-    public const uint PICO_MULTIPLE_RATIO_MODES										0x00000171UL;
+    public const uint PICO_MULTIPLE_RATIO_MODES = (uint)0x00000171UL;
 
 // The enPicoReadSelection request has no samples available.
     public const uint PICO_NO_SAMPLES_READ			                  = (uint)0x00000172UL;
 
 // The enPicoReadSelection did not include one of the downsample ratios now requested.
-    public const uint PICO_RATIO_MODE_NOT_REQUESTED								0x00000173UL;
+    public const uint PICO_RATIO_MODE_NOT_REQUESTED = (uint)0x00000173UL;
 
 // No read requests have been made.
-    public const uint PICO_NO_USER_READ_REQUESTS_SET							0x00000174UL;
+    public const uint PICO_NO_USER_READ_REQUESTS_SET = (uint)0x00000174UL;
 
 // The parameter for <number of values> cannot be zero.
-    public const uint PICO_ZERO_SAMPLES_INVALID										0x00000175UL;
+    public const uint PICO_ZERO_SAMPLES_INVALID = (uint)0x00000175UL;
 
 // The analog hardware cannot be identified; contact Pico Technology Technical Support.
-#define	PICO_ANALOGUE_HARDWARE_MISSING							0x00000176UL;
+    public const uint PICO_ANALOGUE_HARDWARE_MISSING = (uint)0x00000176UL;
 
 // Setting of the analog hardware pins failed.
-    public const uint PICO_ANALOGUE_HARDWARE_PINS									0x00000177UL;
+    public const uint PICO_ANALOGUE_HARDWARE_PINS = (uint)0x00000177UL;
 
 // An SMPS fault has occurred.
-    public const uint PICO_ANALOGUE_HARDWARE_SMPS_FAULT						0x00000178UL;
+    public const uint PICO_ANALOGUE_HARDWARE_SMPS_FAULT = (uint)0x00000178UL;
 
 // There appears to be a conflict between the expected and actual hardware in the device; contact Pico Technology Technical Support.
-    public const uint PICO_DIGITAL_ANALOGUE_HARDWARE_CONFLICT			0x00000179UL;
+    public const uint PICO_DIGITAL_ANALOGUE_HARDWARE_CONFLICT = (uint)0x00000179UL;
 
 // One or more of the enPicoRatioMode requested do not have a data buffer set.
-    public const uint PICO_RATIO_MODE_BUFFER_NOT_SET							0x0000017AUL;
+    public const uint PICO_RATIO_MODE_BUFFER_NOT_SET = (uint)0x0000017AUL;
 
 // The resolution is valid but not supported by the opened device.
-    public const uint PICO_RESOLUTION_NOT_SUPPORTED_BY_VARIANT		0x0000017BUL;
+    public const uint PICO_RESOLUTION_NOT_SUPPORTED_BY_VARIANT = (uint)0x0000017BUL;
 
 // The requested trigger threshold is out of range for the current device resolution.
-    public const uint PICO_THRESHOLD_OUT_OF_RANGE									0x0000017CUL;
+    public const uint PICO_THRESHOLD_OUT_OF_RANGE = (uint)0x0000017CUL;
 
 // The simple trigger only supports upper edge direction options.
-    public const uint PICO_INVALID_SIMPLE_TRIGGER_DIRECTION				0x0000017DUL;
+    public const uint PICO_INVALID_SIMPLE_TRIGGER_DIRECTION = (uint)0x0000017DUL;
 
 // The aux trigger is not supported on this variant.
-    public const uint PICO_AUX_NOT_SUPPORTED											0x0000017EUL;
+    public const uint PICO_AUX_NOT_SUPPORTED = (uint)0x0000017EUL;
 
 // The trigger directions pointer may not be null.
-    public const uint PICO_NULL_DIRECTIONS												0x0000017FUL;
+    public const uint PICO_NULL_DIRECTIONS = (uint)0x0000017FUL;
 
 // The trigger channel properties pointer may not be null.
-    public const uint PICO_NULL_CHANNEL_PROPERTIES								0x00000180UL;
+    public const uint PICO_NULL_CHANNEL_PROPERTIES = (uint)0x00000180UL;
 
 // A trigger is set on a channel that has not been enabled.
-    public const uint PICO_TRIGGER_CHANNEL_NOT_ENABLED						0x00000181UL;
+    public const uint PICO_TRIGGER_CHANNEL_NOT_ENABLED = (uint)0x00000181UL;
 
 // A trigger condition has been set but a trigger property not set.
-    public const uint PICO_CONDITION_HAS_NO_TRIGGER_PROPERTY			0x00000182UL;
+    public const uint PICO_CONDITION_HAS_NO_TRIGGER_PROPERTY = (uint)0x00000182UL;
 
 // When requesting trigger data, this option can only be combined with the segment header ratio mode flag.
-    public const uint PICO_RATIO_MODE_TRIGGER_MASKING_INVALID			0x00000183UL;
+    public const uint PICO_RATIO_MODE_TRIGGER_MASKING_INVALID = (uint)0x00000183UL;
 
 // The trigger data buffer must be 40 or more samples in size.
     public const uint PICO_TRIGGER_DATA_REQUIRES_MIN_BUFFER_SIZE_OF_40_SAMPLES = (uint)0x00000184UL;
 
 // The number of requested waveforms is greater than the number of memory segments allocated.
-    public const uint PICO_NO_OF_CAPTURES_OUT_OF_RANGE						0x00000185UL;
+    public const uint PICO_NO_OF_CAPTURES_OUT_OF_RANGE = (uint)0x00000185UL;
 
 // When requesting segment header information, the segment header does not require a data buffer,
 // to get the segment information use GetTriggerInfo.
-    public const uint PICO_RATIO_MODE_SEGMENT_HEADER_DOES_NOT_REQUIRE_BUFFERS	0x00000186UL;
+    public const uint PICO_RATIO_MODE_SEGMENT_HEADER_DOES_NOT_REQUIRE_BUFFERS = (uint)0x00000186UL;
 
 // Use GetTriggerInfo to retrieve the segment header information.
-    public const uint PICO_FOR_SEGMENT_HEADER_USE_GETTRIGGERINFO	0x00000187UL;
+    public const uint PICO_FOR_SEGMENT_HEADER_USE_GETTRIGGERINFO = (uint)0x00000187UL;
 
 // A read request has not been set.
-    public const uint PICO_READ_NOT_SET														0x00000188UL;
+    public const uint PICO_READ_NOT_SET = (uint)0x00000188UL;
 
 // The expected and actual states of the ADCs do not match.
-    public const uint PICO_ADC_SETTING_MISMATCH										0x00000189UL;
+    public const uint PICO_ADC_SETTING_MISMATCH = (uint)0x00000189UL;
 
 // The requested data type is not one of the enPicoDataType listed.
-    public const uint PICO_DATATYPE_INVALID												0x0000018AUL;
+    public const uint PICO_DATATYPE_INVALID = (uint)0x0000018AUL;
 
 // The down sample ratio mode requested does not support the enPicoDataType option chosen.
-    public const uint PICO_RATIO_MODE_DOES_NOT_SUPPORT_DATATYPE		0x0000018BUL;
+    public const uint PICO_RATIO_MODE_DOES_NOT_SUPPORT_DATATYPE = (uint)0x0000018BUL;
 
 // The channel combination is not valid for the resolution.
     public const uint PICO_CHANNEL_COMBINATION_NOT_VALID_IN_THIS_RESOLUTION = (uint)0x0000018CUL;
 
 
-    public const uint PICO_USE_8BIT_RESOLUTION										0x0000018DUL;
+    public const uint PICO_USE_8BIT_RESOLUTION = (uint)0x0000018DUL;
 
 // The buffer for minimum data values and maximum data values are the same buffers.
-    public const uint PICO_AGGREGATE_BUFFERS_SAME_POINTER					0x0000018EUL;
+    public const uint PICO_AGGREGATE_BUFFERS_SAME_POINTER = (uint)0x0000018EUL;
 
 // The read request number of samples requested for an overlapped operation are more
 // than the total number of samples to capture.
-    public const uint PICO_OVERLAPPED_READ_VALUES_OUT_OF_RANGE		0x0000018FUL;
+    public const uint PICO_OVERLAPPED_READ_VALUES_OUT_OF_RANGE = (uint)0x0000018FUL;
 
 // The overlapped read request has more segments specified than segments allocated.
-    public const uint PICO_OVERLAPPED_READ_SEGMENTS_OUT_OF_RANGE	0x00000190UL;
+    public const uint PICO_OVERLAPPED_READ_SEGMENTS_OUT_OF_RANGE = (uint)0x00000190UL;
 
 // The number of channel combinations available are greater than the array size received.
     public const uint PICO_CHANNELFLAGSCOMBINATIONS_ARRAY_SIZE_TOO_SMALL = (uint)0x00000191UL;
@@ -795,29 +795,29 @@ namespace PicoStatus
     public const uint PICO_CAPTURES_EXCEEDS_NO_OF_SUPPORTED_SEGMENTS = (uint)0x00000192UL;
 
 // The time unit requested is not one of the listed enPicoTimeUnits.
-    public const uint PICO_TIME_UNITS_OUT_OF_RANGE								0x00000193UL;
+    public const uint PICO_TIME_UNITS_OUT_OF_RANGE = (uint)0x00000193UL;
 
 // The number of samples parameter may not be zero.
-    public const uint PICO_NO_SAMPLES_REQUESTED										0x00000194UL;
+    public const uint PICO_NO_SAMPLES_REQUESTED = (uint)0x00000194UL;
 
 // The action requested is not listed in enPicoAction.
-    public const uint PICO_INVALID_ACTION													0x00000195UL;
+    public const uint PICO_INVALID_ACTION = (uint)0x00000195UL;
 
 // When adding buffers for the same read request the buffers for all ratio mode requests have to be the same size.
     public const uint PICO_NO_OF_SAMPLES_NEED_TO_BE_EQUAL_WHEN_ADDING_BUFFERS = (uint)0x00000196UL;
 
 // The data is being processed but there is no empty data buffers available, a new data buffer needs to be set sent to the driver
 // so that the data can be processed.
-    public const uint PICO_WAITING_FOR_DATA_BUFFERS								0x00000197UL;
+    public const uint PICO_WAITING_FOR_DATA_BUFFERS = (uint)0x00000197UL;
 
 // when streaming data, only one read option is available.
-    public const uint PICO_STREAMING_ONLY_SUPPORTS_ONE_READ				0x00000198UL;
+    public const uint PICO_STREAMING_ONLY_SUPPORTS_ONE_READ = (uint)0x00000198UL;
 
 // A clear read request is not one of the enPicoAction listed.
-    public const uint PICO_CLEAR_DATA_BUFFER_INVALID					0x00000199UL;
+    public const uint PICO_CLEAR_DATA_BUFFER_INVALID = (uint)0x00000199UL;
 
 // The combination of action flags are not allowed.
-    public const uint PICO_INVALID_ACTION_FLAGS_COMBINATION				0x0000019AUL;
+    public const uint PICO_INVALID_ACTION_FLAGS_COMBINATION = (uint)0x0000019AUL;
 
 //  PICO_ADD request has been made but both data buffers are set to null and so there is nowhere to put the data.
     public const uint PICO_BOTH_MIN_AND_MAX_NULL_BUFFERS_CANNOT_BE_ADDED = (uint)0x0000019BUL;
@@ -829,16 +829,16 @@ namespace PicoStatus
     public const uint PICO_REMOVING_DATA_BUFFER_ENTRIES_NOT_ALLOWED_WHILE_DATA_PROCESSING  = (uint)0x0000019DUL;
 
 //  An USB request has failed.
-    public const uint PICO_CYUSB_REQUEST_FAILED						0x00000200UL;
+    public const uint PICO_CYUSB_REQUEST_FAILED = (uint)0x00000200UL;
 
 // A request has been made to retrieve the latest streaming data, but with either a null pointer or an array size set to zero.
-    public const uint PICO_STREAMING_DATA_REQUIRED				0x00000201UL;
+    public const uint PICO_STREAMING_DATA_REQUIRED = (uint)0x00000201UL;
 
 // A buffer being set has a length that is invalid (ie less than zero).
-    public const uint PICO_INVALID_NUMBER_OF_SAMPLES			0x00000202UL;
+    public const uint PICO_INVALID_NUMBER_OF_SAMPLES = (uint)0x00000202UL;
 
 // The distribution size may not be zero.
-    public const uint PICO_INVALID_DISTRIBUTION						0x00000203UL;
+    public const uint PICO_INVALID_DISTRIBUTION = (uint)0x00000203UL;
 
 // The buffer length in bytes is greater than a 4-byte word.
     public const uint PICO_BUFFER_LENGTH_GREATER_THAN_INT32_T = (uint)0x00000204UL;
