@@ -7,7 +7,7 @@
 *  defined in the ps5000aApi.h C header file. 
 *  It also has the enums and structs required by the (wrapped) function calls.
 *   
-* Copyright © 2013-2018 Pico Technology Ltd. See LICENSE file for terms.
+* Copyright © 2013-2025 Pico Technology Ltd. See LICENSE file for terms.
 *
 ******************************************************************************/
 
@@ -22,11 +22,14 @@ namespace PS5000AImports
 		#region Constants
 		private const string _DRIVER_FILENAME = "ps5000a.dll";
 
-		#endregion
+        public const int MaxValue = 32512;
+        public const int MaxLogicLevel = 32767;
 
-		#region Driver Enums
+        #endregion
 
-		public enum Channel : int
+        #region Driver Enums
+
+        public enum Channel : int
 		{
 			ChannelA,
 			ChannelB,
@@ -34,8 +37,13 @@ namespace PS5000AImports
 			ChannelD,
 			External,
 			Aux,
-			None
-		}
+            MaxTriggerSources,
+            Port0 = 0x80, // digital channel 0 - 7
+            Port1,        // digital channel 8 - 15
+			Port2,             // digital channel 16 - 23 Not used
+            Port3,             // digital channel 24 - 31 Not used
+            PWQ_Source = 0x10000000
+        }
 
 		public enum Range : uint
 		{
@@ -119,7 +127,53 @@ namespace PS5000AImports
 			Average = 4
 		}
 
-		public enum DeviceResolution : uint
+        public enum DigitalChannel : int
+        {
+            PS5000A_DIGITAL_CHANNEL_0,
+            PS5000A_DIGITAL_CHANNEL_1,
+            PS5000A_DIGITAL_CHANNEL_2,
+            PS5000A_DIGITAL_CHANNEL_3,
+            PS5000A_DIGITAL_CHANNEL_4,
+            PS5000A_DIGITAL_CHANNEL_5,
+            PS5000A_DIGITAL_CHANNEL_6,
+            PS5000A_DIGITAL_CHANNEL_7,
+            PS5000A_DIGITAL_CHANNEL_8,
+            PS5000A_DIGITAL_CHANNEL_9,
+            PS5000A_DIGITAL_CHANNEL_10,
+            PS5000A_DIGITAL_CHANNEL_11,
+            PS5000A_DIGITAL_CHANNEL_12,
+            PS5000A_DIGITAL_CHANNEL_13,
+            PS5000A_DIGITAL_CHANNEL_14,
+            PS5000A_DIGITAL_CHANNEL_15,
+            PS5000A_DIGITAL_CHANNEL_16,
+            PS5000A_DIGITAL_CHANNEL_17,
+            PS5000A_DIGITAL_CHANNEL_18,
+            PS5000A_DIGITAL_CHANNEL_19,
+            PS5000A_DIGITAL_CHANNEL_20,
+            PS5000A_DIGITAL_CHANNEL_21,
+            PS5000A_DIGITAL_CHANNEL_22,
+            PS5000A_DIGITAL_CHANNEL_23,
+            PS5000A_DIGITAL_CHANNEL_24,
+            PS5000A_DIGITAL_CHANNEL_25,
+            PS5000A_DIGITAL_CHANNEL_26,
+            PS5000A_DIGITAL_CHANNEL_27,
+            PS5000A_DIGITAL_CHANNEL_28,
+            PS5000A_DIGITAL_CHANNEL_29,
+            PS5000A_DIGITAL_CHANNEL_30,
+            PS5000A_DIGITAL_CHANNEL_31
+        }
+        public enum DigitalDirection : int
+        {
+            PS5000A_DIGITAL_DONT_CARE,
+            PS5000A_DIGITAL_DIRECTION_LOW,
+            PS5000A_DIGITAL_DIRECTION_HIGH,
+            PS5000A_DIGITAL_DIRECTION_RISING,
+            PS5000A_DIGITAL_DIRECTION_FALLING,
+            PS5000A_DIGITAL_DIRECTION_RISING_OR_FALLING,
+            PS5000A_DIGITAL_MAX_DIRECTION
+        }
+
+        public enum DeviceResolution : uint
 		{
 			PS5000A_DR_8BIT,
 			PS5000A_DR_12BIT,
@@ -318,11 +372,26 @@ namespace PS5000AImports
 			}
 		}
 
-		#endregion
-		
-		#region Driver Imports
-		#region Callback delegates
-		public delegate void ps5000aBlockReady(short handle, short status, IntPtr pVoid);
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct DigitalChannelDirections
+        {
+            public DigitalChannel DigiPort;
+            public DigitalDirection DigiDirection;
+
+            public DigitalChannelDirections(
+                DigitalChannel digiPort,
+                DigitalDirection digiDirection)
+            {
+                this.DigiPort = digiPort;
+                this.DigiDirection = digiDirection;
+            }
+        }
+
+        #endregion
+
+        #region Driver Imports
+        #region Callback delegates
+        public delegate void ps5000aBlockReady(short handle, short status, IntPtr pVoid);
 
 		public delegate void ps5000aStreamingReady(
 												short handle,
@@ -365,7 +434,10 @@ namespace PS5000AImports
 												ps5000aBlockReady lpps5000aBlockReady,
 												IntPtr pVoid);
 
-		[DllImport(_DRIVER_FILENAME, EntryPoint = "ps5000aStop")]
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps5000aIsReady")]
+        public static extern uint IsReady(short handle, out short isReady);
+
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps5000aStop")]
 		public static extern uint Stop(short handle);
 
 		[DllImport(_DRIVER_FILENAME, EntryPoint = "ps5000aSetChannel")]
@@ -377,7 +449,20 @@ namespace PS5000AImports
 												Range range,
 												float analogueOffset);
 
-		[DllImport(_DRIVER_FILENAME, EntryPoint = "ps5000aMaximumValue")]
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps5000aSetDigitalPort")]
+        public static extern uint SetDigitalPort(
+													short handle,
+													Channel digiPort,
+													short enabled,
+													short logicLevel);
+
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps5000aSetTriggerDigitalPortProperties")]
+        public static extern uint SetTriggerDigitalPort(
+													short handle,
+													DigitalChannelDirections[] DigiChannelDirections,
+													short nDigiChannelDirections);
+
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps5000aMaximumValue")]
 		public static extern uint MaximumValue(
 												short handle,
 												out short value);
@@ -511,7 +596,7 @@ namespace PS5000AImports
 
 
 		[DllImport(_DRIVER_FILENAME, EntryPoint = "ps5000aGetValuesBulk")]
-		public static extern uint GetValuesRapid(
+		public static extern uint GetValuesBulk(
 													short handle,
 													ref uint noOfSamples,
 													uint fromSegmentIndex,
@@ -520,7 +605,18 @@ namespace PS5000AImports
 													RatioMode downSampleRatioMode,
 													short[] overflow);
 
-		[DllImport(_DRIVER_FILENAME, EntryPoint = "ps5000aChangePowerSource")]
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps5000aGetValuesOverlappedBulk")]
+        public static extern uint GetValuesOverlappedBulk(
+                                            short handle,
+                                            uint startIndex,
+                                            ref uint noOfSamples,
+                                            uint downSampleRatio,
+                                            RatioMode downSampleRatioMode,
+                                            uint fromSegmentIndex,
+                                            uint toSegmentIndex,
+                                            short[] overflow);
+
+        [DllImport(_DRIVER_FILENAME, EntryPoint = "ps5000aChangePowerSource")]
 		public static extern uint ChangePowerSource(
 														short handle,
 														uint status);

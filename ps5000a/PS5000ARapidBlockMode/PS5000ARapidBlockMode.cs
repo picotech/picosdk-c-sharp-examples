@@ -11,6 +11,7 @@ namespace PS5000ARapidBlockMode
 {
     struct ChannelSettings
     {
+        public Imports.Coupling DCcoupled; 
         public Imports.Range range;
         public bool enabled;
     }
@@ -21,7 +22,7 @@ namespace PS5000ARapidBlockMode
         private Imports.ps5000aBlockReady _callbackDelegate;
 
         private readonly short _handle;
-        public const int BUFFER_SIZE = 1024;
+        public const int BUFFER_SIZE = 16384;
         public const int MAX_CHANNELS = 4;
         public const int QUAD_SCOPE = 4;
         public const int DUAL_SCOPE = 2;
@@ -71,6 +72,86 @@ namespace PS5000ARapidBlockMode
         {
             // flag to say done reading data
             _ready = true;
+        }
+
+        /****************************************************************************
+        * SetDefaults - restore default settings
+        ****************************************************************************/
+        void SetDefaults()
+        {
+            for (int i = 0; i < _channelCount; i++) // reset channels to most recent settings
+            {
+                Imports.SetChannel(_handle, Imports.Channel.ChannelA + i,
+                                   (short)(_channelSettings[(int)(Imports.Channel.ChannelA + i)].enabled ? 1 : 0),
+                                   _channelSettings[(int)(Imports.Channel.ChannelA + i)].DCcoupled,
+                                   _channelSettings[(int)(Imports.Channel.ChannelA + i)].range,
+                                   (float)0.0);
+            }
+        }
+
+        /****************************************************************************
+		* SetDigitals - enable Digital Channels
+		****************************************************************************/
+        void SetDigitals()
+        {
+            Imports.Channel port;
+            uint status;
+            short logicLevel;
+            float logicVoltage = 1.5f;
+            short maxLogicVoltage = 5;
+            short enabled = 1;
+
+            status = StatusCodes.PICO_OK;
+
+            // Set logic threshold
+            logicLevel = (short)((logicVoltage / maxLogicVoltage) * Imports.MaxLogicLevel);
+
+            // Enable Digital ports
+            for (port = Imports.Channel.Port0; port < Imports.Channel.Port2; port++)
+            {
+                status = Imports.SetDigitalPort(_handle, port, enabled, logicLevel);
+            }
+            Console.WriteLine(status != StatusCodes.PICO_OK ? "SetDigitals:Imports.SetDigitalPort Status = 0x{0:X6}" : "", status);
+
+        }
+
+
+        /****************************************************************************
+		 * DisableDigital - disable Digital Channels
+		 ****************************************************************************/
+        void DisableDigital()
+        {
+            Imports.Channel port;
+            uint status;
+
+            status = StatusCodes.PICO_OK;
+
+            // Disable Digital ports 
+            for (port = Imports.Channel.Port0; port <= Imports.Channel.Port1; port++)
+            {
+                status = Imports.SetDigitalPort(_handle, port, 0, 0);
+            }
+
+            Console.WriteLine(status != StatusCodes.PICO_OK ? "DisableDigital:Imports.SetDigitalPort Status = 0x{0:X6}" : "", status);
+        }
+
+
+        /****************************************************************************
+		* DisableAnalogue - disable analogue Channels
+		****************************************************************************/
+        void DisableAnalogue()
+        {
+            uint status;
+
+            status = StatusCodes.PICO_OK;
+
+            // Disable analogue ports
+            for (int i = 0; i < _channelCount; i++)
+            {
+                status = Imports.SetChannel(_handle, Imports.Channel.ChannelA + i, 0, Imports.Coupling.PS5000A_DC, 0, (float)0.0);
+            }
+
+            Console.WriteLine(status != StatusCodes.PICO_OK ? "DisableAnalogue:Imports.SetChannel Status = 0x{0:X6}" : "", status);
         }
 
         /****************************************************************************
@@ -131,17 +212,17 @@ namespace PS5000ARapidBlockMode
             int timeIndisposed;
             _ready = false;
 
-            _timebase = 160;
+            _timebase = 8 ;
             _oversample = 1;
 
             _callbackDelegate = RapidBlockCallback;
             status = Imports.RunBlock(_handle,
                         preTrigger,
-                        (int)numSamples - preTrigger - 1,
+                        (int)numSamples - preTrigger,//-1???
                         _timebase,
                         out timeIndisposed,
                         0,
-                        _callbackDelegate,
+                        null, //_callbackDelegate,
                         IntPtr.Zero);
 
             if (status != StatusCodes.PICO_OK)
@@ -156,15 +237,24 @@ namespace PS5000ARapidBlockMode
             while (!_ready && !Console.KeyAvailable)
             {
                 Thread.Sleep(100);
+
+                status = Imports.IsReady(_handle, out short _isReady);
+                if (_isReady == 1)
+                    _ready = true;
+                if (status != StatusCodes.PICO_OK)
+                    Console.WriteLine("IsReady status error 0x{0:X}", status);
             }
+            _ready = false;
 
             if (Console.KeyAvailable)
             {
                 Console.ReadKey(true); // clear the key
             }
-
             Imports.Stop(_handle);
 
+            //DownSampling and Ratio Mode
+            Imports.RatioMode SetRatioMode = Imports.RatioMode.Average;
+            uint SetRatio = 16;
 
             // Set up the data arrays and pin them
             short[][][] values = new short[nRapidCaptures][][];
@@ -181,21 +271,23 @@ namespace PS5000ARapidBlockMode
                         values[segment][channel] = new short[numSamples];
                         pinned[segment, channel] = new PinnedArray<short>(values[segment][channel]);
 
-                        status = Imports.SetDataBuffer(_handle,
+                        status = Imports.SetDataBuffers(_handle,
                                                (Imports.Channel)channel,
                                                values[segment][channel],
+                                               null,
                                                (int)numSamples,
                                                segment,
-                                               0);
+                                               SetRatioMode);
                     }
                     else
                     {
-                        status = Imports.SetDataBuffer(_handle,
+                        status = Imports.SetDataBuffers(_handle,
                                    (Imports.Channel)channel,
+                                    null,
                                     null,
                                     0,
                                     segment,
-                                    0);
+                                    SetRatioMode);
 
                     }
                 }
@@ -204,11 +296,11 @@ namespace PS5000ARapidBlockMode
             // Read the data
             short[] overflows = new short[nRapidCaptures];
             
-            status = Imports.GetValuesRapid(_handle, ref numSamples, 0, (ushort)(nRapidCaptures - 1), 1, Imports.RatioMode.None, overflows);
+            status = Imports.GetValuesBulk(_handle, ref numSamples, 0, (ushort)(nRapidCaptures - 1), SetRatio, SetRatioMode, overflows);
 
             if (status != StatusCodes.PICO_OK)
             {
-                Console.WriteLine("GetValuesRapid status error 0x{0:X}", status);
+                Console.WriteLine("GetValuesBulk status error 0x{0:X}", status);
                 return;
             }
 
@@ -537,7 +629,7 @@ namespace PS5000ARapidBlockMode
             /* Trigger enabled
              * Rising edge
              * Threshold = 1000mV */
-            short triggerVoltage = mv_to_adc(1000, (short)Imports.Range.Range_1V);
+            short triggerVoltage = mv_to_adc(1000, (short)Imports.Range.Range_5V);
             Imports.SetSimpleTrigger(_handle, 1, Imports.Channel.ChannelA, triggerVoltage, Imports.ThresholdDirection.Rising, 0, 0);
 
             RapidBlockDataHandler(numRapidCaptures, 1); // Collect 100000 pre-trigger samples
