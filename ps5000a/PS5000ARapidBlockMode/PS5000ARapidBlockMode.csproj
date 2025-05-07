@@ -5,6 +5,8 @@
     <Platforms>x64;x86</Platforms>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\..\shared\PicoPinnedArray.cs" Link="PicoPinnedArray.cs" />
+    <Compile Include="..\..\shared\PicoStatus.cs" Link="PicoStatus.cs" />
     <Compile Include="..\PS5000AImports.cs" Link="PS5000AImports.cs" />
   </ItemGroup>
 </Project>
