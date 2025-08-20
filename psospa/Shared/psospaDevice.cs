@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DriverImports;
 using ProbeScaling;
+using PicoPinnedArray;
 
 class psospaDevice
 {
@@ -484,7 +485,7 @@ class psospaDevice
   /// <summary>
   /// Instantiate memory buffers for the driver to process data read from the device
   /// </summary>
-  public static StandardDriverStatusCode ReadDataFromDevice(short handle, Channel channel, ulong numSamples, ref short[] data)
+  public static StandardDriverStatusCode ReadDataFromDevice(short handle, Channel channel, ulong numSamples, ref PinnedArray<short> pinned)
   {
     var downSampleRatioMode = RatioMode.PICO_RATIO_MODE_RAW;
 
@@ -492,7 +493,7 @@ class psospaDevice
         //dataType            - Define type of data to be returned e.g. 8 bit data will be converted to 16bit data.
         //action              - Allows adding and removing of data buffers. See DriverImports.Action
         //Note: psospaSetDataBuffer could be used as an alternative to psospaSetDataBuffers
-        var status = DriverImports.psospa.SetDataBuffers(handle, channel, data, null, numSamples,
+        var status = DriverImports.psospa.SetDataBuffers(handle, channel, pinned, null, numSamples,
                                                       DataType.PICO_INT16_T,
                                                       0, downSampleRatioMode, DriverImports.Action.PICO_CLEAR_ALL | DriverImports.Action.PICO_ADD);
     if (status != StandardDriverStatusCode.Ok) return status;

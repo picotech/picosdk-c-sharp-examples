@@ -3,17 +3,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Runtime.Remoting.Channels;
-using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using DriverImports;
 using ProbeScaling;
-
+using PicoConnectProbes;
+using PicoPinnedArray;
 class ps6000aDevice
 {
     public struct ChannelSettings
@@ -73,7 +69,13 @@ class ps6000aDevice
         if (status != StandardDriverStatusCode.Ok) return status;
 
         numChannels = (int)Char.GetNumericValue(info[1]); //2nd Char contains the number of channels of the device variant
-        Console.WriteLine("This device has " + numChannels + " Channels");
+        Console.WriteLine(info +  ": This device has " + numChannels + " Channels");
+
+        requiredSize = 80;
+        StringBuilder driverinfo = new StringBuilder(requiredSize);
+        status = DriverImports.PS6000a.GetUnitInfo(handle, driverinfo, requiredSize, out requiredSize, InfoType.DriverVersion);
+        if (status != StandardDriverStatusCode.Ok) return status;
+        Console.WriteLine("The driver version is: " + driverinfo);
 
         return status;
     }
@@ -471,15 +473,14 @@ class ps6000aDevice
   /// <summary>
   /// Instantiate memory buffers for the driver to process data read from the device
   /// </summary>
-  public static StandardDriverStatusCode ReadDataFromDevice(short handle, Channel channel, ulong numSamples, ref short[] data)
+  public static StandardDriverStatusCode ReadDataFromDevice(short handle, Channel channel, ulong numSamples, ref PinnedArray<short>pinned )
   {
     var downSampleRatioMode = RatioMode.PICO_RATIO_MODE_RAW;
-
-    //List of new parameters added to SetDataBuffer for the 6000a devices:
-    //dataType            - Define type of data to be returned e.g. 8 bit data will be converted to 16bit data.
-    //action              - Allows adding and removing of data buffers. See DriverImports.Action
-    //Note: ps6000aSetDataBuffer could be used as an alternative to ps6000aSetDataBuffers
-    var status = DriverImports.PS6000a.SetDataBuffers(handle, channel, data, null, (int)numSamples,
+        //List of new parameters added to SetDataBuffer for the 6000a devices:
+        //dataType            - Define type of data to be returned e.g. 8 bit data will be converted to 16bit data.
+        //action              - Allows adding and removing of data buffers. See DriverImports.Action
+        //Note: ps6000aSetDataBuffer could be used as an alternative to ps6000aSetDataBuffers
+        var status = DriverImports.PS6000a.SetDataBuffers(handle, channel, pinned, null, (int)numSamples,
                                                       DataType.PICO_INT16_T,
                                                       0, downSampleRatioMode, DriverImports.Action.PICO_CLEAR_ALL | DriverImports.Action.PICO_ADD);
     if (status != StandardDriverStatusCode.Ok) return status;

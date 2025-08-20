@@ -1,5 +1,5 @@
 ﻿// This is an example of how to setup and capture in RapidBlock mode for PicoScope 6000 Series PC Oscilloscope consuming the ps6000a driver
-// Copyright © 2020-2024 Pico Technology Ltd. See LICENSE file for terms.
+// Copyright © 2020-2025 Pico Technology Ltd. See LICENSE file for terms.
 
 using System;
 using System.Collections.Generic;
@@ -173,7 +173,7 @@ namespace RapidBlockModeExample
 
                         status = PS6000a.SetDataBuffers(handle,
                             (Channel)channel,
-                            values[segment][channel],
+                            pinned[segment, channel],  //values[segment][channel],
                             null,
                             (int)numSamples,
                             DataType.PICO_INT16_T,
@@ -213,6 +213,15 @@ namespace RapidBlockModeExample
                 Console.WriteLine("\nError from function SetDataBuffers with status: " + status);
                 return status;
             }
+            
+            //Un-pin the arrays, Unless you are reusing the arrays for another capture.
+            foreach (PinnedArray<short> p in pinned)
+            {
+                if (p != null)
+                {
+                    p.Dispose();
+                }
+            }
 
             //Write each segment to a file
             Console.WriteLine("\nWriting each segment of Channel buffers to file...");
@@ -221,6 +230,9 @@ namespace RapidBlockModeExample
                 actualTimeInterval,
                 "RapidBlock_Segment",
                 (short)noOfPreTriggerSamples, MaxValues);
+            
+            //Allow the GC to free the buffers
+            values = null; // Now the array is ready for Garbage Collection.
 
             return status;
         }
@@ -230,6 +242,17 @@ namespace RapidBlockModeExample
             var resolution = DeviceResolution.PICO_DR_8BIT;
             //short MinValues, MaxValues = 0;
             DriverImports.StandardDriverStatusCode status = 0;
+
+            StringBuilder EnumerateSerials = new StringBuilder(256);
+            short strLenght_serials = (short)EnumerateSerials.Capacity;
+            status = PS6000a.EnumerateUnits(out short count, EnumerateSerials, out strLenght_serials);
+            if (status != StandardDriverStatusCode.Ok)
+            {
+                Console.WriteLine("EnumerateUnits returned status: " + status);
+            }
+            Console.WriteLine("\nNumber of unused ps6000a devices: " + count);        
+            Console.WriteLine("ps6000a serial numbers: " + EnumerateSerials);
+
             //Turn all channels off
             for (int i = 0; i < _channelSettings.Length; i++)
             {

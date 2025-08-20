@@ -663,6 +663,400 @@ namespace PicoStatus
     /// </summary>
     public const uint PICO_WARNING_PROBE_CHANNEL_OUT_OF_SYNC = (uint)0x00000157UL;
 
+    public const uint PICO_ENDPOINT_MISSING									 = (uint)0x00000158UL;
+    public const uint PICO_UNKNOWN_ENDPOINT_REQUEST							 = (uint)0x00000159UL;
+
+// The ADC on board the device has not been correctly identified.
+    public const uint PICO_ADC_TYPE_ERROR = (uint)0x0000015AUL;
+
+    public const uint PICO_FPGA2_FAILED = (uint)0x0000015BUL;
+
+    public const uint PICO_FPGA2_DEVICE_STATUS = (uint)0x0000015CUL;
+
+    public const uint PICO_ENABLE_PROGRAM_FPGA2_FAILED = (uint)0x0000015DUL;
+    public const uint PICO_NO_CHANNELS_OR_PORTS_ENABLED = (uint)0x0000015EUL;
+
+    public const uint PICO_INVALID_RATIO_MODE = (uint)0x0000015FUL;
+
+    public const uint PICO_READS_NOT_SUPPORTED_IN_CURRENT_CAPTURE_MODE = (uint)0x00000160UL;
+
+// These selection tests can be masked together to show that mode than one read selection has failed the tests,
+// therefore theses error codes cover = (uint)0x00000161UL to = (uint)0x0000016FUL.
+    public const uint PICO_TRIGGER_READ_SELECTION_CHECK_FAILED = (uint)0x00000161UL;
+    public const uint PICO_DATA_READ1_SELECTION_CHECK_FAILED = (uint)0x00000162UL;
+    public const uint PICO_DATA_READ2_SELECTION_CHECK_FAILED = (uint)0x00000164UL;
+    public const uint PICO_DATA_READ3_SELECTION_CHECK_FAILED = (uint)0x00000168UL;
+
+// The requested read is not one of the reads available in enPicoReadSelection.
+    public const uint PICO_READ_SELECTION_OUT_OF_RANGE = (uint)0x00000170UL;
+
+// The downsample ratio options cannot be combined together for this request.
+    public const uint PICO_MULTIPLE_RATIO_MODES = (uint)0x00000171UL;
+
+// The enPicoReadSelection request has no samples available.
+    public const uint PICO_NO_SAMPLES_READ			                  = (uint)0x00000172UL;
+
+// The enPicoReadSelection did not include one of the downsample ratios now requested.
+    public const uint PICO_RATIO_MODE_NOT_REQUESTED = (uint)0x00000173UL;
+
+// No read requests have been made.
+    public const uint PICO_NO_USER_READ_REQUESTS_SET = (uint)0x00000174UL;
+
+// The parameter for <number of values> cannot be zero.
+    public const uint PICO_ZERO_SAMPLES_INVALID = (uint)0x00000175UL;
+
+// The analog hardware cannot be identified; contact Pico Technology Technical Support.
+    public const uint PICO_ANALOGUE_HARDWARE_MISSING = (uint)0x00000176UL;
+
+// Setting of the analog hardware pins failed.
+    public const uint PICO_ANALOGUE_HARDWARE_PINS = (uint)0x00000177UL;
+
+// An SMPS fault has occurred.
+    public const uint PICO_ANALOGUE_HARDWARE_SMPS_FAULT = (uint)0x00000178UL;
+
+// There appears to be a conflict between the expected and actual hardware in the device; contact Pico Technology Technical Support.
+    public const uint PICO_DIGITAL_ANALOGUE_HARDWARE_CONFLICT = (uint)0x00000179UL;
+
+// One or more of the enPicoRatioMode requested do not have a data buffer set.
+    public const uint PICO_RATIO_MODE_BUFFER_NOT_SET = (uint)0x0000017AUL;
+
+// The resolution is valid but not supported by the opened device.
+    public const uint PICO_RESOLUTION_NOT_SUPPORTED_BY_VARIANT = (uint)0x0000017BUL;
+
+// The requested trigger threshold is out of range for the current device resolution.
+    public const uint PICO_THRESHOLD_OUT_OF_RANGE = (uint)0x0000017CUL;
+
+// The simple trigger only supports upper edge direction options.
+    public const uint PICO_INVALID_SIMPLE_TRIGGER_DIRECTION = (uint)0x0000017DUL;
+
+// The aux trigger is not supported on this variant.
+    public const uint PICO_AUX_NOT_SUPPORTED = (uint)0x0000017EUL;
+
+// The trigger directions pointer may not be null.
+    public const uint PICO_NULL_DIRECTIONS = (uint)0x0000017FUL;
+
+// The trigger channel properties pointer may not be null.
+    public const uint PICO_NULL_CHANNEL_PROPERTIES = (uint)0x00000180UL;
+
+// A trigger is set on a channel that has not been enabled.
+    public const uint PICO_TRIGGER_CHANNEL_NOT_ENABLED = (uint)0x00000181UL;
+
+// A trigger condition has been set but a trigger property not set.
+    public const uint PICO_CONDITION_HAS_NO_TRIGGER_PROPERTY = (uint)0x00000182UL;
+
+// When requesting trigger data, this option can only be combined with the segment header ratio mode flag.
+    public const uint PICO_RATIO_MODE_TRIGGER_MASKING_INVALID = (uint)0x00000183UL;
+
+// The trigger data buffer must be 40 or more samples in size.
+    public const uint PICO_TRIGGER_DATA_REQUIRES_MIN_BUFFER_SIZE_OF_40_SAMPLES = (uint)0x00000184UL;
+
+// The number of requested waveforms is greater than the number of memory segments allocated.
+    public const uint PICO_NO_OF_CAPTURES_OUT_OF_RANGE = (uint)0x00000185UL;
+
+// When requesting segment header information, the segment header does not require a data buffer,
+// to get the segment information use GetTriggerInfo.
+    public const uint PICO_RATIO_MODE_SEGMENT_HEADER_DOES_NOT_REQUIRE_BUFFERS = (uint)0x00000186UL;
+
+// Use GetTriggerInfo to retrieve the segment header information.
+    public const uint PICO_FOR_SEGMENT_HEADER_USE_GETTRIGGERINFO = (uint)0x00000187UL;
+
+// A read request has not been set.
+    public const uint PICO_READ_NOT_SET = (uint)0x00000188UL;
+
+// The expected and actual states of the ADCs do not match.
+    public const uint PICO_ADC_SETTING_MISMATCH = (uint)0x00000189UL;
+
+// The requested data type is not one of the enPicoDataType listed.
+    public const uint PICO_DATATYPE_INVALID = (uint)0x0000018AUL;
+
+// The down sample ratio mode requested does not support the enPicoDataType option chosen.
+    public const uint PICO_RATIO_MODE_DOES_NOT_SUPPORT_DATATYPE = (uint)0x0000018BUL;
+
+// The channel combination is not valid for the resolution.
+    public const uint PICO_CHANNEL_COMBINATION_NOT_VALID_IN_THIS_RESOLUTION = (uint)0x0000018CUL;
+
+
+    public const uint PICO_USE_8BIT_RESOLUTION = (uint)0x0000018DUL;
+
+// The buffer for minimum data values and maximum data values are the same buffers.
+    public const uint PICO_AGGREGATE_BUFFERS_SAME_POINTER = (uint)0x0000018EUL;
+
+// The read request number of samples requested for an overlapped operation are more
+// than the total number of samples to capture.
+    public const uint PICO_OVERLAPPED_READ_VALUES_OUT_OF_RANGE = (uint)0x0000018FUL;
+
+// The overlapped read request has more segments specified than segments allocated.
+    public const uint PICO_OVERLAPPED_READ_SEGMENTS_OUT_OF_RANGE = (uint)0x00000190UL;
+
+// The number of channel combinations available are greater than the array size received.
+    public const uint PICO_CHANNELFLAGSCOMBINATIONS_ARRAY_SIZE_TOO_SMALL = (uint)0x00000191UL;
+
+// The number of captures is larger than the maximum number of segments allowed for the device variant.
+    public const uint PICO_CAPTURES_EXCEEDS_NO_OF_SUPPORTED_SEGMENTS = (uint)0x00000192UL;
+
+// The time unit requested is not one of the listed enPicoTimeUnits.
+    public const uint PICO_TIME_UNITS_OUT_OF_RANGE = (uint)0x00000193UL;
+
+// The number of samples parameter may not be zero.
+    public const uint PICO_NO_SAMPLES_REQUESTED = (uint)0x00000194UL;
+
+// The action requested is not listed in enPicoAction.
+    public const uint PICO_INVALID_ACTION = (uint)0x00000195UL;
+
+// When adding buffers for the same read request the buffers for all ratio mode requests have to be the same size.
+    public const uint PICO_NO_OF_SAMPLES_NEED_TO_BE_EQUAL_WHEN_ADDING_BUFFERS = (uint)0x00000196UL;
+
+// The data is being processed but there is no empty data buffers available, a new data buffer needs to be set sent to the driver
+// so that the data can be processed.
+    public const uint PICO_WAITING_FOR_DATA_BUFFERS = (uint)0x00000197UL;
+
+// when streaming data, only one read option is available.
+    public const uint PICO_STREAMING_ONLY_SUPPORTS_ONE_READ = (uint)0x00000198UL;
+
+// A clear read request is not one of the enPicoAction listed.
+    public const uint PICO_CLEAR_DATA_BUFFER_INVALID = (uint)0x00000199UL;
+
+// The combination of action flags are not allowed.
+    public const uint PICO_INVALID_ACTION_FLAGS_COMBINATION = (uint)0x0000019AUL;
+
+//  PICO_ADD request has been made but both data buffers are set to null and so there is nowhere to put the data.
+    public const uint PICO_BOTH_MIN_AND_MAX_NULL_BUFFERS_CANNOT_BE_ADDED = (uint)0x0000019BUL;
+
+// A conflict between the data buffers being set has occurred. Please use the PICO_CLEAR_ALL action to reset.
+    public const uint PICO_CONFLICT_IN_SET_DATA_BUFFERS_CALL_REMOVE_DATA_BUFFER_TO_RESET = (uint)0x0000019CUL;
+
+// While processing data, buffers cannot be removed from the data buffers list.
+    public const uint PICO_REMOVING_DATA_BUFFER_ENTRIES_NOT_ALLOWED_WHILE_DATA_PROCESSING  = (uint)0x0000019DUL;
+
+//  An USB request has failed.
+    public const uint PICO_CYUSB_REQUEST_FAILED = (uint)0x00000200UL;
+
+// A request has been made to retrieve the latest streaming data, but with either a null pointer or an array size set to zero.
+    public const uint PICO_STREAMING_DATA_REQUIRED = (uint)0x00000201UL;
+
+// A buffer being set has a length that is invalid (ie less than zero).
+    public const uint PICO_INVALID_NUMBER_OF_SAMPLES = (uint)0x00000202UL;
+
+// The distribution size may not be zero.
+    public const uint PICO_INVALID_DISTRIBUTION = (uint)0x00000203UL;
+
+// The buffer length in bytes is greater than a 4-byte word.
+    public const uint PICO_BUFFER_LENGTH_GREATER_THAN_INT32_T = (uint)0x00000204UL;
+
+// The PLL has failed.
+    public const uint PICO_PLL_MUX_OUT_FAILED             = (uint)0x00000209UL;
+
+// Pulse width only supports one direction.
+    public const uint PICO_ONE_PULSE_WIDTH_DIRECTION_ALLOWED = (uint)0x0000020AUL;
+
+// There is no external trigger available on the device specified by the handle.
+    public const uint PICO_EXTERNAL_TRIGGER_NOT_SUPPORTED = (uint)0x0000020BUL;
+
+// The condition parameter is a null pointer.
+    public const uint PICO_NO_TRIGGER_CONDITIONS_SET = (uint)0x0000020CUL;
+
+// The number of trigger channel properties it outside the allowed range (is less than zero).
+    public const uint PICO_NO_OF_CHANNEL_TRIGGER_PROPERTIES_OUT_OF_RANGE = (uint)0x0000020DUL;
+
+// A probe has been plugged into a channel, but can not be identified correctly.
+    public const uint PICO_PROBE_COMPONENT_ERROR = (uint)0x0000020EUL;
+
+// The probe is incompatible with the device channel it is connected to. This could lead to error in the measurements.
+    public const uint PICO_INCOMPATIBLE_PROBE = (uint)0x0000020FUL;
+
+// The requested channel for ETS triggering is not supported.
+    public const uint PICO_INVALID_TRIGGER_CHANNEL_FOR_ETS              = (uint)0x00000210UL;
+
+// While the device is streaming the get values method is not available
+    public const uint PICO_NOT_AVAILABLE_WHEN_STREAMING_IS_RUNNING = (uint)0x00000211UL;
+
+// the requested state is not one of the enSharedTriggerWithinPreTrigger values
+    public const uint PICO_INVALID_TRIGGER_WITHIN_PRE_TRIGGER_STATE = (uint)0x00000212UL;
+
+// the number of captures have to be greater than zero
+    public const uint PICO_ZERO_NUMBER_OF_CAPTURES_INVALID = (uint)0x00000213UL;
+
+// the quantifier for a pointer, defining the length in bytes is invalid
+    public const uint PICO_INVALID_LENGTH = (uint)0x00000214UL;
+
+// the trigger delay is greater than supported by the hardware
+    public const uint PICO_TRIGGER_DELAY_OUT_OF_RANGE = (uint)0x00000300UL;
+
+// the requested threshold direction is not allowed with the specified channel
+    public const uint PICO_INVALID_THRESHOLD_DIRECTION = (uint)0x00000301UL;
+
+// the requested threshold mode is not allowed with the specified channel
+    public const uint PICO_INVALID_THRESHOLD_MODE = (uint)0x00000302UL;
+
+// The timebase is not supported or is invalid.
+    public const uint PICO_TIMEBASE_NOT_SUPPORTED_BY_RESOLUTION = (uint)0x00000303UL;
+
+// The device variant is not supported by this current driver.
+    public const uint PICO_INVALID_VARIANT = (uint)0x00001000UL;
+
+// The actual memory module does not match the expected memory module.
+    public const uint PICO_MEMORY_MODULE_ERROR = (uint)0x00001001UL;
+
+// A null pointer has been passed in the trigger function or one of the parameters is out of range.
+    public const uint PICO_PULSE_WIDTH_QUALIFIER_LOWER_UPPER_CONFILCT  = (uint)0x00002000UL;
+
+// The pulse width qualifier type is not one of the listed options.
+    public const uint PICO_PULSE_WIDTH_QUALIFIER_TYPE  = (uint)0x00002001UL;
+
+// The pulse width qualifier direction is not one of the listed options.
+    public const uint PICO_PULSE_WIDTH_QUALIFIER_DIRECTION = (uint)0x00002002UL;
+
+// The threshold range is not one of the listed options.
+    public const uint PICO_THRESHOLD_MODE_OUT_OF_RANGE = (uint)0x00002003UL;
+
+// The trigger direction and pulse width option conflict with each other.
+    public const uint PICO_TRIGGER_AND_PULSEWIDTH_DIRECTION_IN_CONFLICT = (uint)0x00002004UL;
+
+// The thresholds upper limits and thresholds lower limits conflict with each other.
+    public const uint PICO_THRESHOLD_UPPER_LOWER_MISMATCH = (uint)0x00002005UL;
+
+// The pulse width lower count is out of range.
+    public const uint PICO_PULSE_WIDTH_LOWER_OUT_OF_RANGE = (uint)0x00002006UL;
+
+// The pulse width upper count is out of range.
+    public const uint PICO_PULSE_WIDTH_UPPER_OUT_OF_RANGE = (uint)0x00002007UL;
+
+// The devices front panel has caused an error.
+    public const uint PICO_FRONT_PANEL_ERROR = (uint)0x00002008UL;
+
+// The actual and expected mode of the front panel do not match.
+    public const uint PICO_FRONT_PANEL_MODE = (uint)0x0000200BUL;
+
+// A front panel feature is not available or failed to configure.
+    public const uint PICO_FRONT_PANEL_FEATURE = (uint)0x0000200CUL;
+
+// When setting the pulse width conditions either the pointer is null or the number of conditions is set to zero.
+    public const uint PICO_NO_PULSE_WIDTH_CONDITIONS_SET = (uint)0x0000200DUL;
+
+// a trigger condition exists for a port, but the port has not been enabled
+    public const uint PICO_TRIGGER_PORT_NOT_ENABLED = (uint)0x0000200EUL;
+
+// a trigger condition exists for a port, but no digital channel directions have been set
+    public const uint PICO_DIGITAL_DIRECTION_NOT_SET = (uint)0x0000200FUL;
+
+    public const uint PICO_I2C_DEVICE_INVALID_READ_COMMAND = (uint)0x00002010UL;
+
+    public const uint PICO_I2C_DEVICE_INVALID_RESPONSE = (uint)0x00002011UL;
+
+    public const uint PICO_I2C_DEVICE_INVALID_WRITE_COMMAND = (uint)0x00002012UL;
+
+    public const uint PICO_I2C_DEVICE_ARGUMENT_OUT_OF_RANGE = (uint)0x00002013UL;
+
+// The actual and expected mode do not match.
+    public const uint PICO_I2C_DEVICE_MODE = (uint)0x00002014UL;
+
+// While trying to configure the device, set up failed.
+    public const uint PICO_I2C_DEVICE_SETUP_FAILED = (uint)0x00002015UL;
+
+// A feature is not available or failed to configure.
+    public const uint PICO_I2C_DEVICE_FEATURE = (uint)0x00002016UL;
+
+// The device did not pass the validation checks.
+    public const uint PICO_I2C_DEVICE_VALIDATION_FAILED = (uint)0x00002017UL;
+
+    public const uint PICO_INTERNAL_HEADER_ERROR = (uint)0x00002018UL;
+
+// The device couldn't write the channel settings due to a hardware fault
+    public const uint PICO_FAILED_TO_WRITE_HARDWARE_FAULT = (uint)0x00002019UL;
+
+// The number of MSO's edge transitions being set is not supported by this device (RISING, FALLING, or RISING_OR_FALLING).
+    public const uint PICO_MSO_TOO_MANY_EDGE_TRANSITIONS_WHEN_USING_PULSE_WIDTH = (uint)0x00003000UL;
+
+// A probe LED position requested is not one of the available probe positions in the ProbeLedPosition enum.
+    public const uint PICO_INVALID_PROBE_LED_POSITION = (uint)0x00003001UL;
+
+// The LED position is not supported by the selected variant.
+    public const uint PICO_PROBE_LED_POSITION_NOT_SUPPORTED = (uint)0x00003002UL;
+
+// A channel has more than one of the same LED position in the ProbeChannelLedSetting struct.
+    public const uint PICO_DUPLICATE_PROBE_CHANNEL_LED_POSITION = (uint)0x00003003UL;
+
+// Setting the probes LED has failed.
+    public const uint PICO_PROBE_LED_FAILURE = (uint)0x00003004UL;
+
+// Probe is not supported by the selected variant.
+    public const uint PICO_PROBE_NOT_SUPPORTED_BY_THIS_DEVICE = (uint)0x00003005UL;
+
+// The probe name is not in the list of enPicoConnectProbe enums.
+    public const uint PICO_INVALID_PROBE_NAME = (uint)0x00003006UL;
+
+// The number of colour settings are zero or a null pointer passed to the function.
+    public const uint PICO_NO_PROBE_COLOUR_SETTINGS = (uint)0x00003007UL;
+
+// Channel has no probe connected to it.
+    public const uint PICO_NO_PROBE_CONNECTED_ON_REQUESTED_CHANNEL = (uint)0x00003008UL;
+
+// Connected probe does not require calibration.
+    public const uint PICO_PROBE_DOES_NOT_REQUIRE_CALIBRATION = (uint)0x00003009UL;
+
+// Connected probe could not be calibrated - hardware fault is a possible cause.
+    public const uint PICO_PROBE_CALIBRATION_FAILED = (uint)0x0000300AUL;
+
+// A probe has been connected, but the version is not recognised.
+    public const uint PICO_PROBE_VERSION_ERROR = (uint)0x0000300BUL;
+
+// The channel with the frequency counter enabled has a probe connected that does not support this feature
+    public const uint PICO_PROBE_DOES_NOT_SUPPORT_FREQUENCY_COUNTER = (uint)0x0000300CUL;
+
+// The requested trigger time is to long for the selected variant.
+    public const uint PICO_AUTO_TRIGGER_TIME_TOO_LONG   = (uint)0x00004000UL;
+
+// The MSO pod did not pass the validation checks.
+    public const uint PICO_MSO_POD_VALIDATION_FAILED = (uint)0x00005000UL;
+
+// No MSO pod found on the requested digital port.
+    public const uint PICO_NO_MSO_POD_CONNECTED = (uint)0x00005001UL;
+
+// the digital port enum value is not in the enPicoDigitalPortHysteresis declaration
+    public const uint PICO_DIGITAL_PORT_HYSTERESIS_OUT_OF_RANGE = (uint)0x00005002UL;
+
+    public const uint PICO_MSO_POD_FAILED_UNIT = (uint)0x00005003UL;
+
+// The device's EEPROM is corrupt. Contact Pico Technology support: https://www.picotech.com/tech-support.
+    public const uint PICO_ATTENUATION_FAILED = (uint)0x00005004UL;
+
+// a channel set to the 50Ohm Path has Tripped due to the input signal
+    public const uint PICO_DC_50OHM_OVERVOLTAGE_TRIPPED = (uint)0x00005005UL;
+
+// The MSO pod over current protection activated, unplug and replug the MSO pod 
+    public const uint PICO_MSO_OVER_CURRENT_TRIPPED = (uint)0x00005006UL;
+
+// Status error for when the device has overheated.
+    public const uint PICO_NOT_RESPONDING_OVERHEATED = (uint)0x00005010UL;
+
+// The USB version of the port is not supported by this variant
+    public const uint PICO_USB_VERSION_NOT_SUPPORTED = (uint)0x00005100UL;
+
+// waiting for the device to capture timed out
+    public const uint PICO_HARDWARE_CAPTURE_TIMEOUT = (uint)0x00006000UL;
+
+// waiting for the device be ready for capture timed out
+    public const uint PICO_HARDWARE_READY_TIMEOUT   = (uint)0x00006001UL;
+
+// the driver is performing a capture requested by RunStreaming or RunBlock
+// to interrupt this capture call Stop on the device first
+    public const uint PICO_HARDWARE_CAPTURING_CALL_STOP   = (uint)0x00006002UL;
+
+// the number of samples is less than the minimum number allowed
+    public const uint PICO_TOO_FEW_REQUESTED_STREAMING_SAMPLES = (uint)0x00007000UL;
+
+// a streaming capture has been made but re-reading the data is not allowed
+    public const uint PICO_STREAMING_REREAD_DATA_NOT_AVAILABLE = (uint)0x00007001UL;
+
+// When requesting data only Raw and one of the following aggregation data types allowed
+//   - PICO_RATIO_MODE_AGGREGATE (Min Max),
+//     PICO_RATIO_MODE_DECIMATE,
+//     PICO_RATIO_MODE_AVERAGE and/or PICO_RATIO_MODE_SUM,
+//     PICO_RATIO_MODE_DISTRIBUTION
+//
+//	 average and sum are classed as one aggregation type
+    public const uint PICO_STREAMING_COMBINATION_OF_RAW_DATA_AND_ONE_AGGREGATION_DATA_TYPE_ALLOWED = (uint)0x00007002UL;
+
     /// <summary>The time stamp per waveform segment has been reset.</summary>
     public const uint PICO_DEVICE_TIME_STAMP_RESET = (uint)0x01000000UL;
 
@@ -695,6 +1089,20 @@ namespace PicoStatus
 
     /// <summary>Reserved</summary>
     public const uint PICO_RESERVED_1 = (uint)0x11000000UL;
+
+    // The PicoSource device is not ready to accept instructions.
+    public const uint PICO_SOURCE_NOT_READY = (uint)0x20000000UL;
+    public const uint PICO_SOURCE_INVALID_BAUD_RATE = (uint)0x20000001UL;
+    public const uint PICO_SOURCE_NOT_OPENED_FOR_WRITE = (uint)0x20000002UL;
+    public const uint PICO_SOURCE_FAILED_TO_WRITE_DEVICE = (uint)0x20000003UL;
+    public const uint PICO_SOURCE_EEPROM_FAIL = (uint)0x20000004UL;
+    public const uint PICO_SOURCE_EEPROM_NOT_PRESENT = (uint)0x20000005UL;
+    public const uint PICO_SOURCE_EEPROM_NOT_PROGRAMMED = (uint)0x20000006UL;
+    public const uint PICO_SOURCE_LIST_NOT_READY = (uint)0x20000007UL;
+    public const uint PICO_SOURCE_FTD2XX_NOT_FOUND = (uint)0x20000008UL;
+    public const uint PICO_SOURCE_FTD2XX_NO_FUNCTION = (uint)0x20000009UL;
+
+
   }
 }
 
@@ -1164,11 +1572,32 @@ namespace DriverImports
     // waiting for the device be ready for capture timed out
     PICO_HARDWARE_READY_TIMEOUT = 0x00006001,
 
+    // the driver is performing a capture requested by RunStreaming or RunBlock
+    // to interrupt this capture call Stop on the device first
+    PICO_HARDWARE_CAPTURING_CALL_STOP = 0x00006002,
+
+    // the number of samples is less than the minimum number allowed
+    PICO_TOO_FEW_REQUESTED_STREAMING_SAMPLES = 0x00007000,
+
+    // a streaming capture has been made but re-reading the data is not allowed
+    PICO_STREAMING_REREAD_DATA_NOT_AVAILABLE = 0x00007001,
+
+    // When requesting data only Raw and one of the following aggregation data types allowed
+    //   - PICO_RATIO_MODE_AGGREGATE (Min Max),
+    //     PICO_RATIO_MODE_DECIMATE,
+    //     PICO_RATIO_MODE_AVERAGE and/or PICO_RATIO_MODE_SUM,
+    //     PICO_RATIO_MODE_DISTRIBUTION
+    //
+    //	 average and sum are classed as one aggregation type
+    PICO_STREAMING_COMBINATION_OF_RAW_DATA_AND_ONE_AGGREGATION_DATA_TYPE_ALLOWED = 0x00007002,
+
     DeviceTimeStampReset = 0x01000000,
 
     PICO_TRIGGER_TIME_NOT_REQUESTED = 0x02000001,
     PICO_TRIGGER_TIME_BUFFER_NOT_SET = 0x02000002,
     PICO_TRIGGER_TIME_FAILED_TO_CALCULATE = 0x02000004,
+
+    PICO_TRIGGER_WITHIN_A_PRE_TRIGGER_FAILED_TO_CALCULATE = 0x02000008,
 
     PICO_TRIGGER_TIME_STAMP_NOT_REQUESTED = 0x02000100,
 
@@ -1196,10 +1625,17 @@ namespace DriverImports
     SigGenSweepWaveTypeMismatch = 0x03000035,
     SigGenInvalidSweepParameters = 0x03000036,
     SigGenSweepPrescaleNotSupported = 0x03000037,
-
+    PICO_AWG_OVER_VOLTAGE_RANGE = 0x03000038,
+    PICO_NOT_LOCKED_TO_REFERENCE_FREQUENCY = 0x03000039,
     UsbPermissionsError = 0x03000040,
 
     PICO_PORTS_WITHOUT_ANALOGUE_CHANNELS_ONLY_ALLOWED_IN_8BIT_RESOLUTION = 0x03001000,
+
+    PICO_ANALOGUE_FRONTEND_MISSING = 0x03003001,
+    PICO_FRONT_PANEL_MISSING = 0x03003002,
+    PICO_ANALOGUE_FRONTEND_AND_FRONT_PANEL_MISSING = 0x03003003,
+
+    PICO_DIGITAL_BOARD_HARDWARE_ERROR = 0x03003800,
 
     // checking if the firmware needs updating the updateRequired parameter is null
     PICO_FIRMWARE_UPDATE_REQUIRED_TO_USE_DEVICE_WITH_THIS_DRIVER = 0x03004000,
@@ -1214,6 +1650,13 @@ namespace DriverImports
     PICO_FIRMWARE_VERSION_OUT_OF_RANGE = 0x03004009,
     PICO_FRONTPANEL_FIRMWARE_UPDATE_REQUIRED_TO_USE_DEVICE_WITH_THIS_DRIVER = 0x0300400A,
 
+    PICO_OPTIONAL_BOOTLOADER_UPDATE_AVAILABLE_WITH_THIS_DRIVER = 0x03005000,
+    PICO_BOOTLOADER_VERSION_NOT_AVAILABLE = 0x03005001,
+
+    PICO_NO_APPS_AVAILABLE = 0x03008000,
+    PICO_UNSUPPORTED_APP = 0x03008001,
+
+
     // the adc is powered down when trying to capture data
     PICO_ADC_POWERED_DOWN = 0x03002000,
 
@@ -1227,5 +1670,18 @@ namespace DriverImports
     ShadowCalCorrupt = 0x10000007,
 
     Reserved1 = 0x11000000,
+
+    // The PicoSource device is not ready to accept instructions.
+		PICO_SOURCE_NOT_READY = 0x20000000,
+		PICO_SOURCE_INVALID_BAUD_RATE = 0x20000001,
+		PICO_SOURCE_NOT_OPENED_FOR_WRITE = 0x20000002,
+		PICO_SOURCE_FAILED_TO_WRITE_DEVICE = 0x20000003,
+		PICO_SOURCE_EEPROM_FAIL = 0x20000004,
+		PICO_SOURCE_EEPROM_NOT_PRESENT = 0x20000005,
+		PICO_SOURCE_EEPROM_NOT_PROGRAMMED = 0x20000006,
+		PICO_SOURCE_LIST_NOT_READY = 0x20000007,
+		PICO_SOURCE_FTD2XX_NOT_FOUND = 0x20000008,
+		PICO_SOURCE_FTD2XX_NO_FUNCTION = 0x20000009,
+
   }
 }

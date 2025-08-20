@@ -44,16 +44,24 @@ namespace AWGScopeTriggerExample
       if (status != StandardDriverStatusCode.Ok) return status;
 
       var data = new short[numSamples];
-      var pinned = new PinnedArray<short>(data);
-
-            
+      var pinned = new PinnedArray<short>(data);     
       
-        status = psospaDevice.ReadDataFromDevice(handle, readChannel, numSamples, ref data);
-        if (status != StandardDriverStatusCode.Ok)
-          return status;
+      status = psospaDevice.ReadDataFromDevice(handle, readChannel, numSamples, ref pinned);
+      if (status != StandardDriverStatusCode.Ok)
+        return status;
 
-        PicoFileFunctions.WriteDataToFile(data);
-     
+      // Un-pin the arrays
+      if (pinned != null)
+      {
+        pinned.Dispose();
+      }
+
+      // Work with the arrays, Write the data to a file, etc
+      PicoFileFunctions.WriteDataToFile(data);
+
+      //Allow the GC to free the buffers
+      data = null; // Now the array is ready for Garbage Collection.
+
       return status;
     }
 

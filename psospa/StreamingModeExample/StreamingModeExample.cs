@@ -1,5 +1,5 @@
 ﻿// This is an example of how to setup and capture in streaming mode for PicoScope PC Oscilloscope consuming the psospa driver
-// Copyright © 2024 Pico Technology Ltd. See LICENSE file for terms.
+// Copyright © 2024-2025 Pico Technology Ltd. See LICENSE file for terms.
 
 using System;
 using System.Collections.Generic;
@@ -173,7 +173,7 @@ namespace StreamingModeExample
                             {
                                 status = psospa.SetDataBuffers(handle,
                                 (Channel)channel,
-                                values[i][channel], //i is the memory segment index
+                                pinned[i, channel], //values[i][channel],//i is the memory segment index
                                 null,               //not using downsampling buffers passing null
                                 numSamples,
                                 DataType.PICO_INT16_T,
@@ -273,8 +273,19 @@ namespace StreamingModeExample
                 }
 
                 Console.WriteLine("\n");
+                //Un-pin the arrays, Unless you are reusing the arrays for another capture.
+                foreach (PinnedArray<short> p in pinned)
+                {
+                    if (p != null)
+                    {
+                        p.Dispose();
+                    }
+                }
                 //OR WAIT UNTIL ALL BUFFER SEGMENTS ARE CAPTURED AND PROCESS DATA IN - "values"
             }
+
+            //Allow the GC to free the buffers
+            values = null; // Now the array is ready for Garbage Collection.
             return status;
     }
 

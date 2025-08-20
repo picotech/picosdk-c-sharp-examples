@@ -1,8 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
+    <Platforms>x64;x86</Platforms>
   </PropertyGroup>
-
+  <ItemGroup>
+    <Compile Include="..\..\shared\PicoPinnedArray.cs" Link="PicoPinnedArray.cs" />
+    <Compile Include="..\..\shared\PicoStatus.cs" Link="PicoStatus.cs" />
+    <Compile Include="..\PS5000AImports.cs" Link="PS5000AImports.cs" />
+  </ItemGroup>
 </Project>
