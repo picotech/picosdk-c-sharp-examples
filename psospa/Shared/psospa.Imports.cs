@@ -465,7 +465,7 @@ namespace DriverImports
     public static extern StandardDriverStatusCode SetDeviceResolution(int handle, DeviceResolution resolution);
 
     [DllImport(DriverName, EntryPoint = "psospaGetDeviceResolution")]
-    public static extern StandardDriverStatusCode GetDeviceResolution(int handle, DeviceResolution resolution);
+    public static extern StandardDriverStatusCode GetDeviceResolution(int handle, out DeviceResolution resolution);
 
     [DllImport(DriverName, EntryPoint = "psospaQueryOutputEdgeDetect")]
     public static extern StandardDriverStatusCode QueryOutputEdgeDetect(int handle, out short state);
