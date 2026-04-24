@@ -101,9 +101,18 @@ public enum enPicoProbeRangeInfo
   public enum BandwidthLimiter
   {
     BW_FULL = 0,
+    BW_100KHZ = 100000,
+    BW_20KHZ = 20000,
+    BW_1MHZ = 1000000,
     BW_20MHZ = 20000000,
-    BW_25MZ = 25000000,
+    BW_25MHZ = 25000000,
+    BW_50MHZ = 50000000,
+    BW_60MHZ = 60000000,
+    BW_100MHZ = 100000000,
+    BW_200MHZ = 200000000,
     BW_250MHZ = 250000000,
+    BW_300MHZ = 300000000,
+    BW_350MHZ = 350000000,
     BW_500MHZ = 500000000,
   }
 
