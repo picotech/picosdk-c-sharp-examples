@@ -1,13 +1,13 @@
 /******************************************************************************
 *
 * Filename: USBTC08Imports.cs
-*  
+*
 * Description:
-*  This file contains .NET wrapper calls correseponding to function calls 
-*  defined in the usbtc08.h C header file. 
+*  This file contains .NET wrapper calls correseponding to function calls
+*  defined in the usbtc08.h C header file.
 *  It also has the enums required by the (wrapped) function calls.
-*   
-* Copyright © 2011-2018 Pico Technology Ltd. See LICENSE file for terms.
+*
+* Copyright ï¿½ 2011-2018 Pico Technology Ltd. See LICENSE file for terms.
 *
 ******************************************************************************/
 
@@ -16,7 +16,7 @@ using System.Text;
 
 namespace USBTC08Imports
 {
-	unsafe class Imports
+	class Imports
 	{
 		#region Constants
 		private const string _DRIVER_FILENAME = "usbtc08.dll";
@@ -25,8 +25,8 @@ namespace USBTC08Imports
 
 		#region Driver Enums
 
-        public enum TempUnit : short 
-        {   USBTC08_UNITS_CENTIGRADE, 
+        public enum TempUnit : short
+        {   USBTC08_UNITS_CENTIGRADE,
             USBTC08_UNITS_FAHRENHEIT,
             USBTC08_UNITS_KELVIN,
             USBTC08_UNITS_RANKINE
@@ -48,10 +48,13 @@ namespace USBTC08Imports
         [DllImport(_DRIVER_FILENAME, EntryPoint = "usb_tc08_close_unit")]
         public static extern short TC08CloseUnit(short handle);
 
+        // usb_tc08_run returns int32_t: the sampling interval the driver
+        // actually applied, or 0 on failure. Declaring it as short truncated
+        // that value.
         [DllImport(_DRIVER_FILENAME, EntryPoint = "usb_tc08_run")]
-        public static extern short TC08Run(short handle,
-                                           int interval
-                                           );
+        public static extern int TC08Run(short handle,
+                                         int interval
+                                         );
 
         [DllImport(_DRIVER_FILENAME, EntryPoint = "usb_tc08_stop")]
         public static extern short TC08Stop(short handle);
@@ -62,16 +65,22 @@ namespace USBTC08Imports
                                                         short string_length
                                                         );
 
+        // tc_type is int8_t in usbtc08.h, so it is declared sbyte here rather
+        // than char: that keeps the marshalled width correct without relying on
+        // the DllImport CharSet default.
         [DllImport(_DRIVER_FILENAME, EntryPoint = "usb_tc08_set_channel")]
         public static extern short TC08SetChannel(short handle,
                                                   short channel,
-                                                  char tc_type
+                                                  sbyte tc_type
                                                   );
 
+        // overflow_flags points at one flag per channel (the cold junction plus
+        // the eight inputs), so it is marshalled as an array. Using an array
+        // rather than a raw pointer keeps this example free of unsafe code.
         [DllImport(_DRIVER_FILENAME, EntryPoint = "usb_tc08_get_single")]
         public static extern short TC08GetSingle(short handle,
                                                   float[] temp,
-                                                  short *overflow_flags,
+                                                  short[] overflow_flags,
                                                   TempUnit units
                                                   );
 

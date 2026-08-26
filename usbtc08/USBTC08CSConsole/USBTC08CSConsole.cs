@@ -1,30 +1,50 @@
 /**************************************************************************
  *
  * Filename: USBTC08CSConsole.cs
- * 
+ *
  * Description:
  *   This is a console-mode program that demonstrates how to use the
  *   USBTC08 driver using .NET
- *   
- * Copyright (C) 2011-2018 Pico Technology Ltd. See LICENSE file for terms. 
- *   
+ *
+ * Copyright (C) 2011-2018 Pico Technology Ltd. See LICENSE file for terms.
+ *
  **************************************************************************/
 
 using System;
 using System.Threading;
 
 using USBTC08Imports;
-using PicoPinnedArray;
 
 namespace USBTC08ConsoleExample
 {
     class ConsoleExample
     {
         private readonly short _handle;
+
         public const int USBTC08_MAX_CHANNELS = 8;
-        public const char TC_TYPE_K = 'K';
-        public const int PICO_OK = 1;
-       
+
+        // The cold junction (channel 0) plus the eight thermocouple inputs.
+        public const int NUM_TC08_CHANNELS = USBTC08_MAX_CHANNELS + 1;
+
+        // usb_tc08_get_temp never returns more than this many readings in a
+        // single call (USBTC08_MAX_SAMPLE_BUFFER in usbtc08.h), so the buffers
+        // and the buffer_length argument are both sized from it.
+        public const int USBTC08_MAX_SAMPLE_BUFFER = 600;
+
+        // USBTC08_MAX_INFO_CHARS in usbtc08.h.
+        public const int USBTC08_MAX_INFO_CHARS = 256;
+
+        // Thermocouple type for channels 1 to 8.
+        public const sbyte TC_TYPE_K = (sbyte)'K';
+
+        // Channel 0 is the cold junction and takes this dedicated type, not a
+        // thermocouple type.
+        public const sbyte TC_TYPE_CJC = (sbyte)'C';
+
+        // The usbtc08 driver reports success as non-zero, unlike the
+        // PICO_STATUS drivers where PICO_OK is 0. Do not confuse the two.
+        public const short USBTC08_SUCCESS = 1;
+
 
     private static void WaitForKey()
     {
@@ -44,63 +64,79 @@ namespace USBTC08ConsoleExample
      ****************************************************************************/
     void GetDeviceInfo()
     {
-        System.Text.StringBuilder line = new System.Text.StringBuilder(256);
+        System.Text.StringBuilder line = new System.Text.StringBuilder(USBTC08_MAX_INFO_CHARS);
 
-        if (_handle >= 0)
+        // A handle of 0 is not a valid unit, so test for greater than zero.
+        if (_handle > 0)
         {
             Console.WriteLine("USB TC-08 Device Information:\n");
-            Imports.TC08GetFormattedInfo(_handle, line, 256);
-            Console.WriteLine("{0}\n", line);
+
+            // The length passed to the driver is taken from the buffer itself so
+            // the two cannot drift apart and let the driver overrun it.
+            if (Imports.TC08GetFormattedInfo(_handle, line, (short)line.Capacity) == USBTC08_SUCCESS)
+            {
+                Console.WriteLine("{0}\n", line);
+            }
+            else
+            {
+                Console.WriteLine("Unable to read the device information: {0}\n",
+                    Imports.TC08GetLastError(_handle));
+            }
         }
     }
 
     /****************************************************************************
      * Read temperature information from the unit
      ****************************************************************************/
-    unsafe void GetValues()
+    void GetValues()
     {
         short status;
         short chan;
-        float[] tempbuffer = new float[9]; 
-        short overflow;
-        int lines=0;
+        float[] tempbuffer = new float[NUM_TC08_CHANNELS];
+        short[] overflow = new short[NUM_TC08_CHANNELS];
+        int lines = 0;
 
         Console.Write("\n");
 
-        Console.WriteLine("Temperatures are in °C\n");
+        Console.WriteLine("Temperatures are in ï¿½C\n");
         Console.WriteLine("Chan0 is the Cold Junction Temperature\n");
 
         // Label the columns
-        for (chan = 0; chan <= USBTC08_MAX_CHANNELS; chan++)
+        for (chan = 0; chan < NUM_TC08_CHANNELS; chan++)
         {
             Console.Write("Chan{0}:    ", chan);
         }
         Console.Write("\n");
 
         do
-        { 
-            status = Imports.TC08GetSingle(_handle, tempbuffer, &overflow, Imports.TempUnit.USBTC08_UNITS_CENTIGRADE);
-            
-            if (status == PICO_OK)
-            {
-                for (chan = 0; chan <= USBTC08_MAX_CHANNELS; chan++)
-                {
-                    Console.Write("{0:0.0000}   ", tempbuffer[chan]);
-                }
+        {
+            status = Imports.TC08GetSingle(_handle, tempbuffer, overflow, Imports.TempUnit.USBTC08_UNITS_CENTIGRADE);
 
-                Console.Write("\n");
-                Thread.Sleep(1000);
+            // Report the failure and stop rather than spinning on a device that
+            // is no longer answering (for example one that has been unplugged).
+            if (status != USBTC08_SUCCESS)
+            {
+                Console.WriteLine("\nError reading temperatures: {0}", Imports.TC08GetLastError(_handle));
+                break;
             }
+
+            for (chan = 0; chan < NUM_TC08_CHANNELS; chan++)
+            {
+                Console.Write("{0:0.0000}{1}   ", tempbuffer[chan], overflow[chan] != 0 ? "!" : " ");
+            }
+
+            Console.Write("\n");
+            Thread.Sleep(1000);
 
             if (++lines > 9)
             {
-                Console.WriteLine("Temperatures are in °C\n");
+                Console.WriteLine("Temperatures are in ï¿½C  (! marks an over-range channel)\n");
                 Console.WriteLine("Chan0 is the Cold Junction Temperature\n");
                 Console.WriteLine("Press any key to stop....\n");
 
                 lines = 0;
 
-                for (chan = 0; chan <= USBTC08_MAX_CHANNELS; chan++)
+                for (chan = 0; chan < NUM_TC08_CHANNELS; chan++)
                 {
                     Console.Write("Chan{0}:    ", chan);
                 }
@@ -109,8 +145,10 @@ namespace USBTC08ConsoleExample
             }
         } while (!Console.KeyAvailable);
 
-        char ch = (Console.ReadKey().KeyChar);       // use up keypress
-        status = Imports.TC08Stop(_handle);
+        if (Console.KeyAvailable)
+        {
+            Console.ReadKey(true);       // use up keypress
+        }
 
         Console.WriteLine();
     }
@@ -118,86 +156,105 @@ namespace USBTC08ConsoleExample
     /****************************************************************************
     * Read temperature information from the unit using streaming
     ****************************************************************************/
-    unsafe void GetStreamingValues()
+    void GetStreamingValues()
     {
-        short status;
-        short chan;
-        int interval_ms;
-        int buffer_size = 1024;
+        int chan;
+        int lines = 0;
 
-        float[][] tempbuffer = new float[9][];
+        float[][] tempbuffer = new float[NUM_TC08_CHANNELS][];
+        int[] samplesPerChannel = new int[NUM_TC08_CHANNELS];
+        short[] overflow = new short[NUM_TC08_CHANNELS];
 
-        PinnedArray<float>[] pinned = new PinnedArray<float>[buffer_size];
-
-        for (short channel = 0; channel <= USBTC08_MAX_CHANNELS; channel++)
+        for (chan = 0; chan < NUM_TC08_CHANNELS; chan++)
         {
-            tempbuffer[channel] = new float[buffer_size];
-            pinned[channel] = new PinnedArray<float>(tempbuffer[channel]);
+            tempbuffer[chan] = new float[USBTC08_MAX_SAMPLE_BUFFER];
         }
 
-        int[] times_ms_buffer = new int[buffer_size];
-        short[] overflow = new short[9];
-        int lines = 0;
-        int numberOfSamples = 0;
+        int[] times_ms_buffer = new int[USBTC08_MAX_SAMPLE_BUFFER];
 
         // Find the time interval
-        interval_ms = Imports.TC08GetMinIntervalMS(_handle);
+        int interval_ms = Imports.TC08GetMinIntervalMS(_handle);
+
+        if (interval_ms <= 0)
+        {
+            Console.WriteLine("Unable to read the minimum sampling interval: {0}",
+                Imports.TC08GetLastError(_handle));
+            return;
+        }
 
         Console.Write("\n");
 
+        // TC08Run returns the interval the driver actually applied, or 0 if
+        // streaming could not be started.
         int actual_interval_ms = Imports.TC08Run(_handle, interval_ms);
+
+        if (actual_interval_ms <= 0)
+        {
+            Console.WriteLine("Unable to start streaming: {0}", Imports.TC08GetLastError(_handle));
+            return;
+        }
+
+        Console.WriteLine("Sampling interval: {0} ms", actual_interval_ms);
 
         do
         {
             Thread.Sleep(1000);
 
-            if (actual_interval_ms > 0)
+            // Obtain readings for each channel
+            for (chan = 0; chan < NUM_TC08_CHANNELS; chan++)
             {
-                // Obtain readings for each channel
-                for (chan = 0; chan <= USBTC08_MAX_CHANNELS; chan++)
+                samplesPerChannel[chan] = Imports.TC08GetTemp(_handle, tempbuffer[chan], times_ms_buffer,
+                    USBTC08_MAX_SAMPLE_BUFFER, out overflow[chan], (short)chan,
+                    Imports.TempUnit.USBTC08_UNITS_CENTIGRADE, 0);
+
+                // A negative count means the call failed.
+                if (samplesPerChannel[chan] < 0)
                 {
-                    numberOfSamples = Imports.TC08GetTemp(_handle, tempbuffer[chan], times_ms_buffer, buffer_size,
-                        out overflow[chan], chan, Imports.TempUnit.USBTC08_UNITS_CENTIGRADE, 0);
-
-                    if (numberOfSamples == 1)
-                    {
-                        Console.WriteLine("Channel {0}: {1} reading.\n", chan, numberOfSamples);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Channel {0}: {1} readings.\n", chan, numberOfSamples);
-                    }
-
-                    lines++;
+                    Console.WriteLine("\nError while streaming: {0}", Imports.TC08GetLastError(_handle));
+                    Imports.TC08Stop(_handle);
+                    return;
                 }
 
-                Console.WriteLine("Temperatures are in °C\n");
-                Console.Write("Chan0 is the Cold Junction Temperature\n\n");
-
-                // Label the columns
-                for (chan = 0; chan <= USBTC08_MAX_CHANNELS; chan++)
-                {
-                    Console.Write("Chan{0}:    ", chan);
-                }
-
-                Console.Write("\n");
-
-                // Print readings
-                for (int i = 0; i < numberOfSamples; i++)
-                {
-
-                    for (int channel = 0; channel <= USBTC08_MAX_CHANNELS; channel++)
-                    {
-                        Console.Write("{0:0.0000}\t", pinned[channel].Target[i]);
-                    }
-
-                    Console.WriteLine("");
-
-                }
-
-                Console.Write("\n");
-                Thread.Sleep(5000);
+                Console.WriteLine("Channel {0}: {1} reading{2}.\n", chan, samplesPerChannel[chan],
+                    samplesPerChannel[chan] == 1 ? "" : "s");
             }
+
+            Console.WriteLine("Temperatures are in ï¿½C\n");
+            Console.Write("Chan0 is the Cold Junction Temperature\n\n");
+
+            // Label the columns
+            for (chan = 0; chan < NUM_TC08_CHANNELS; chan++)
+            {
+                Console.Write("Chan{0}:    ", chan);
+            }
+
+            Console.Write("\n");
+
+            // The driver reports a count per channel and those counts can
+            // differ, so only print the rows every channel actually returned.
+            int rowsToPrint = USBTC08_MAX_SAMPLE_BUFFER;
+
+            for (chan = 0; chan < NUM_TC08_CHANNELS; chan++)
+            {
+                if (samplesPerChannel[chan] < rowsToPrint)
+                {
+                    rowsToPrint = samplesPerChannel[chan];
+                }
+            }
+
+            // Print readings
+            for (int i = 0; i < rowsToPrint; i++)
+            {
+                for (int channel = 0; channel < NUM_TC08_CHANNELS; channel++)
+                {
+                    Console.Write("{0:0.0000}\t", tempbuffer[channel][i]);
+                }
+
+                Console.WriteLine("");
+            }
+
+            Console.Write("\n");
+            Thread.Sleep(5000);
 
             if (++lines > 9)
             {
@@ -208,33 +265,41 @@ namespace USBTC08ConsoleExample
 
         } while (!Console.KeyAvailable);
 
-        char ch = (Console.ReadKey().KeyChar);       // use up keypress
-        status = Imports.TC08Stop(_handle);
-
-        // Un-pin the arrays
-        foreach (PinnedArray<float> p in pinned)
+        if (Console.KeyAvailable)
         {
-            if (p != null)
-            {
-                p.Dispose();
-            }
-
+            Console.ReadKey(true);       // use up keypress
         }
+
+        Imports.TC08Stop(_handle);
     }
 
     /****************************************************************************
-    *  Set channels 
+    *  Set channels
+    *
+    *  Returns false if any channel could not be set up.
     ****************************************************************************/
-    void SetChannels()
+    bool SetChannels()
     {
 	    short channel;
 	    short ok;
 
-	    for (channel = 0; channel <= USBTC08_MAX_CHANNELS; channel++)
+        // Channel 0 is the cold junction and takes the dedicated 'C' type.
+        ok = Imports.TC08SetChannel(_handle, 0, TC_TYPE_CJC);
+
+        // Each result is tested in turn: the driver documents "non-zero means
+        // success", so the individual codes must not be combined.
+	    for (channel = 1; channel < NUM_TC08_CHANNELS && ok != 0; channel++)
 	    {
             ok = Imports.TC08SetChannel(_handle, channel, TC_TYPE_K);
-
 	    }
+
+        if (ok == 0)
+        {
+            Console.WriteLine("Error setting up channels: {0}", Imports.TC08GetLastError(_handle));
+            return false;
+        }
+
+        return true;
     }
 
     /****************************************************************************
@@ -264,6 +329,14 @@ namespace USBTC08ConsoleExample
                 {
                     mainsRejectionInput =  Console.ReadLine();
 
+                    // ReadLine returns null at end of input. Without this the
+                    // loop would spin forever on a closed or redirected stdin.
+                    if (mainsRejectionInput == null)
+                    {
+                        Console.WriteLine("No more input available. Mains rejection not set.");
+                        return;
+                    }
+
                     validInput = Int16.TryParse(mainsRejectionInput, out mainsRejectionFrequency);
 
                     if (validInput == true)
@@ -279,7 +352,7 @@ namespace USBTC08ConsoleExample
 
                 status = Imports.TC08SetMains(_handle, (Imports.MainsFrequency)mainsRejectionFrequency);
 
-                if (status == 1)
+                if (status == USBTC08_SUCCESS)
                 {
                     Console.WriteLine("Mains rejection set successfully.");
                 }
@@ -322,13 +395,17 @@ namespace USBTC08ConsoleExample
                     break;
 
                 case 'G':
-                    SetChannels();
-                    GetValues();
+                    if (SetChannels())
+                    {
+                        GetValues();
+                    }
                     break;
 
                 case 'S':
-                    SetChannels();
-                    GetStreamingValues();
+                    if (SetChannels())
+                    {
+                        GetStreamingValues();
+                    }
                     break;
 
                 case 'X':
@@ -360,21 +437,29 @@ namespace USBTC08ConsoleExample
       short handle = Imports.TC08OpenUnit();
       Console.WriteLine("Handle: {0}", handle);
 
-      if (handle == 0)
+      // usb_tc08_open_unit returns a positive handle on success, 0 if no unit
+      // was found and a negative value on error. Testing only for 0 let a
+      // negative handle through as if the unit had opened.
+      if (handle <= 0)
       {
         Console.WriteLine("Unable to open device");
-        Console.WriteLine("Error code : {0}", handle);
+        Console.WriteLine("Error code : {0}", Imports.TC08GetLastError(0));
         WaitForKey();
+        return;
       }
-      else
-      {
-        Console.WriteLine("Device opened successfully\n");
 
+      Console.WriteLine("Device opened successfully\n");
+
+      try
+      {
         ConsoleExample consoleExample = new ConsoleExample(handle);
         consoleExample.Run();
-
+      }
+      finally
+      {
+        // Always release the unit, including when Run throws.
         Imports.TC08CloseUnit(handle);
       }
     }
   }
-}  
+}
