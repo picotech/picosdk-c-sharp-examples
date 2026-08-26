@@ -1,12 +1,12 @@
-﻿/******************************************************************************
+/******************************************************************************
 *
 * Filename: PL1000Imports.cs
-*  
+*
 * Description:
-*  This file contains .NET wrapper calls corresponding to function calls 
-*  defined in the pl1000Api.h C header file. 
+*  This file contains .NET wrapper calls corresponding to function calls
+*  defined in the pl1000Api.h C header file.
 *  It also has the enums required by the (wrapped) function calls.
-*   
+*
 * Copyright © 2012-2024 Pico Technology Ltd. See LICENSE file for terms.
 *
 ******************************************************************************/
@@ -21,6 +21,14 @@ namespace PL1000Imports
   {
     #region Constants
     private const string _DRIVER_FILENAME = "pl1000.dll";
+
+    // PL1000_MIN_PERIOD / PL1000_MAX_PERIOD from pl1000Api.h: the range accepted
+    // by pl1000SetPulseWidth, in microseconds.
+    public const ushort PL1000_MIN_PERIOD = 100;
+    public const ushort PL1000_MAX_PERIOD = 1800;
+
+    // Full-scale input range of the PicoLog 1000 Series, in volts.
+    public const double PL1000_FULL_SCALE_VOLTS = 2.5;
 
     #endregion
 
@@ -79,18 +87,21 @@ namespace PL1000Imports
     [DllImport(_DRIVER_FILENAME, EntryPoint = "pl1000CloseUnit")]
     public static extern StandardDriverStatusCode CloseUnit(short handle);
 
+    // info is PICO_INFO (uint32_t) in pl1000Api.h.
     [DllImport(_DRIVER_FILENAME, EntryPoint = "pl1000GetUnitInfo")]
     public static extern StandardDriverStatusCode GetUnitInfo(short handle,
                                                               StringBuilder infoString,
                                                               short strlength,
                                                               out short reqSize,
-                                                              int info);
+                                                              uint info);
 
     [DllImport(_DRIVER_FILENAME, EntryPoint = "pl1000OpenUnit")]
     public static extern StandardDriverStatusCode OpenUnit(out short handle);
 
+    // Named after the function it imports. This was previously called
+    // Enumerate, which does not describe pl1000GetSingle at all.
     [DllImport(_DRIVER_FILENAME, EntryPoint = "pl1000GetSingle")]
-    public static extern StandardDriverStatusCode Enumerate(short handle,
+    public static extern StandardDriverStatusCode GetSingle(short handle,
                                                             enPL1000Inputs channel,
                                                             out ushort value);
 
@@ -109,13 +120,13 @@ namespace PL1000Imports
     public static extern StandardDriverStatusCode OpenUnitAsync(out short handle);
 
     [DllImport(_DRIVER_FILENAME, EntryPoint = "pl1000OpenUnitProgress")]
-    public static extern StandardDriverStatusCode pl1000OpenUnitProgress(out short handle,
-                                                                         out short progress,
-                                                                         out short complete);
+    public static extern StandardDriverStatusCode OpenUnitProgress(out short handle,
+                                                                   out short progress,
+                                                                   out short complete);
 
     [DllImport(_DRIVER_FILENAME, EntryPoint = "pl1000Ready")]
-    public static extern StandardDriverStatusCode pl1000Ready(short handle,
-                                                              out short ready);
+    public static extern StandardDriverStatusCode Ready(short handle,
+                                                        out short ready);
 
     [DllImport(_DRIVER_FILENAME, EntryPoint = "pl1000Run")]
     public static extern StandardDriverStatusCode Run(short handle,
@@ -134,6 +145,11 @@ namespace PL1000Imports
                                                               short[] channels,
                                                               short NoofChannels);
 
+    [DllImport(_DRIVER_FILENAME, EntryPoint = "pl1000SetPulseWidth")]
+    public static extern StandardDriverStatusCode SetPulseWidth(short handle,
+                                                                ushort period,
+                                                                byte cycle);
+
     [DllImport(_DRIVER_FILENAME, EntryPoint = "pl1000SetTrigger")]
     public static extern StandardDriverStatusCode SetTrigger(short handle,
                                                              ushort enabled,
@@ -146,7 +162,7 @@ namespace PL1000Imports
                                                              float delay);
 
     [DllImport(_DRIVER_FILENAME, EntryPoint = "pl1000Stop")]
-    public static extern StandardDriverStatusCode stop(short handle);
+    public static extern StandardDriverStatusCode Stop(short handle);
 
     #endregion
   }
