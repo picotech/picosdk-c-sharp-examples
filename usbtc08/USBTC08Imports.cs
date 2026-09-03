@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
 *
 * Filename: USBTC08Imports.cs
 *
@@ -7,7 +7,7 @@
 *  defined in the usbtc08.h C header file.
 *  It also has the enums required by the (wrapped) function calls.
 *
-* Copyright � 2011-2018 Pico Technology Ltd. See LICENSE file for terms.
+* Copyright ï¿½ 2011-2018 Pico Technology Ltd. See LICENSE file for terms.
 *
 ******************************************************************************/
 
@@ -16,7 +16,7 @@ using System.Text;
 
 namespace USBTC08Imports
 {
-	class Imports
+	unsafe class Imports
 	{
 		#region Constants
 		private const string _DRIVER_FILENAME = "usbtc08.dll";
@@ -74,13 +74,12 @@ namespace USBTC08Imports
                                                   sbyte tc_type
                                                   );
 
-        // overflow_flags points at one flag per channel (the cold junction plus
-        // the eight inputs), so it is marshalled as an array. Using an array
-        // rather than a raw pointer keeps this example free of unsafe code.
+        // overflow_flags is a pointer to a single 16-bit field carrying one bit
+        // per channel, so it keeps the pointer form declared in usbtc08.h.
         [DllImport(_DRIVER_FILENAME, EntryPoint = "usb_tc08_get_single")]
         public static extern short TC08GetSingle(short handle,
                                                   float[] temp,
-                                                  short[] overflow_flags,
+                                                  short *overflow_flags,
                                                   TempUnit units
                                                   );
 

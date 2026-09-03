@@ -14,6 +14,7 @@ using System;
 using System.Threading;
 
 using USBTC08Imports;
+using PicoPinnedArray;
 
 namespace USBTC08ConsoleExample
 {
@@ -88,12 +89,14 @@ namespace USBTC08ConsoleExample
     /****************************************************************************
      * Read temperature information from the unit
      ****************************************************************************/
-    void GetValues()
+    unsafe void GetValues()
     {
         short status;
         short chan;
         float[] tempbuffer = new float[NUM_TC08_CHANNELS];
-        short[] overflow = new short[NUM_TC08_CHANNELS];
+        // usb_tc08_get_single's overflow_flags is a single 16-bit field with one
+        // bit per channel, not an array of per-channel flags.
+        short overflow;
         int lines = 0;
 
         Console.Write("\n");
@@ -110,7 +113,7 @@ namespace USBTC08ConsoleExample
 
         do
         {
-            status = Imports.TC08GetSingle(_handle, tempbuffer, overflow, Imports.TempUnit.USBTC08_UNITS_CENTIGRADE);
+            status = Imports.TC08GetSingle(_handle, tempbuffer, &overflow, Imports.TempUnit.USBTC08_UNITS_CENTIGRADE);
 
             // Report the failure and stop rather than spinning on a device that
             // is no longer answering (for example one that has been unplugged).
@@ -122,7 +125,8 @@ namespace USBTC08ConsoleExample
 
             for (chan = 0; chan < NUM_TC08_CHANNELS; chan++)
             {
-                Console.Write("{0:0.0000}{1}   ", tempbuffer[chan], overflow[chan] != 0 ? "!" : " ");
+                // One bit per channel in the returned field.
+                Console.Write("{0:0.0000}{1}   ", tempbuffer[chan], (overflow & (1 << chan)) != 0 ? "!" : " ");
             }
 
             Console.Write("\n");
@@ -156,7 +160,7 @@ namespace USBTC08ConsoleExample
     /****************************************************************************
     * Read temperature information from the unit using streaming
     ****************************************************************************/
-    void GetStreamingValues()
+    unsafe void GetStreamingValues()
     {
         int chan;
         int lines = 0;
@@ -165,12 +169,26 @@ namespace USBTC08ConsoleExample
         int[] samplesPerChannel = new int[NUM_TC08_CHANNELS];
         short[] overflow = new short[NUM_TC08_CHANNELS];
 
+        // Each channel buffer is pinned for the whole capture. The usbtc08
+        // driver is handed the address of these buffers, so they must not be
+        // relocated by the garbage collector while it holds them - the
+        // marshaller's own pin only lasts for the duration of a single call.
+        // One PinnedArray per channel; the array was previously sized
+        // buffer_size (1024) while only the first NUM_TC08_CHANNELS entries
+        // were ever populated.
+        PinnedArray<float>[] pinned = new PinnedArray<float>[NUM_TC08_CHANNELS];
+
         for (chan = 0; chan < NUM_TC08_CHANNELS; chan++)
         {
             tempbuffer[chan] = new float[USBTC08_MAX_SAMPLE_BUFFER];
+            pinned[chan] = new PinnedArray<float>(tempbuffer[chan]);
         }
 
         int[] times_ms_buffer = new int[USBTC08_MAX_SAMPLE_BUFFER];
+        PinnedArray<int> pinnedTimes = new PinnedArray<int>(times_ms_buffer);
+
+        try
+        {
 
         // Find the time interval
         int interval_ms = Imports.TC08GetMinIntervalMS(_handle);
@@ -242,12 +260,12 @@ namespace USBTC08ConsoleExample
                 }
             }
 
-            // Print readings
+            // Print readings, read back through the pinned view of each buffer.
             for (int i = 0; i < rowsToPrint; i++)
             {
                 for (int channel = 0; channel < NUM_TC08_CHANNELS; channel++)
                 {
-                    Console.Write("{0:0.0000}\t", tempbuffer[channel][i]);
+                    Console.Write("{0:0.0000}\t", pinned[channel].Target[i]);
                 }
 
                 Console.WriteLine("");
@@ -271,6 +289,27 @@ namespace USBTC08ConsoleExample
         }
 
         Imports.TC08Stop(_handle);
+
+        }
+        finally
+        {
+            // Release the pins on every exit path, including the early returns
+            // above. Previously the Dispose loop was only reached on a normal
+            // exit, so a driver error left the buffers pinned for the lifetime
+            // of the process.
+            foreach (PinnedArray<float> p in pinned)
+            {
+                if (p != null)
+                {
+                    p.Dispose();
+                }
+            }
+
+            if (pinnedTimes != null)
+            {
+                pinnedTimes.Dispose();
+            }
+        }
     }
 
     /****************************************************************************
