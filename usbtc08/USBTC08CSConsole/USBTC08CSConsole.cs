@@ -94,14 +94,15 @@ namespace USBTC08ConsoleExample
         short status;
         short chan;
         float[] tempbuffer = new float[NUM_TC08_CHANNELS];
-        // usb_tc08_get_single's overflow_flags is a single 16-bit field with one
-        // bit per channel, not an array of per-channel flags.
+        // usb_tc08_get_single's overflow_flags is a single 16-bit field, not an
+        // array of per-channel flags. Bit 0 is channel 1: the cold junction has
+        // no bit because it cannot go over range.
         short overflow;
         int lines = 0;
 
         Console.Write("\n");
 
-        Console.WriteLine("Temperatures are in �C\n");
+        Console.WriteLine("Temperatures are in degrees C\n");
         Console.WriteLine("Chan0 is the Cold Junction Temperature\n");
 
         // Label the columns
@@ -125,8 +126,13 @@ namespace USBTC08ConsoleExample
 
             for (chan = 0; chan < NUM_TC08_CHANNELS; chan++)
             {
-                // One bit per channel in the returned field.
-                Console.Write("{0:0.0000}{1}   ", tempbuffer[chan], (overflow & (1 << chan)) != 0 ? "!" : " ");
+                // The overflow field carries one bit per THERMOCOUPLE channel,
+                // starting at bit 0 for channel 1. The cold junction cannot be
+                // over range and has no bit of its own, so channel N is tested
+                // at bit N-1 and chan 0 is never marked.
+                bool overRange = chan > 0 && (overflow & (1 << (chan - 1))) != 0;
+
+                Console.Write("{0:0.0000}{1}   ", tempbuffer[chan], overRange ? "!" : " ");
             }
 
             Console.Write("\n");
@@ -134,7 +140,7 @@ namespace USBTC08ConsoleExample
 
             if (++lines > 9)
             {
-                Console.WriteLine("Temperatures are in �C  (! marks an over-range channel)\n");
+                Console.WriteLine("Temperatures are in degrees C  (! marks an over-range channel)\n");
                 Console.WriteLine("Chan0 is the Cold Junction Temperature\n");
                 Console.WriteLine("Press any key to stop....\n");
 
@@ -237,7 +243,7 @@ namespace USBTC08ConsoleExample
                     samplesPerChannel[chan] == 1 ? "" : "s");
             }
 
-            Console.WriteLine("Temperatures are in �C\n");
+            Console.WriteLine("Temperatures are in degrees C\n");
             Console.Write("Chan0 is the Cold Junction Temperature\n\n");
 
             // Label the columns
