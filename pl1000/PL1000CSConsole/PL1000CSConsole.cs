@@ -65,10 +65,12 @@ namespace PL1000CSConsole
       }
       finally
       {
-        WaitForUserToContinue();
-
+        // Release the unit before waiting on the user, rather than holding it
+        // open for as long as the console window is left sitting there.
         if (handle > 0)
           Imports.CloseUnit(handle);
+
+        WaitForUserToContinue();
       }
     }
 
